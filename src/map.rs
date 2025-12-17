@@ -2,21 +2,29 @@
 use bevy::prelude::*;
 use rand::Rng;
 use std::cmp::{max, min};
-
-
-#[derive(Component)]
-struct MapTile {
-    x: usize,
-    y: usize,
-    tile_type: TileType,
-}
+use crate::components::*;
 
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
-    Floor,
-    Wall,
-    Island,
+    Floor, // atlas index = 1..3 **
+    WallSideEast,
+    WallSideWest,
+    WallSideSouth,
+    WallSideNorth,
+    WallCentre,
+    WallCornerSE,
+    WallCornerSW,
+    WallCornerNE,
+    WallCornerNW,
+    WallEndEast,
+    WallEndWest,
+    WallEndNorth,
+    WallEndSouth,
+    WallEastWest,
+    WallNorthSouth,
+    WallSingle,
+    Empty, //no tile here. Going to use for corridors
 }
 
 
@@ -68,17 +76,54 @@ pub fn map_setup(
         for x in 0..MAP_WIDTH {
             let idx = xy_idx(x, y);
             let mut tile_type = map[idx];
-            if tile_type == TileType::Wall {
-                if has_tile_below(&map, x, y) {
-                    tile_type = TileType::Island;
+            if tile_type != TileType::Floor {
+                let condition = (
+                    has_tile_below(&map, x, y),
+                    has_tile_above(&map, x, y),
+                    has_tile_left(&map, x, y),
+                    has_tile_right(&map, x, y)
+                );
+                match condition {
+                    (true, true, true, true) => tile_type = TileType::WallCentre,
+                    (true, true, true, false) => tile_type = TileType::WallSideEast,
+                    (true, true, false, false) => tile_type = TileType::WallNorthSouth,
+                    (true, false, false, false) => tile_type = TileType::WallEndSouth,
+                    (false, false, false, false) => tile_type = TileType::WallSingle,
+                    (true, true, false, true) => tile_type = TileType::WallSideWest,
+                    (true, false, true, false) => tile_type = TileType::WallCornerNW,
+                    (false, false, false, true) => tile_type = TileType::WallEndWest,  
+                    (true, false, true, true) => tile_type = TileType::WallSideNorth,
+                    (false, false, true, true) => tile_type = TileType::WallEndEast,                    
+                    (false, true, true, true) => tile_type = TileType::WallSideSouth,                            
+                    (true, true, false, false) => tile_type = TileType::WallEastWest,
+                    (false, true, false, true) => tile_type = TileType::WallCornerSE,
+                    (false, true, true, false) => tile_type = TileType::WallCornerSW,
+                    (true, false, false, true) => tile_type = TileType::WallCornerNE,
+                    (false, true, false, false) => tile_type = TileType::WallEndNorth,
+                    _ => tile_type = TileType::Empty,
                 }
+                
             }
-
             // Select sprite index from atlas
             let sprite_index = match tile_type {
-                TileType::Floor => 0, // First tile in spritesheet
-                TileType::Wall => 1,
-                TileType::Island => 2,
+                TileType::Floor => 0, // First tile in spritesheet, takes first 3 spirtes.
+                TileType::Empty => 19,
+                TileType::WallSideEast => 3,
+                TileType::WallSideWest => 4,
+                TileType::WallSideSouth => 5,
+                TileType::WallSideNorth => 6,
+                TileType::WallCentre => 7,
+                TileType::WallCornerSE => 8,
+                TileType::WallCornerSW => 9,
+                TileType::WallCornerNE => 10,
+                TileType::WallCornerNW => 11,
+                TileType::WallEndEast => 12,
+                TileType::WallEndWest => 13,
+                TileType::WallEndNorth => 14,
+                TileType::WallEndSouth => 15,
+                TileType::WallSingle => 16,
+                TileType::WallNorthSouth => 17,
+                TileType::WallEastWest => 18,
             };
 
             // Calculate position (centered on screen)
@@ -105,7 +150,7 @@ fn xy_idx(x: usize, y: usize) -> usize {
 }
 
 fn new_map_rooms_and_corridors() -> Vec<TileType> {
-    let mut map = vec![TileType::Wall; 80 * 50];
+    let mut map = vec![TileType::WallCentre; 80 * 50];
 
     let mut rooms: Vec<Rect> = Vec::new();
     const MAX_ROOMS: i32 = 30;
@@ -150,7 +195,7 @@ fn new_map_rooms_and_corridors() -> Vec<TileType> {
 fn apply_room_to_map(room: &Rect, map: &mut [TileType]) {
     for y in room.y1 + 1..=room.y2 {
         for x in room.x1 + 1..=room.x2 {
-            map[xy_idx(x as usize, y as usize)] = TileType::Floor;
+            map[xy_idx(x as usize, y as usize)] = TileType::Empty;
         }
     }
 }
@@ -159,7 +204,7 @@ fn apply_horizontal_tunnel(map: &mut [TileType], x1: i32, x2: i32, y: i32) {
     for x in min(x1, x2)..=max(x1, x2) {
         let idx = xy_idx(x as usize, y as usize);
         if idx > 0 && idx < 80 * 50 {
-            map[idx as usize] = TileType::Floor;
+            map[idx as usize] = TileType::Empty;
         }
     }
 }
@@ -168,7 +213,7 @@ fn apply_vertical_tunnel(map: &mut [TileType], y1: i32, y2: i32, x: i32) {
     for y in min(y1, y2)..=max(y1, y2) {
         let idx = xy_idx(x as usize, y as usize);
         if idx > 0 && idx < 80 * 50 {
-            map[idx as usize] = TileType::Floor;
+            map[idx as usize] = TileType::Empty;
         }
     }
 }
@@ -182,6 +227,45 @@ fn has_tile_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     let tile_type = map[idx];
 
     let below_idx = xy_idx(x, y - 1);
+    let below_tile_type = map[below_idx];
+
+    below_tile_type == tile_type
+}
+fn has_tile_above(map: &Vec<TileType>, x: usize, y: usize) -> bool {
+    if y + 1 >=  MAP_HEIGHT {
+        return false;
+    }
+
+    let idx = xy_idx(x, y);
+    let tile_type = map[idx];
+
+    let below_idx = xy_idx(x, y + 1);
+    let below_tile_type = map[below_idx];
+
+    below_tile_type == tile_type
+}
+fn has_tile_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
+    if x == 0 {
+        return false;
+    }
+
+    let idx = xy_idx(x, y);
+    let tile_type = map[idx];
+
+    let below_idx = xy_idx(x - 1, y);
+    let below_tile_type = map[below_idx];
+
+    below_tile_type == tile_type
+}
+fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
+    if x + 1 >= MAP_WIDTH {
+        return false;
+    }
+
+    let idx = xy_idx(x, y);
+    let tile_type = map[idx];
+
+    let below_idx = xy_idx(x + 1, y);
     let below_tile_type = map[below_idx];
 
     below_tile_type == tile_type
