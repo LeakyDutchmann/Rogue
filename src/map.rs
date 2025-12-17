@@ -61,6 +61,8 @@ impl Rect {
 }
 
 
+    
+)
 pub fn map_setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -76,7 +78,7 @@ pub fn map_setup(
         for x in 0..MAP_WIDTH {
             let idx = xy_idx(x, y);
             let mut tile_type = map[idx];
-            if tile_type != TileType::Floor {
+            if tile_type != TileType::Empty {
                 let condition = (
                     has_tile_below(&map, x, y),
                     has_tile_above(&map, x, y),
@@ -86,14 +88,14 @@ pub fn map_setup(
                 match condition {
                     (true, true, true, true) => tile_type = TileType::WallCentre,
                     (true, true, true, false) => tile_type = TileType::WallSideEast,
-                    (true, true, false, false) => tile_type = TileType::WallNorthSouth,
+                    (false, false, true, true) => tile_type = TileType::WallNorthSouth,
                     (true, false, false, false) => tile_type = TileType::WallEndSouth,
                     (false, false, false, false) => tile_type = TileType::WallSingle,
                     (true, true, false, true) => tile_type = TileType::WallSideWest,
                     (true, false, true, false) => tile_type = TileType::WallCornerNW,
-                    (false, false, false, true) => tile_type = TileType::WallEndWest,  
+                    (false, false, true, false) => tile_type = TileType::WallEndWest,  
                     (true, false, true, true) => tile_type = TileType::WallSideNorth,
-                    (false, false, true, true) => tile_type = TileType::WallEndEast,                    
+                    (false, false, false, true) => tile_type = TileType::WallEndEast,                    
                     (false, true, true, true) => tile_type = TileType::WallSideSouth,                            
                     (true, true, false, false) => tile_type = TileType::WallEastWest,
                     (false, true, false, true) => tile_type = TileType::WallCornerSE,
@@ -108,8 +110,8 @@ pub fn map_setup(
             let sprite_index = match tile_type {
                 TileType::Floor => 0, // First tile in spritesheet, takes first 3 spirtes.
                 TileType::Empty => 19,
-                TileType::WallSideEast => 3,
-                TileType::WallSideWest => 4,
+                TileType::WallSideEast => 4,
+                TileType::WallSideWest => 3,
                 TileType::WallSideSouth => 5,
                 TileType::WallSideNorth => 6,
                 TileType::WallCentre => 7,
@@ -122,8 +124,8 @@ pub fn map_setup(
                 TileType::WallEndNorth => 14,
                 TileType::WallEndSouth => 15,
                 TileType::WallSingle => 16,
-                TileType::WallNorthSouth => 17,
-                TileType::WallEastWest => 18,
+                TileType::WallNorthSouth => 18,
+                TileType::WallEastWest => 17,
             };
 
             // Calculate position (centered on screen)
@@ -144,6 +146,7 @@ pub fn map_setup(
         }
     }
 }
+
 
 fn xy_idx(x: usize, y: usize) -> usize {
     (y * MAP_WIDTH) + x
