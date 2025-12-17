@@ -11,7 +11,7 @@ use movement::*;
 use map::*;
 
 #[derive(Resource)]
-pub struct MyTimer(Timer);
+pub struct MyTimer(pub Timer);
 
 fn main() {
     App::new()
