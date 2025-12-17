@@ -5,6 +5,13 @@ use std::cmp::{max, min};
 use crate::components::*;
 
 
+#[derive(Resource)]
+pub struct MapAtlas {
+    pub texture: Handle<Image>,
+    pub layout: Handle<TextureAtlasLayout>,
+}
+
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
     Floor, // atlas index = 1..3 **
@@ -61,18 +68,59 @@ impl Rect {
 }
 
 
-    
-)
-pub fn map_setup(
+pub fn floor_setup(
+    mut commands: Commands,
+    atlas: Res<MapAtlas>,
+) {
+    let mut map = vec![TileType::Floor; 80 * 50];
+    for x in 0..MAP_WIDTH {
+        for y in 0..MAP_HEIGHT {
+            let idx = xy_idx(x, y);
+            let tile_type = TileType::Floor;
+            let mut rng = rand::rng();
+            let sprite_index = rng.random_range(0..3);
+            let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
+            let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
+
+            commands.spawn((
+                Sprite::from_atlas_image(
+                            atlas.texture.clone(),
+                            TextureAtlas {
+                                layout: atlas.layout.clone(),
+                                index: sprite_index,
+                            },
+                        ),
+                Transform::from_xyz(pos_x, pos_y, 0.0),
+                MapTile { x, y, tile_type },
+            ));
+            
+            
+        }
+    }
+}   
+
+
+pub fn setup_atlas(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let texture = asset_server.load("Sprites.png");
-
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 8, 8, None, None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+    let layout_handle = texture_atlas_layouts.add(layout);
 
+    commands.insert_resource(MapAtlas {
+        texture,
+        layout: layout_handle,
+    });
+}
+
+
+
+pub fn map_setup(
+    mut commands: Commands,
+    atlas: Res<MapAtlas>,
+) {
     let map = new_map_rooms_and_corridors();
     for y in 0..MAP_HEIGHT {
         for x in 0..MAP_WIDTH {
@@ -119,8 +167,8 @@ pub fn map_setup(
                 TileType::WallCornerSW => 9,
                 TileType::WallCornerNE => 10,
                 TileType::WallCornerNW => 11,
-                TileType::WallEndEast => 12,
-                TileType::WallEndWest => 13,
+                TileType::WallEndEast => 13,
+                TileType::WallEndWest => 12,
                 TileType::WallEndNorth => 14,
                 TileType::WallEndSouth => 15,
                 TileType::WallSingle => 16,
@@ -134,12 +182,12 @@ pub fn map_setup(
 
             commands.spawn((
                 Sprite::from_atlas_image(
-                    texture.clone(),
-                    TextureAtlas {
-                        layout: texture_atlas_layout.clone(),
-                        index: sprite_index,
-                    },
-                ),
+                            atlas.texture.clone(),
+                            TextureAtlas {
+                                layout: atlas.layout.clone(),
+                                index: sprite_index,
+                            },
+                        ),
                 Transform::from_xyz(pos_x, pos_y, 0.0),
                 MapTile { x, y, tile_type },
             ));
