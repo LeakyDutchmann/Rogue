@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use rand::Rng;
 use std::cmp::{max, min};
 use crate::components::*;
+use crate::cave_generating::*;
 
 
 #[derive(Resource)]
@@ -35,9 +36,9 @@ pub enum TileType {
 }
 
 
-const MAP_HEIGHT: usize = 50;
-const MAP_WIDTH: usize = 80;
-const TILE_SIZE: f32 = 32.0;
+pub const MAP_HEIGHT: usize = 50;
+pub const MAP_WIDTH: usize = 80;
+pub const TILE_SIZE: f32 = 32.0;
 
 
 pub struct Rect {
@@ -121,7 +122,7 @@ pub fn map_setup(
     mut commands: Commands,
     atlas: Res<MapAtlas>,
 ) {
-    let map = new_map_rooms_and_corridors();
+    let map = generate_cave();
     for y in 0..MAP_HEIGHT {
         for x in 0..MAP_WIDTH {
             let idx = xy_idx(x, y);
@@ -196,7 +197,7 @@ pub fn map_setup(
 }
 
 
-fn xy_idx(x: usize, y: usize) -> usize {
+pub fn xy_idx(x: usize, y: usize) -> usize {
     (y * MAP_WIDTH) + x
 }
 
