@@ -23,7 +23,7 @@ fn main() {
         .add_message::<MouseClickEvent>()
         .add_systems(Startup, (setup_atlas,floor_setup, map_setup, setup).chain())
         .add_systems(FixedUpdate, (move_player, camera_update))
-        .add_systems(Update, (get_cursor_position, mouse_click_handler))
+        .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events))
         .run();
 }
 

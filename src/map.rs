@@ -53,6 +53,7 @@ pub fn floor_setup(
             let sprite_index = rng.random_range(0..3);
             let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
             let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
+            let position = IVec2::new(x as i32, y as i32);
 
             commands.spawn((
                 Sprite::from_atlas_image(
@@ -63,7 +64,7 @@ pub fn floor_setup(
                             },
                         ),
                 Transform::from_xyz(pos_x, pos_y, 0.0),
-                MapTile { x, y, tile_type },
+                MapTile { position, tile_type },
             ));
             
             
@@ -151,8 +152,9 @@ pub fn map_setup(
             // Calculate position (centered on screen)
             let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
             let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
-
-            commands.spawn((
+            let position = IVec2::new(x as i32, y as i32);
+            if tile_type != TileType::Empty {
+                commands.spawn((
                 Sprite::from_atlas_image(
                             atlas.texture.clone(),
                             TextureAtlas {
@@ -161,16 +163,17 @@ pub fn map_setup(
                             },
                         ),
                 Transform::from_xyz(pos_x, pos_y, 0.0),
-                MapTile { x, y, tile_type },
-                Wall
+                MapTile { position, tile_type },
+                Wall,
             ));
+            }
         }
     }
 }
 
 
 pub fn xy_idx(x: usize, y: usize) -> usize {
-    (y * MAP_WIDTH) + x
+    (y as usize * MAP_WIDTH) + x as usize
 }
 
 
@@ -227,59 +230,5 @@ fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     right_tile_type == tile_type
 }
 
-//Functions bellow are unneeded for now, but you could use them later. If so, delete this line first. ***
-
-// fn has_diagonal_upper_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
-//     if x + 1 >= MAP_WIDTH || y + 1 >= MAP_HEIGHT {
-//         return false;
-//     }
-
-//     let idx = xy_idx(x, y);
-//     let tile_type = map[idx];
-
-//     let below_idx = xy_idx(x + 1, y + 1);
-//     let below_tile_type = map[below_idx];
-
-//     below_tile_type == tile_type
-// }
-// fn has_diagonal_upper_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
-//     if x == 0 || y + 1 >= MAP_HEIGHT {
-//         return false;
-//     }
-
-//     let idx = xy_idx(x, y);
-//     let tile_type = map[idx];
-
-//     let below_idx = xy_idx(x - 1, y + 1);
-//     let below_tile_type = map[below_idx];
-
-//     below_tile_type == tile_type
-// }
-// fn has_diagonal_bottom_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
-//     if x == 0 || y == 0 {
-//         return false;
-//     }
-
-//     let idx = xy_idx(x, y);
-//     let tile_type = map[idx];
-
-//     let below_idx = xy_idx(x - 1, y - 1);
-//     let below_tile_type = map[below_idx];
-
-//     below_tile_type == tile_type
-// }
-// fn has_diagonal_bottom_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
-//     if x + 1 >= MAP_WIDTH || y == 0 {
-//         return false;
-//     }
-
-//     let idx = xy_idx(x, y);
-//     let tile_type = map[idx];
-
-//     let below_idx = xy_idx(x + 1, y - 1);
-//     let below_tile_type = map[below_idx];
-
-//     below_tile_type == tile_type
-// }
 
 
