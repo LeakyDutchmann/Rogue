@@ -162,6 +162,7 @@ pub fn map_setup(
                         ),
                 Transform::from_xyz(pos_x, pos_y, 0.0),
                 MapTile { x, y, tile_type },
+                Wall
             ));
         }
     }
@@ -194,10 +195,10 @@ fn has_tile_above(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     let idx = xy_idx(x, y);
     let tile_type = map[idx];
 
-    let below_idx = xy_idx(x, y + 1);
-    let below_tile_type = map[below_idx];
+    let above_idx = xy_idx(x, y + 1);
+    let above_tile_type = map[above_idx];
 
-    below_tile_type == tile_type
+    above_tile_type == tile_type
 }
 fn has_tile_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x == 0 {
@@ -207,10 +208,10 @@ fn has_tile_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     let idx = xy_idx(x, y);
     let tile_type = map[idx];
 
-    let below_idx = xy_idx(x - 1, y);
-    let below_tile_type = map[below_idx];
+    let left_idx = xy_idx(x - 1, y);
+    let left_tile_type = map[left_idx];
 
-    below_tile_type == tile_type
+    left_tile_type == tile_type
 }
 fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x + 1 >= MAP_WIDTH {
@@ -220,10 +221,10 @@ fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     let idx = xy_idx(x, y);
     let tile_type = map[idx];
 
-    let below_idx = xy_idx(x + 1, y);
-    let below_tile_type = map[below_idx];
+    let right_idx = xy_idx(x + 1, y);
+    let right_tile_type = map[right_idx];
 
-    below_tile_type == tile_type
+    right_tile_type == tile_type
 }
 
 //Functions bellow are unneeded for now, but you could use them later. If so, delete this line first. ***
