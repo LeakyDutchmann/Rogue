@@ -2,6 +2,7 @@ mod movement;
 mod components;
 mod map;
 mod mouse_input;
+mod cave_generating;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
