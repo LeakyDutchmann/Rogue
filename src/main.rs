@@ -11,8 +11,8 @@ use mouse_input::*;
 use movement::*;
 use map::*;
 
-#[derive(Resource)]
-pub struct MyTimer(pub Timer);
+// #[derive(Resource)]
+// pub struct MyTimer(pub Timer);
 
 fn main() {
     App::new()

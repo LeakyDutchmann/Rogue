@@ -1,7 +1,5 @@
 use bevy::prelude::*;
 use rand::Rng;
-use std::cmp::{max, min};
-use crate::components::*;
 use crate::map::*;
 
 pub fn generate_cave() -> Vec<TileType> {
