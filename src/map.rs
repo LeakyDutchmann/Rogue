@@ -238,8 +238,11 @@ pub fn update_map(
         let changed_y = changes.position.y;
         let changed_idx = xy_idx(changed_x as usize, changed_y as usize);
         copied[changed_idx] = TileType::Empty;
-        for x in changed_x - 2..changed_x + 3  {
-            for y in changed_y - 2..changed_y + 3 {
+        for x in changed_x.saturating_sub(2)..=(changed_x + 2)  {
+            if x as usize >= MAP_WIDTH { continue; }
+            for y in changed_y.saturating_sub(2)..=(changed_y + 2) {
+                if y as usize >= MAP_HEIGHT { continue; }
+                
                 let idx = xy_idx(x as usize, y as usize);
                 let mut tile_type = copied[idx];
                 println!("Now Saw tile with type: {:?} at ({}, {})", tile_type, x, y);
