@@ -11,6 +11,17 @@ use mouse_input::*;
 use movement::*;
 use map::*;
 
+#[derive(Component)]
+struct AnimationIndices {
+    first: usize,
+    last: usize,
+}
+
+
+#[derive(Component, Deref, DerefMut)]
+struct AnimationTimer(Timer);
+
+
 // #[derive(Resource)]
 // pub struct MyTimer(pub Timer);
 
@@ -25,11 +36,15 @@ fn main() {
         .add_message::<MapChanged>()
         .add_systems(Startup, (setup_atlas,floor_setup, map_setup, setup).chain())
         .add_systems(FixedUpdate, (move_player, camera_update))
-        .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events, destruction_system, update_map))
+        .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events, destruction_system, update_map, animate_sprite))
         .run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+) {
     //CAMERA SETUP
 
     commands.spawn((
@@ -41,11 +56,49 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 
     //PLAYER SETUP
+    let texture = asset_server.load("player_idle.png");
+    let layout = TextureAtlasLayout::from_grid(
+        UVec2::splat(32), 
+        4,
+        1,
+        None,
+        None
+    );
+    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+    let animation_indices = AnimationIndices { first: 0, last: 3 };
 
     commands.spawn((
-        Sprite::from_image(asset_server.load("player.png")),
+        Sprite::from_atlas_image(
+            texture,
+            TextureAtlas {
+                layout: texture_atlas_layout,
+                index: animation_indices.first,
+            }
+        ),
         Player,
         Transform::from_xyz(0.0, 0.0, 1.0),
         Speed(250.0),
+        animation_indices,
+        AnimationTimer(Timer::from_seconds(0.20, TimerMode::Repeating)),
     ));
 }
+
+fn animate_sprite(
+    time: Res<Time>,
+    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
+) {
+    for (indices, mut timer, mut sprite) in &mut query {
+        timer.tick(time.delta());
+
+        if timer.just_finished()
+            && let Some(atlas) = &mut sprite.texture_atlas
+        {
+            atlas.index = if atlas.index == indices.last {
+                indices.first
+            } else {
+                atlas.index + 1
+            };
+        }
+    }
+}
+
