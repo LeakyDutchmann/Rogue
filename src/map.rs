@@ -1,7 +1,5 @@
 
 use bevy::prelude::*;
-use bevy::sprite;
-use bevy_ecs_tiled::prelude::geo::SimplifyVwIdx;
 use rand::Rng;
 use crate::components::*;
 use crate::cave_generating::*;
@@ -226,7 +224,6 @@ fn tile_type_to_index(tile_type: TileType) -> usize {
 
 
 pub fn update_map(
-    mut commands: Commands,
     mut map: ResMut<GameMap>,
     mut query: Query<(&mut Sprite, &mut MapTile), With<Wall>>,
     mut reader: EventReader<MapChanged>,

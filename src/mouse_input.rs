@@ -2,7 +2,6 @@ use bevy::camera::Camera;
 use bevy::input::ButtonInput;
 use bevy::math::{IVec2, Vec2};
 use bevy::prelude::{GlobalTransform, Entity, Commands, Message, MessageWriter, MessageReader, MouseButton, Query, Res, ResMut, Resource, Window, With};
-use bevy::transform::commands;
 use bevy::window::PrimaryWindow;
 use crate::components::*;
 use crate::map::*;
