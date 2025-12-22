@@ -1,7 +1,8 @@
 use bevy::camera::Camera;
 use bevy::input::ButtonInput;
 use bevy::math::{IVec2, Vec2};
-use bevy::prelude::{GlobalTransform, Message, MessageWriter, MessageReader, MouseButton, Query, Res, ResMut, Resource, Window, With};
+use bevy::prelude::{GlobalTransform, Entity, Commands, Message, MessageWriter, MessageReader, MouseButton, Query, Res, ResMut, Resource, Window, With};
+use bevy::transform::commands;
 use bevy::window::PrimaryWindow;
 use crate::components::*;
 use crate::map::*;
@@ -15,6 +16,19 @@ pub struct CursorWorldPos(pub Option<Vec2>);
 #[derive(Message)]
 pub enum MouseClickEvent {
     LeftClick(Vec2),
+}
+
+#[derive(Message)]
+pub struct ApplyDestruction {
+    pub entity: Entity,
+    pub position: IVec2,
+}
+
+
+
+#[derive(Message)]
+pub struct MapChanged {
+    pub position: IVec2,
 }
 
 
@@ -44,16 +58,21 @@ pub fn mouse_click_handler(
 }
 
 pub fn mouse_events(
-    mut query: Query<&mut MapTile, With<Wall>>,
-    mut reader: MessageReader<MouseClickEvent>
+    mut query: Query<(Entity, &mut MapTile), With<Wall>>,
+    mut reader: MessageReader<MouseClickEvent>,
+    mut writer: MessageWriter<ApplyDestruction>,
 ) {
     for click in reader.read() {
         if let MouseClickEvent::LeftClick(pos) = click {
             let click_pos = world_to_tile(*pos);
-            for tile in query.iter_mut() {
+            for (entity, tile) in query.iter_mut() {
                 let tile_pos = tile.position;
                 if click_pos == tile_pos {
-                    println!("Clicked on tile {:?}", tile_pos)
+                    println!("Clicked on tile {:?}", tile_pos);
+                    writer.write(ApplyDestruction{
+                        entity,
+                        position: tile_pos
+                    });
                 }
                 
             }
@@ -62,8 +81,21 @@ pub fn mouse_events(
 }
 
 fn world_to_tile(world: Vec2) -> IVec2 {
-    IVec2::new(
-        ((world.x / TILE_SIZE) + (MAP_WIDTH as f32 / 2.0)).floor() as i32,
-        ((world.y / TILE_SIZE) + (MAP_HEIGHT as f32 / 2.0)).floor() as i32,
-    )
+    let x = ((world.x + (MAP_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
+    let y = ((world.y + (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
+    IVec2::new(x, y)
 }
+
+pub fn destruction_system(
+    mut commands: Commands,
+    mut reader: MessageReader<ApplyDestruction>,
+    mut writer: MessageWriter<MapChanged>,
+) {
+    for destruction in reader.read() {
+        commands.entity(destruction.entity).despawn();
+        writer.write(MapChanged {
+            position: destruction.position
+        });
+    }
+}
+

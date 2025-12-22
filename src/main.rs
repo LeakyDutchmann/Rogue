@@ -21,9 +21,11 @@ fn main() {
         .insert_resource(CursorWorldPos(None))
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .add_message::<MouseClickEvent>()
+        .add_message::<ApplyDestruction>()
+        .add_message::<MapChanged>()
         .add_systems(Startup, (setup_atlas,floor_setup, map_setup, setup).chain())
         .add_systems(FixedUpdate, (move_player, camera_update))
-        .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events))
+        .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events, destruction_system, update_map))
         .run();
 }
 
