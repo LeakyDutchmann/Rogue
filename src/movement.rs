@@ -2,14 +2,15 @@ use bevy::input::ButtonInput;
 use bevy::math::Vec2;
 use bevy::prelude::{Camera2d, Fixed, KeyCode, Query, Res, Time, Transform, With, Without};
 use crate::components::Player;
-use crate::Speed;
+use crate::{ActiveAnimation, Speed};
+use crate::*;
 
 pub fn move_player(
     time: Res<Time<Fixed>>,
     keys: Res<ButtonInput<KeyCode>>,
-    mut player: Query<(&mut Transform, &Speed), With<Player>>,
+    mut player: Query<(&mut Transform, &Speed, &mut ActiveAnimation), With<Player>>,
 ) {
-    for (mut transform, speed) in &mut player {
+    for (mut transform, speed, mut active) in &mut player {
         let mut direction = Vec2::ZERO;
 
         if keys.pressed(KeyCode::KeyW) {
@@ -17,12 +18,15 @@ pub fn move_player(
         }
         if keys.pressed(KeyCode::KeyS) {
             direction.y -= 1.0;
+        
         }
         if keys.pressed(KeyCode::KeyD) {
             direction.x += 1.0;
+            
         }
         if keys.pressed(KeyCode::KeyA) {
             direction.x -= 1.0;
+            
         }
 
         let direction = direction.normalize_or_zero();
