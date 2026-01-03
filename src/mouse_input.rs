@@ -1,10 +1,12 @@
-use bevy::camera::Camera;
+use bevy::camera::{Camera, Projection, Camera2d};
 use bevy::input::ButtonInput;
+use bevy::input::mouse::MouseWheel;
 use bevy::math::{IVec2, Vec2};
 use bevy::prelude::{GlobalTransform, Entity, Commands, Message, MessageWriter, MessageReader, MouseButton, Query, Res, ResMut, Resource, Window, With};
 use bevy::window::PrimaryWindow;
 use crate::components::*;
 use crate::map::*;
+
 
 
 #[derive(Resource, Default)]
@@ -29,6 +31,20 @@ pub struct ApplyDestruction {
 pub struct MapChanged {
     pub position: IVec2,
 }
+
+
+#[derive(Message)]
+pub struct ScrollMessage {
+    pub event: ScrollDir,
+}
+
+
+#[derive(PartialEq, Clone)]
+pub enum ScrollDir {
+    ScrollUp,
+    ScrollDown,
+}
+
 
 
 pub fn get_cursor_position(
@@ -97,4 +113,26 @@ pub fn destruction_system(
         });
     }
 }
+
+pub fn scroll_events(
+    mut scroll: MessageReader<MouseWheel>,
+    mut writer: MessageWriter<ScrollMessage>,
+) {
+    for ev in scroll.read() {
+        if ev.y == 1.0 {
+            writer.write(ScrollMessage {
+                event: ScrollDir::ScrollUp
+            });
+            println!("Scroll up");
+        }
+        if ev.y == -1.0 {
+            writer.write(ScrollMessage {
+                event: ScrollDir::ScrollDown
+            });
+        }
+    }
+}
+
+
+
 

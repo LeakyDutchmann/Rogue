@@ -50,11 +50,12 @@ fn main() {
         .add_message::<MouseClickEvent>()
         .add_message::<ApplyDestruction>()
         .add_message::<MapChanged>()
+        .add_message::<ScrollMessage>()
         .add_systems(Startup, (setup_atlas,floor_setup, map_setup, setup).chain())
         .add_systems(FixedUpdate, (move_player, camera_update))
         .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events, destruction_system, update_map))
         .add_systems(Update, animate_sprite)
-        .add_systems(Update, (change_animation, match_animation_type))
+        .add_systems(Update, (match_animation_type, scroll_events, camera_scroll_in))
         .run();
 }
 
@@ -77,9 +78,9 @@ fn setup(
     sprites.indices.insert(AnimationType::IdleRight, (0, 1));
     sprites.indices.insert(AnimationType::IdleLeft, (8, 10));
     sprites.indices.insert(AnimationType::MoveDown, (16, 19));
-    sprites.indices.insert(AnimationType::MoveUp, (24, 27));
-    sprites.indices.insert(AnimationType::MoveRight, (32, 35));
-    sprites.indices.insert(AnimationType::MoveLeft, (40, 43));
+    sprites.indices.insert(AnimationType::MoveUp, (20, 23));
+    sprites.indices.insert(AnimationType::MoveRight, (12, 15));
+    sprites.indices.insert(AnimationType::MoveLeft, (8, 11));
 
 
     //PLAYER SETUP
@@ -103,7 +104,7 @@ fn setup(
         ),
         Player,
         Transform::from_xyz(0.0, 0.0, 1.0),
-        Speed(250.0),
+        Speed(125.0),
         AnimationTimer(Timer::from_seconds(0.20, TimerMode::Repeating)),
         ActiveAnimation {
             current: AnimationType::IdleLeft,
@@ -147,28 +148,6 @@ fn animate_sprite(
     }
 }
 
-fn change_animation(
-    keys: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut ActiveAnimation, With<Player>>,
-) {
-    for mut active in query.iter_mut() {
-        if keys.pressed(KeyCode::KeyF) {
-            active.current = AnimationType::IdleRight;
-        }
-        if keys.pressed(KeyCode::KeyR) {
-            active.current = AnimationType::MoveDown;
-        }
-        if keys.pressed(KeyCode::KeyT) {
-            active.current = AnimationType::MoveUp;
-        }
-        if keys.pressed(KeyCode::KeyG) {
-            active.current = AnimationType::MoveLeft;
-        }
-        if keys.pressed(KeyCode::KeyH) {
-            active.current = AnimationType::MoveRight;
-        }
-    }
-}
 
 
 
