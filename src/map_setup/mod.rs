@@ -8,7 +8,7 @@ pub struct MapSetupPlugin;
 
 impl Plugin for MapSetupPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, (setup_atlas,floor_setup, map_setup).chain());
+        app.add_systems(Startup, (setup_atlas, floor_setup, map_setup).chain());
         app.add_systems(Update, update_map);
     }
 }
