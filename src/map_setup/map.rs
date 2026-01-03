@@ -2,49 +2,9 @@
 use bevy::prelude::*;
 use rand::Rng;
 use crate::components::*;
-use crate::cave_generating::*;
+use crate::map_setup::cave_generating::*;
+use crate::map_setup::*;
 use crate::mouse_input::*;
-
-
-#[derive(Resource)]
-pub struct MapAtlas {
-    pub texture: Handle<Image>,
-    pub layout: Handle<TextureAtlasLayout>,
-}
-
-
-#[derive(Resource)]
-pub struct GameMap {
-    tiles: Vec<TileType>,
-}
-
-
-#[derive(Debug, PartialEq, Copy, Clone)]
-pub enum TileType {
-    Floor, // atlas index = 1..3 **
-    WallSideEast,
-    WallSideWest,
-    WallSideSouth,
-    WallSideNorth,
-    WallCentre,
-    WallCornerSE,
-    WallCornerSW,
-    WallCornerNE,
-    WallCornerNW,
-    WallEndEast,
-    WallEndWest,
-    WallEndNorth,
-    WallEndSouth,
-    WallEastWest,
-    WallNorthSouth,
-    WallSingle,
-    Empty, //no tile here. Going to use for corridors
-}
-
-
-pub const MAP_HEIGHT: usize = 50;
-pub const MAP_WIDTH: usize = 80;
-pub const TILE_SIZE: f32 = 32.0;
 
 
 pub fn floor_setup(

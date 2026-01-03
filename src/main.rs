@@ -1,8 +1,7 @@
 mod movement;
 mod components;
-mod map;
+mod map_setup;
 mod mouse_input;
-mod cave_generating;
 
 use bevy::{prelude::*, sprite};
 use bevy::time::Fixed;
@@ -10,7 +9,7 @@ use std::collections::HashMap;
 use components::*;
 use mouse_input::*;
 use movement::*;
-use map::*;
+use map_setup::*;
 
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
@@ -43,6 +42,7 @@ pub struct SpriteSheetIndices {
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.build().set(ImagePlugin::default_nearest()))
+        .add_plugins(MapSetupPlugin)
         //.insert_resource(MyTimer(Timer::from_seconds(0.1, TimerMode::Once)))
         .insert_resource(CursorWorldPos(None))
         .insert_resource(SpriteSheetIndices { indices: HashMap::new() })
@@ -51,9 +51,9 @@ fn main() {
         .add_message::<ApplyDestruction>()
         .add_message::<MapChanged>()
         .add_message::<ScrollMessage>()
-        .add_systems(Startup, (setup_atlas,floor_setup, map_setup, setup).chain())
+        .add_systems(Startup, setup)
         .add_systems(FixedUpdate, (move_player, camera_update))
-        .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events, destruction_system, update_map))
+        .add_systems(Update, (get_cursor_position, mouse_click_handler, mouse_events, destruction_system))
         .add_systems(Update, animate_sprite)
         .add_systems(Update, (match_animation_type, scroll_events, camera_scroll_in))
         .run();

@@ -5,7 +5,7 @@ use bevy::math::{IVec2, Vec2};
 use bevy::prelude::{GlobalTransform, Entity, Commands, Message, MessageWriter, MessageReader, MouseButton, Query, Res, ResMut, Resource, Window, With};
 use bevy::window::PrimaryWindow;
 use crate::components::*;
-use crate::map::*;
+use crate::map_setup::*;
 
 
 

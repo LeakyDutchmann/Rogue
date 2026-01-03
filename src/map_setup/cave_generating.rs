@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use rand::Rng;
-use crate::map::*;
+use crate::map_setup::map::*;
+use crate::map_setup::*;
+
 
 pub fn generate_cave() -> Vec<TileType> {
     let mut map = vec![TileType::Empty; MAP_WIDTH * MAP_HEIGHT];
