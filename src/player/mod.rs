@@ -5,6 +5,7 @@ use crate::components::*;
 use player_setup::*;
 use player_movement::*;
 use bevy::prelude::*;
+use bevy::prelude::Component;
 
 
 pub struct PlayerSetupPlugin;
@@ -15,3 +16,39 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(FixedUpdate, move_player);
     }
 }
+
+
+//resources
+
+
+
+//components
+
+
+#[derive(Component, Copy, Clone, Eq, PartialEq, Debug)]
+pub struct Player {
+    pub state: PlayerState,
+    pub facing: Facing,
+}
+
+
+
+//enums
+// 
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+pub enum PlayerState {
+    Idle,
+    Walking,
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+pub enum Facing {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+
+
+

@@ -25,7 +25,10 @@ pub fn player_setup(
                 index: 0
             }
         ),
-        Player,
+        Player {
+            state: PlayerState::Idle,
+            facing: Facing::Right,
+        },
         Transform::from_xyz(0.0, 0.0, 1.0),
         Speed(125.0),
     ));

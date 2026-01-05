@@ -2,7 +2,7 @@ mod camera;
 
 use camera::*;
 use bevy::prelude::*;
-use crate::components::*;
+use crate::player::*;
 use crate::mouse::*;
 
 pub struct CameraSetupPlugin;
