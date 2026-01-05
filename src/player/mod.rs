@@ -1,6 +1,7 @@
 mod player_setup;
 mod player_movement;
 
+use crate::components::*;
 use player_setup::*;
 use player_movement::*;
 use bevy::prelude::*;

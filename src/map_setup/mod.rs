@@ -2,7 +2,12 @@ mod map;
 mod cave_generating;
 
 use bevy::prelude::*;
+use rand::Rng;
 use map::*;
+use cave_generating::*;
+use crate::components::*;
+use crate::mouse::*;
+
 
 pub struct MapSetupPlugin;
 

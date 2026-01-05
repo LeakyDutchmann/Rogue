@@ -1,11 +1,4 @@
-
-use bevy::prelude::*;
-use rand::Rng;
-use crate::components::*;
-use crate::map_setup::cave_generating::*;
 use crate::map_setup::*;
-use crate::mouse_input::*;
-
 
 pub fn floor_setup(
     mut commands: Commands,
