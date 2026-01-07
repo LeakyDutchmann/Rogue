@@ -6,6 +6,7 @@ use player_setup::*;
 use player_movement::*;
 use bevy::prelude::*;
 use bevy::prelude::Component;
+use crate::animations::*;
 
 
 pub struct PlayerSetupPlugin;
@@ -19,6 +20,7 @@ impl Plugin for PlayerSetupPlugin {
 
 
 //resources
+
 
 
 

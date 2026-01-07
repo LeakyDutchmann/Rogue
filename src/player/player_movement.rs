@@ -30,6 +30,12 @@ pub fn move_player(
             player.state = PlayerState::Walking;
             player.facing = direction_to_facing(direction);
             println!("Player is walking in direction {:?}", player.facing);
+            println!("Player state is {:?}", player.state);
+        } else {
+            player.state = PlayerState::Idle;
+            player.facing = direction_to_facing(direction);
+            println!("Player is idle");
+            println!("Player state is {:?}", player.state);
         }
     }
 }

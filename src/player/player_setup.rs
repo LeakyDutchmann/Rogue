@@ -29,6 +29,11 @@ pub fn player_setup(
             state: PlayerState::Idle,
             facing: Facing::Right,
         },
+        ActiveAnimation {
+            current: AnimationId::IdleRight,
+            previous: AnimationId::IdleRight,
+        },
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         Transform::from_xyz(0.0, 0.0, 1.0),
         Speed(125.0),
     ));
