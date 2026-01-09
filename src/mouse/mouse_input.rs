@@ -39,7 +39,7 @@ pub fn mouse_events(
                 if click_pos == tile_pos {
                     writer.write(ApplyDestruction{
                         entity,
-                        position: tile_pos
+                        position: tile_pos,
                     });
                 }
                 

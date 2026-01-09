@@ -2,11 +2,11 @@ use crate::player::*;
 
 
 pub fn move_player(
-    time: Res<Time<Fixed>>,
+    mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
-    mut player: Query<(&mut Transform, &Speed, &mut Player)>,
+    mut player: Query<(Entity, &mut Transform, &mut Player), With<Player>>,
 ) {
-    for (mut transform, speed, mut player) in &mut player {
+    for (mut player_e, mut transform, mut player_c) in &mut player {
         let mut direction = Vec2::ZERO;
         if keys.pressed(KeyCode::KeyW) {
             direction.y += 1.0;
@@ -21,21 +21,13 @@ pub fn move_player(
             direction.x -= 1.0;
         }
         let direction = direction.normalize_or_zero();
-        let movement = direction * speed.0 * time.delta_secs();
-
-        transform.translation.x += movement.x;
-        transform.translation.y += movement.y;
         
         if direction != Vec2::ZERO {
-            player.state = PlayerState::Walking;
-            player.facing = direction_to_facing(direction);
-            println!("Player is walking in direction {:?}", player.facing);
-            println!("Player state is {:?}", player.state);
+            commands.entity(player_e).insert(MovementIntent { direction });
+            player_c.state = PlayerState::Walking;
+            player_c.facing = direction_to_facing(direction);
         } else {
-            player.state = PlayerState::Idle;
-            player.facing = direction_to_facing(direction);
-            println!("Player is idle");
-            println!("Player state is {:?}", player.state);
+            player_c.state = PlayerState::Idle;
         }
     }
 }
@@ -46,4 +38,31 @@ fn direction_to_facing(direction: Vec2)-> Facing {
         } else {
             if direction.y > 0.0 { Facing::Up } else { Facing::Down }
         } 
+}
+
+pub fn print_state(
+    player: Query<&Player, With<Player>>,
+) {
+    for player in player.iter() {
+        println!("state: {:?}, facing: {:?}", player.state, player.facing);
+    }
+}
+
+pub fn player_idle_direction(
+    mut cursor: ResMut<CursorWorldPos>,
+    mut player: Query<(&Transform, &mut Player), With<Player>>,
+) {
+    for (transform, mut player) in player.iter_mut() {
+        if player.state == PlayerState::Idle {
+            if let Some(cursor_pos) = cursor.0 {
+                let player_pos = transform.translation.truncate();
+                if player_pos.x >= cursor_pos.x {
+                    player.facing = Facing::Left
+                } else {
+                    player.facing = Facing::Right
+                }
+            }
+            
+        }
+    }
 }

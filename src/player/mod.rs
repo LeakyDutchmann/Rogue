@@ -2,6 +2,7 @@ mod player_setup;
 mod player_movement;
 
 use crate::components::*;
+use crate::mouse::*;
 use player_setup::*;
 use player_movement::*;
 use bevy::prelude::*;
@@ -15,6 +16,7 @@ impl Plugin for PlayerSetupPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, player_setup);
         app.add_systems(FixedUpdate, move_player);
+        app.add_systems(Update, (player_idle_direction, print_state));
     }
 }
 
