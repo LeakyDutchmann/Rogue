@@ -4,10 +4,8 @@ pub fn floor_setup(
     mut commands: Commands,
     atlas: Res<MapAtlas>,
 ) {
-    let mut map = vec![TileType::Floor; 80 * 50];
     for x in 0..MAP_WIDTH {
         for y in 0..MAP_HEIGHT {
-            let idx = xy_idx(x, y);
             let tile_type = TileType::Floor;
             let mut rng = rand::rng();
             let sprite_index = rng.random_range(0..3);
@@ -108,10 +106,6 @@ fn has_tile_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if y == 0 {
         return false;
     }
-
-    let idx = xy_idx(x, y);
-    let tile_type = map[idx];
-
     let below_idx = xy_idx(x, y - 1);
     let below_tile_type = map[below_idx];
     
@@ -123,9 +117,6 @@ fn has_tile_above(map: &Vec<TileType>, x: usize, y: usize) -> bool {
         return false;
     }
 
-    let idx = xy_idx(x, y);
-    let tile_type = map[idx];
-
     let above_idx = xy_idx(x, y + 1);
     let above_tile_type = map[above_idx];
     
@@ -135,9 +126,6 @@ fn has_tile_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x == 0 {
         return false;
     }
-
-    let idx = xy_idx(x, y);
-    let tile_type = map[idx];
 
     let left_idx = xy_idx(x - 1, y);
     let left_tile_type = map[left_idx];
@@ -149,9 +137,6 @@ fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x + 1 >= MAP_WIDTH {
         return false;
     }
-
-    let idx = xy_idx(x, y);
-    let tile_type = map[idx];
 
     let right_idx = xy_idx(x + 1, y);
     let right_tile_type = map[right_idx];
@@ -187,7 +172,7 @@ fn tile_type_to_index(tile_type: TileType) -> usize {
 pub fn update_map(
     mut map: ResMut<GameMap>,
     mut query: Query<(&mut Sprite, &mut MapTile), With<Wall>>,
-    mut reader: EventReader<MapChanged>,
+    mut reader: MessageReader<MapChanged>,
 ) {
     let mut copied = map.tiles.clone();
     for changes in reader.read() {

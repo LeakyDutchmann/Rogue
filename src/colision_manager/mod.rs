@@ -4,8 +4,7 @@ mod colisions;
 use bevy::prelude::*;
 pub use colisions::*;
 use crate::components::*;
-use crate::map_setup::*;
-use crate::player::*;
+
 
 
 

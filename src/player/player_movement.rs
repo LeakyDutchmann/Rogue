@@ -4,9 +4,9 @@ use crate::player::*;
 pub fn move_player(
     mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
-    mut player: Query<(Entity, &mut Transform, &mut Player), With<Player>>,
+    mut player: Query<(Entity, &mut Player), With<Player>>,
 ) {
-    for (mut player_e, mut transform, mut player_c) in &mut player {
+    for (player_e, mut player_c) in &mut player {
         let mut direction = Vec2::ZERO;
         if keys.pressed(KeyCode::KeyW) {
             direction.y += 1.0;
@@ -49,7 +49,7 @@ fn direction_to_facing(direction: Vec2)-> Facing {
 // }
 
 pub fn player_idle_direction(
-    mut cursor: ResMut<CursorWorldPos>,
+    cursor: ResMut<CursorWorldPos>,
     mut player: Query<(&Transform, &mut Player), With<Player>>,
 ) {
     for (transform, mut player) in player.iter_mut() {
