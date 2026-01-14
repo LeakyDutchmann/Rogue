@@ -23,7 +23,7 @@ pub fn floor_setup(
                                 index: sprite_index,
                             },
                         ),
-                Transform::from_xyz(pos_x, pos_y, 0.0),
+                Transform::from_xyz(pos_x, pos_y, -1.0),
                 MapTile { position, tile_type },
             ));
             
@@ -84,6 +84,14 @@ pub fn map_setup(
                 Transform::from_xyz(pos_x, pos_y, 0.0),
                 MapTile { position, tile_type },
                 Wall,
+                Colider {
+                    shape: ColiderShape::Rectangle {
+                        width: TILE_SIZE,
+                        height: TILE_SIZE,
+                    },
+                    offsety: 0.0,
+                    sensor: true,
+                },
             ));
             }
         }

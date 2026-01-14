@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::components::*;
-use crate::colisions::*;
+use crate::colision_manager::*;
 
 
 pub struct MovementPlugin;
@@ -20,10 +20,10 @@ pub fn apply_movement(
 ) {
     for (entity, mut transform, speed, movement) in intender.iter_mut() {
         let direction = movement.direction;
-        let movement = direction * speed.0 * time.delta_secs();
+        // let movement = direction * speed.0 * time.delta_secs();
         
-        transform.translation.x += movement.x;
-        transform.translation.y += movement.y;
+        transform.translation.x += direction.x;
+        transform.translation.y += direction.y;
         
         commands.entity(entity).remove::<MovementResolved>();
     }

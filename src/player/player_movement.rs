@@ -40,13 +40,13 @@ fn direction_to_facing(direction: Vec2)-> Facing {
         } 
 }
 
-pub fn print_state(
-    player: Query<&Player, With<Player>>,
-) {
-    for player in player.iter() {
-        println!("state: {:?}, facing: {:?}", player.state, player.facing);
-    }
-}
+// pub fn print_state(
+//     player: Query<&Player, With<Player>>,
+// ) {
+//     for player in player.iter() {
+//         println!("state: {:?}, facing: {:?}", player.state, player.facing);
+//     }
+// }
 
 pub fn player_idle_direction(
     mut cursor: ResMut<CursorWorldPos>,
