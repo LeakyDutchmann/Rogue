@@ -3,11 +3,12 @@ mod cave_generating;
 
 use bevy::prelude::*;
 use rand::Rng;
-use map::*;
+pub use map::*;
 use cave_generating::*;
 use crate::components::*;
 use crate::mouse::*;
 use crate::colision_manager::*;
+
 
 
 pub struct MapSetupPlugin;
@@ -32,6 +33,7 @@ pub struct MapAtlas {
 pub struct GameMap {
     tiles: Vec<TileType>,
 }
+
 
 
 //Acosiated Enums and components here!!
