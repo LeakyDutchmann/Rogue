@@ -42,6 +42,10 @@ pub fn player_setup(
             offsety: -5.0,
             sensor: true,
         },
+        Inventory {
+            capacity: 9,
+            items: vec!{None; 9}
+        },
     ));
     
     //Spawning entity to test colisions, don't forget to remove!

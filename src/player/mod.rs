@@ -9,6 +9,7 @@ use bevy::prelude::*;
 use bevy::prelude::Component;
 use crate::animations::*;
 use crate::colision_manager::*;
+use crate::items::*;
 
 
 pub struct PlayerSetupPlugin;

@@ -7,6 +7,7 @@ mod animations;
 mod colision_manager;
 mod movement;
 mod world;
+mod items;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -19,13 +20,14 @@ use components::*;
 use movement::*;
 use colision_manager::*;
 use world::*;
+use items::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.build().set(ImagePlugin::default_nearest()))
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
-        .add_plugins(WorldPlugin)
+        .add_plugins((WorldPlugin, ItemsPlugin))
         .add_systems(Startup, setup)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();
@@ -33,20 +35,14 @@ fn main() {
 
 fn setup(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    asset_server: Res<AssetServer>,
 ) {
+    let texture = asset_server.load("potion.png");
     commands.spawn((
-        Mesh2d(meshes.add(Circle::new(10.0))),
-        MeshMaterial2d(materials.add(ColorMaterial::from_color(
-            Color::srgb(1.0, 0.0, 0.0)  // Red
-        ))),
-        Colider {
-            shape: ColiderShape::Circle { radius: 10.0},
-            offsety: 0.0,
-            sensor: true,
-        },
+        Sprite::from_image(texture),
         Transform::from_xyz(90.0, 0.0, 1.0),
+        Item,
+        OnGround,
     ));
 }
 
