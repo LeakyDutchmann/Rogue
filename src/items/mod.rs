@@ -17,7 +17,9 @@ impl Plugin for ItemsPlugin {
 //components
 
 #[derive(Component)]
-pub struct Item;
+pub struct Item {
+    pub image: Handle<Image>,
+}
 
 
 #[derive(Component)]

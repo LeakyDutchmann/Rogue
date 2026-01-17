@@ -46,6 +46,9 @@ pub fn player_setup(
             capacity: 9,
             items: vec!{None; 9}
         },
+        ActiveSlot {
+            index: 1,
+        },
     ));
     
     //Spawning entity to test colisions, don't forget to remove!

@@ -39,13 +39,35 @@ fn setup(
 ) {
     let texture = asset_server.load("potion.png");
     commands.spawn((
-        Sprite::from_image(texture),
+        Sprite::from_image(texture.clone()),
         Transform::from_xyz(90.0, 0.0, 1.0),
-        Item,
+        Item {
+            image: texture.clone(),
+        },
         OnGround,
     ));
+    
+    //making ui inventory
+    
+    
 }
 
+
+
+
+fn check_inventory(
+     mut inventory: Query<&mut Inventory, With<Player>>,
+) {
+    let inventory = inventory.single_mut().unwrap();
+    println!("Checking inventory");
+    for item in inventory.items.iter() {
+        if let Some(item) = item {
+            println!("Item found");
+        } else {
+            println!("No item found");
+        }
+    }
+}
 
 
 
