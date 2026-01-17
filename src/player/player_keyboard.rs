@@ -33,6 +33,26 @@ pub fn pick_active_slot(
     }
 }
 
+pub fn drop_item(
+    mut commands: Commands, keys: Res<ButtonInput<KeyCode>>,
+    active_slot: Query<&ActiveSlot>, mut inventory: Query<&mut Inventory, With<Player>>,
+    mut writer: MessageWriter<ItemDropped>, )
+{
+    if let Ok(active_slot) = active_slot.single() {
+        if keys.just_pressed(KeyCode::KeyG) {
+            if let Ok(mut inventory) = inventory.single_mut() {
+                if let Some(mut item) = inventory.items.get_mut(active_slot.index) {
+                    let dropped_item = *item;
+                    *item = None; 
+                    println!("Item dropped"); 
+                    writer.write(ItemDropped {item: dropped_item });
+                    println!("event sent"); 
+                } 
+            } 
+        } 
+    } 
+}
+
 
 
 

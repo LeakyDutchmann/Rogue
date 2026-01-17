@@ -3,11 +3,13 @@ mod items_systems;
 use bevy::prelude::*;
 use items_systems::*;
 
+use crate::player::*;
+
 pub struct ItemsPlugin;
 
 impl Plugin for ItemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, pick_up_item);
+        app.add_systems(Update, (pick_up_item, update_dropped_items, sync_player_inventory));
     }
 }
 

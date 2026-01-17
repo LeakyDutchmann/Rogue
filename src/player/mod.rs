@@ -20,9 +20,10 @@ pub struct PlayerSetupPlugin;
 
 impl Plugin for PlayerSetupPlugin {
     fn build(&self, app: &mut App) {
+        app.add_message::<ItemDropped>();
         app.add_systems(Startup, (player_setup, setup_inventory));
         app.add_systems(FixedUpdate, move_player);
-        app.add_systems(Update, (player_idle_direction, sync_player_inventory, pick_active_slot, show_active_slot));
+        app.add_systems(Update, (player_idle_direction, sync_player_inventory, pick_active_slot, show_active_slot, drop_item));
     }
 }
 
@@ -60,7 +61,7 @@ pub struct ActiveSlot {
 }
 
 //enums
-// 
+
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum PlayerState {
     Idle,
@@ -75,6 +76,9 @@ pub enum Facing {
     Right,
 }
 
+//messages
 
-
-
+#[derive(Message)]
+pub struct ItemDropped {
+    pub item: Option<Entity>,
+}
