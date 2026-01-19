@@ -234,7 +234,6 @@ fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
             (false, true, true, false) => tile_type = TileType::WallCornerSW,
             (true, false, false, true) => tile_type = TileType::WallCornerNE,
             (false, true, false, false) => tile_type = TileType::WallEndNorth,
-            _ => tile_type = TileType::Empty,
         }
     }
     tile_type

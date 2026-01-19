@@ -6,7 +6,7 @@ pub fn resolve_movement(
     mut commands: Commands,
     intender: Query<(Entity, &Transform, &MovementIntent, &Colider, &Speed), With<MovementIntent>>,
     others: Query<(&Transform, &Colider)>,
-    mut world: ResMut<WorldGrid>
+    world: ResMut<WorldGrid>
 ) {
     for (entity, transform, direction_intended, colider, speed) in intender.iter() {
         let current_pos = transform.translation.truncate();

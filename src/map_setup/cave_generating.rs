@@ -66,9 +66,7 @@ fn has_wall_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if y == 0 {
         return false;
     }
-
-    let idx = xy_idx(x, y);
-
+    
     let below_idx = xy_idx(x, y - 1);
     let below_tile_type = map[below_idx];
 
@@ -79,84 +77,71 @@ fn has_wall_above(map: &Vec<TileType>, x: usize, y: usize) -> bool {
         return false;
     }
 
-    let idx = xy_idx(x, y);
+    let above_idx = xy_idx(x, y + 1);
+    let above_tile_type = map[above_idx];
 
-    let below_idx = xy_idx(x, y + 1);
-    let below_tile_type = map[below_idx];
-
-    below_tile_type == TileType::WallCentre
+    above_tile_type == TileType::WallCentre
 }
 fn has_wall_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x == 0 {
         return false;
     }
 
-    let idx = xy_idx(x, y);
+    let left_idx = xy_idx(x - 1, y);
+    let left_tile_type = map[left_idx];
 
-    let below_idx = xy_idx(x - 1, y);
-    let below_tile_type = map[below_idx];
-
-    below_tile_type == TileType::WallCentre
+    left_tile_type == TileType::WallCentre
 }
 fn has_wall_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x + 1 >= MAP_WIDTH {
         return false;
     }
 
-    let idx = xy_idx(x, y);
+    let right_idx = xy_idx(x + 1, y);
+    let right_tile_type = map[right_idx];
 
-    let below_idx = xy_idx(x + 1, y);
-    let below_tile_type = map[below_idx];
-
-    below_tile_type == TileType::WallCentre
+    right_tile_type == TileType::WallCentre
 }
 fn has_wall_diagonal_upper_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x + 1 >= MAP_WIDTH || y + 1 >= MAP_HEIGHT {
         return false;
     }
 
-    let idx = xy_idx(x, y);
+    let diagonal_upper_righ_idx = xy_idx(x + 1, y + 1);
+    let diagonal_upper_righ_type = map[diagonal_upper_righ_idx];
 
-    let below_idx = xy_idx(x + 1, y + 1);
-    let below_tile_type = map[below_idx];
-
-    below_tile_type == TileType::WallCentre
+    diagonal_upper_righ_type == TileType::WallCentre
 }
 fn has_wall_diagonal_upper_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x == 0 || y + 1 >= MAP_HEIGHT {
         return false;
     }
 
-    let idx = xy_idx(x, y);
 
-    let below_idx = xy_idx(x - 1, y + 1);
-    let below_tile_type = map[below_idx];
+    let iagonal_upper_left_idx = xy_idx(x - 1, y + 1);
+    let iagonal_upper_left_type = map[iagonal_upper_left_idx];
 
-    below_tile_type == TileType::WallCentre
+    iagonal_upper_left_type == TileType::WallCentre
 }
 fn has_wall_diagonal_bottom_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x == 0 || y == 0 {
         return false;
     }
 
-    let idx = xy_idx(x, y);
 
-    let below_idx = xy_idx(x - 1, y - 1);
-    let below_tile_type = map[below_idx];
+    let diagonal_bottom_left_idx = xy_idx(x - 1, y - 1);
+    let diagonal_bottom_left_tile_type = map[diagonal_bottom_left_idx];
 
-    below_tile_type == TileType::WallCentre
+    diagonal_bottom_left_tile_type == TileType::WallCentre
 }
 fn has_wall_diagonal_bottom_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x + 1 >= MAP_WIDTH || y == 0 {
         return false;
     }
 
-    let idx = xy_idx(x, y);
-    let tile_type = map[idx];
+    let diagonal_bottom_right_idx = xy_idx(x + 1, y - 1);
+    let diagonal_bottom_right_type = map[diagonal_bottom_right_idx];
 
-    let below_idx = xy_idx(x + 1, y - 1);
-    let below_tile_type = map[below_idx];
-
-    below_tile_type == TileType::WallCentre
+    diagonal_bottom_right_type == TileType::WallCentre
 }
 
