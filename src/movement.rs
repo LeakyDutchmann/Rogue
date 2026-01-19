@@ -15,12 +15,12 @@ impl Plugin for MovementPlugin {
 
 
 pub fn apply_movement(
-    time: Res<Time<Fixed>>,
+    _time: Res<Time<Fixed>>,
     mut commands: Commands,
     mut intender: Query<(Entity, &mut Transform, &Speed, &MovementResolved), With<MovementResolved>>,
     mut world: ResMut<WorldGrid>,
 ) {
-    for (entity, mut transform, speed, movement) in intender.iter_mut() {
+    for (entity, mut transform, _speed, movement) in intender.iter_mut() {
         let old_pos = transform.translation.truncate();
         let old_cell = (
             (old_pos.x / CELL_SIZE).floor() as i32,

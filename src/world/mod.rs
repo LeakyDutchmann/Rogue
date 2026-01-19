@@ -5,9 +5,7 @@ pub use world_systems::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
 use crate::map_setup::*;
-use crate::player::*;
 use crate::map_setup::map_setup;
-use crate::movement::*;
 
 
 

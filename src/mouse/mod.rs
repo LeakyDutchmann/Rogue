@@ -7,7 +7,7 @@ use crate::map_setup::*;
 use crate::items::*;
 use crate::player::*;
 
-use bevy::camera::{Camera, Projection, Camera2d};
+use bevy::camera::{Camera};
 use bevy::input::ButtonInput;
 use bevy::input::mouse::MouseWheel;
 use bevy::math::{IVec2, Vec2};

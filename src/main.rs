@@ -16,7 +16,6 @@ use map_setup::*;
 use player::*;
 use camera_setup::*;
 use animations::*;
-use components::*;
 use movement::*;
 use colision_manager::*;
 use world::*;
@@ -55,19 +54,19 @@ fn setup(
 
 
 
-fn check_inventory(
-     mut inventory: Query<&mut Inventory, With<Player>>,
-) {
-    let inventory = inventory.single_mut().unwrap();
-    println!("Checking inventory");
-    for item in inventory.items.iter() {
-        if let Some(item) = item {
-            println!("Item found");
-        } else {
-            println!("No item found");
-        }
-    }
-}
+// fn check_inventory(
+//      mut inventory: Query<&mut Inventory, With<Player>>,
+// ) {
+//     let inventory = inventory.single_mut().unwrap();
+//     println!("Checking inventory");
+//     for item in inventory.items.iter() {
+//         if let Some(item) = item {
+//             println!("Item found");
+//         } else {
+//             println!("No item found");
+//         }
+//     }
+// }
 
 
 

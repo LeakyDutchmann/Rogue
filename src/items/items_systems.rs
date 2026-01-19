@@ -10,9 +10,9 @@ pub fn pick_up_item(
     for (entity, mut inventory, transform, intent ) in intender.iter_mut() {
         commands.entity(entity).remove::<IntentPickingUp>();
         println!("Picking up item");
-        let intender_pos = transform.translation.truncate();
+        let _intender_pos = transform.translation.truncate();
         let target = intent.target;
-        if let Ok((target_tf, sprite)) = item.get_mut(target) {
+        if let Ok((_target_tf, _sprite)) = item.get_mut(target) {
             println!("Item found");
             for slot in inventory.items.iter_mut() {
                 if slot.is_none() {
@@ -33,9 +33,9 @@ pub fn pick_up_item(
 
 pub fn update_dropped_items(
     mut commands: Commands,
-    mut player_pos: Query<&Transform, With<Player>>,
-    mut reader: EventReader<ItemDropped>,
-    mut img: Query<&Item>, 
+    player_pos: Query<&Transform, With<Player>>,
+    mut reader: MessageReader<ItemDropped>,
+    img: Query<&Item>, 
 ) {
     for msg in reader.read() {
         println!("event received");
@@ -46,15 +46,10 @@ pub fn update_dropped_items(
             if let Some(item) = msg.item {
                 println!("item found in msg");
                 if let Ok(img) = img.get(item) {
-                    println!("image found");
                     commands.entity(item).remove::<InInventory>();
-                    println!("not in inventory now!");
                     commands.entity(item).insert(OnGround);
-                    println!("ongorund");
                     commands.entity(item).insert(Sprite::from_image(img.image.clone()),);
-                    println!("image inserted");
                     commands.entity(item).insert(Transform::from_xyz(new_pos.x, new_pos.y, 1.0));
-                    println!("position updated"); 
                 } 
             }
         } 
@@ -62,7 +57,7 @@ pub fn update_dropped_items(
 }
 
 fn generate_random_coords(pos: Vec2) -> Vec2 {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let dx = rng.random_range(-30.0..30.0);
     let dy = rng.random_range(-30.0..30.0);
     Vec2::new(pos.x + dx, pos.y + dy)

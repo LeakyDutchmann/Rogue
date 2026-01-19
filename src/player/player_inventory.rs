@@ -76,7 +76,6 @@ pub fn sync_player_inventory(
 }
 
 pub fn show_active_slot(
-    mut commands: Commands,
     active_slot: Query<&ActiveSlot>,
     mut ui_slots: Query<(&mut BorderColor, &Slot)>
 ) {

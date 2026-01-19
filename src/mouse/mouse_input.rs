@@ -57,7 +57,7 @@ pub fn item_click_system(
     let mut player = player.single_mut().unwrap();
     for click in reader.read() {
         if let MouseClickEvent::LeftClick(click_pos) = click {
-            for (mut entity, transform) in query.iter_mut() {
+            for (entity, transform) in query.iter_mut() {
                 let item_pos = transform.translation.truncate();
                 let dist = click_pos.distance(item_pos);
                 if dist <= 32.0  {
