@@ -62,6 +62,10 @@ pub fn player_setup(
                 duration: 0.0,
                 max_angle: std::f32::consts::PI / 4.0,
                 active: false,
+                impact_triggered: false,
+                target: None,
+                item: None,
+                
             }
         ));
     });

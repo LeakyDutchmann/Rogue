@@ -77,6 +77,9 @@ struct KickAnimation {
     duration: f32,      // seconds
     max_angle: f32,     // radians
     active: bool,
+    impact_triggered: bool,
+    target: Option<Vec2>,
+    item: Option<Entity>,
 }
 
 
