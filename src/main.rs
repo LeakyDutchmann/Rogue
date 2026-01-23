@@ -37,11 +37,22 @@ fn setup(
     asset_server: Res<AssetServer>,
 ) {
     let texture = asset_server.load("potion.png");
+    let pickaxe_texture = asset_server.load("pickaxe.png");
     commands.spawn((
         Sprite::from_image(texture.clone()),
         Transform::from_xyz(90.0, 0.0, 1.0),
         Item {
             image: texture.clone(),
+            name: "Potion".to_string(),
+        },
+        OnGround,
+    ));
+    commands.spawn((
+        Sprite::from_image(pickaxe_texture.clone()),
+        Transform::from_xyz(44.0, 0.0, 1.0),
+        Item {
+            image: pickaxe_texture.clone(),
+            name: "Pickaxe".to_string(),
         },
         OnGround,
     ));

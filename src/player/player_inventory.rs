@@ -90,4 +90,45 @@ pub fn show_active_slot(
     }
 }
 
+pub fn draw_helditem(
+    mut commands: Commands,
+    mut held_item: Query<(Entity, &mut HeldItem), With<HeldItem>>,
+    inventory: Query<(&Inventory, &ActiveSlot), With<Player>>,
+    item_query: Query<&Item>,
+) {
+    if let Ok((player_hand, mut held_item)) = held_item.single_mut() {
+        if let Ok((inventory, active_slot)) = inventory.single() {
+            if let Some(Some(item_entity)) = inventory.items.get(active_slot.index) {
+                // Only update if we're holding a different item (or None)
+                if held_item.last_held != Some(*item_entity) {
+                    let texture = item_query.get(*item_entity).unwrap();
+                    let image = texture.image.clone();
+                    commands.entity(player_hand).insert(Sprite::from_image(image));
+                    held_item.last_held = Some(*item_entity);
+                }
+            } else {
+                // No item in active slot - remove sprite if we were holding something
+                if held_item.last_held.is_some() {
+                    commands.entity(player_hand).remove::<Sprite>();
+                    held_item.last_held = None;
+                }
+            }
+        }
+    }
+}
+
+
+pub fn update_held_item_dir(
+    mut held_item: Query<&mut Sprite, With<HeldItem>>,
+    player: Query<&Player>,
+) {
+    let Ok(player) = player.single() else { return };
+    let Ok(mut sprite) = held_item.single_mut() else { return };
+
+    sprite.flip_x = matches!(player.facing, Facing::Right);
+}
+
+
+
+
 

@@ -49,7 +49,22 @@ pub fn player_setup(
         ActiveSlot {
             index: 1,
         },
-    ));
+        
+        
+    )).with_children(|parent| {
+        parent.spawn((
+            HeldItem {
+                last_held: None,
+            },
+            Transform::default(),
+            KickAnimation {
+                progress: 0.0,
+                duration: 0.0,
+                max_angle: std::f32::consts::PI / 4.0,
+                active: false,
+            }
+        ));
+    });
     
     //Spawning entity to test colisions, don't forget to remove!
     
