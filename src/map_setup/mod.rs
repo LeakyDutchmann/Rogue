@@ -68,7 +68,8 @@ pub struct MapTile {
     pub tile_type: TileType,
 }
 
-
+// Again, don't group code by morphological similarity (enums, constants, structs etc),
+// but by their functionality (camera, rendering, map, creatures, combat, crafting, etc)
 //Constants Here!!
 
 pub const MAP_HEIGHT: usize = 50;

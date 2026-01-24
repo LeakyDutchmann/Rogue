@@ -9,6 +9,8 @@ pub fn resolve_movement(
     world: ResMut<WorldGrid>
 ) {
     for (entity, transform, direction_intended, colider, speed) in intender.iter() {
+        // You may want to extract the entire for{} body into a new function.
+
         let current_pos = transform.translation.truncate();
         let delta = direction_intended.direction * speed.0 * time.delta_secs();
         let mut resolved_dir = Vec2::ZERO;

@@ -4,6 +4,7 @@ pub fn floor_setup(
     mut commands: Commands,
     atlas: Res<MapAtlas>,
 ) {
+    // Every floor tile is an entity? This can get too CPU intensive pretty soon.
     for x in 0..MAP_WIDTH {
         for y in 0..MAP_HEIGHT {
             let tile_type = TileType::Floor;
@@ -217,6 +218,14 @@ fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
             has_tile_left(&map, x, y),
             has_tile_right(&map, x, y)
         );
+        // Good thinking. But the repetition here makes me think that
+        // a better data structure would be something like 
+        // struct TileType { center: bool, east: bool, ...  }
+        // or something even more general.
+        // 
+        // Also, this logic applies ONLY to TileType, so maybe it shall be
+        // a method of TileType?
+        // See https://refactoring.guru/smells/inappropriate-intimacy
         match condition {
             (true, true, true, true) => tile_type = TileType::WallCentre,
             (true, true, true, false) => tile_type = TileType::WallSideEast,

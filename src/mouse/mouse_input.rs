@@ -71,6 +71,9 @@ pub fn item_click_system(
 }
 
 
+// This looks like a World or maybe Camera method. Or Camera method that takes World argument,
+// because it needs to know size of the world.
+// The words you may be looking for is "world to screen / screen to world coordinate conversion".
 fn world_to_tile(world: Vec2) -> IVec2 {
     let x = ((world.x + (MAP_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
     let y = ((world.y + (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;

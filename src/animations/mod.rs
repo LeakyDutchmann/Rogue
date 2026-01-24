@@ -28,13 +28,14 @@ impl Plugin for AnimationSetupPlugin {
     }
 }
 
+// This comment restates what is already written in code.
 //resourses
 #[derive(Resource)]
 pub struct AnimationSet {
     pub indices: HashMap<AnimationId, (usize, usize)>
 }
 
-
+// Same comment. Think, can the same thing be stated in code? For example, moved into `components.rs`?
 //components
 
 #[derive(Component, Deref, DerefMut)]
@@ -43,10 +44,15 @@ pub struct AnimationTimer(pub Timer);
 #[derive(Component, PartialEq)]
 pub struct ActiveAnimation{
     pub current: AnimationId,
+    // Why do you even need the previous animation?
     pub previous: AnimationId,
 }
 
-
+// This is even worse. Don't do the "textbook comments", like
+// "this line increments value of variable i by 1", assume that your reader
+// already knows Rust syntax :)
+// A simple rule shall be "Comments explain WHY the code is here, not WHAT it does".
+// If it's unclear what a code does, work on refactoring the code.
 //enums
 
 #[derive(Hash, Eq, PartialEq, Copy, Clone)]

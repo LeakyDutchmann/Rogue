@@ -9,7 +9,8 @@ pub struct Speed(pub f32);
 #[derive(Component)]
 pub struct Wall;
 
-
+// I like the separation between intent and what actually happened. 
+// Makes a lot of sense in real-time game.
 #[derive(Component)]
 pub struct MovementIntent {
     pub direction: Vec2,

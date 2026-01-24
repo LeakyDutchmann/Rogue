@@ -32,6 +32,7 @@ fn main() {
         .run();
 }
 
+// You may want to gather all setup functions in one module.
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
