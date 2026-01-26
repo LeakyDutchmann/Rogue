@@ -8,6 +8,7 @@ mod colision_manager;
 mod movement;
 mod world;
 mod items;
+mod combat;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -20,13 +21,14 @@ use movement::*;
 use colision_manager::*;
 use world::*;
 use items::*;
+use combat::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.build().set(ImagePlugin::default_nearest()))
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
-        .add_plugins((WorldPlugin, ItemsPlugin))
+        .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin))
         .add_systems(Startup, setup)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();

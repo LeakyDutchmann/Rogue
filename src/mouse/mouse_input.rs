@@ -26,27 +26,7 @@ pub fn mouse_click_handler(
     }
 }
 
-pub fn tile_click_system(
-    mut query: Query<(Entity, &mut MapTile,), With<Wall>>,
-    mut reader: MessageReader<MouseClickEvent>,
-    mut writer: MessageWriter<ApplyDestruction>,
-) {
-    for click in reader.read() {
-        if let MouseClickEvent::LeftClick(pos) = click {
-            let click_pos = world_to_tile(*pos);
-            for (entity, tile) in query.iter_mut() {
-                let tile_pos = tile.position;
-                if click_pos == tile_pos {
-                    writer.write(ApplyDestruction{
-                        entity,
-                        position: tile_pos,
-                    });
-                }
-                
-            }
-        }
-    }
-}
+
 
 pub fn item_click_system(
     mut commands: Commands,
@@ -71,24 +51,8 @@ pub fn item_click_system(
 }
 
 
-fn world_to_tile(world: Vec2) -> IVec2 {
-    let x = ((world.x + (MAP_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
-    let y = ((world.y + (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
-    IVec2::new(x, y)
-}
 
-pub fn destruction_system(
-    mut commands: Commands,
-    mut reader: MessageReader<ApplyDestruction>,
-    mut writer: MessageWriter<MapChanged>,
-) {
-    for destruction in reader.read() {
-        commands.entity(destruction.entity).despawn();
-        writer.write(MapChanged {
-            position: destruction.position
-        });
-    }
-}
+
 
 pub fn scroll_events(
     mut scroll: MessageReader<MouseWheel>,

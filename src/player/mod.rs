@@ -3,6 +3,7 @@ mod player_movement;
 mod player_inventory;
 mod player_keyboard;
 mod player_animations;
+mod player_combat;
 
 use crate::components::*;
 use crate::mouse::*;
@@ -12,6 +13,7 @@ use player_inventory::*;
 use player_keyboard::*;
 use player_animations::*;
 use bevy::prelude::*;
+use player_combat::*;
 use bevy::prelude::Component;
 use crate::animations::*;
 use crate::colision_manager::*;
@@ -23,6 +25,7 @@ pub struct PlayerSetupPlugin;
 impl Plugin for PlayerSetupPlugin {
     fn build(&self, app: &mut App) {
         app.add_message::<ItemDropped>();
+        app.add_message::<ImpactTrigger>();
         app.add_systems(Startup, (player_setup, setup_inventory));
         app.add_systems(FixedUpdate, move_player);
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
@@ -104,4 +107,11 @@ pub enum Facing {
 #[derive(Message)]
 pub struct ItemDropped {
     pub item: Option<Entity>,
+}
+
+
+#[derive(Message)]
+pub struct ImpactTrigger {
+    pub item: Option<Entity>,
+    pub target: Option<Vec2>,
 }

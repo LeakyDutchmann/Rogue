@@ -20,11 +20,9 @@ pub struct MouseInputPlugin;
 
 impl Plugin for MouseInputPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (get_cursor_position, mouse_click_handler, tile_click_system, destruction_system, scroll_events, item_click_system));
+        app.add_systems(Update, (get_cursor_position, mouse_click_handler, scroll_events, item_click_system));
         app.add_message::<MouseClickEvent>();
-        app.add_message::<ApplyDestruction>();
         app.add_message::<ScrollMessage>();
-        app.add_message::<MapChanged>();
         app.insert_resource(CursorWorldPos(None));
     }
 }
@@ -44,17 +42,7 @@ pub enum MouseClickEvent {
 }
 
 
-#[derive(Message)]
-pub struct ApplyDestruction {
-    pub entity: Entity,
-    pub position: IVec2,
-}
 
-
-#[derive(Message)]
-pub struct MapChanged {
-    pub position: IVec2,
-}
 
 
 #[derive(Message)]

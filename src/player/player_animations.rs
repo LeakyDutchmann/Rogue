@@ -3,6 +3,7 @@ use super::*;
 pub fn animate_kick( mut commands: Commands,
     time: Res<Time>,
     mut query: Query<(Entity,&mut Transform, &mut KickAnimation)>,
+    mut writer: MessageWriter<ImpactTrigger>,
 ) {
     for (entity, mut transform, mut anim) in query.iter_mut() {
         if anim.active {
@@ -16,7 +17,11 @@ pub fn animate_kick( mut commands: Commands,
             
             if !anim.impact_triggered && anim.progress >= 0.5 {
                 anim.impact_triggered = true;
-                println!("Impact triggered!");
+                writer.write(ImpactTrigger {
+                    item: anim.item,
+                    target: anim.target,
+                });
+                 println!("Impact send!");
             }
             
             if anim.progress >= 1.0 {
@@ -41,28 +46,6 @@ let t = if p <= 0.5 {
 t * max_angle_rad
 }
 
-pub fn start_kick(
-    mut hand: Query<(&mut KickAnimation, &HeldItem), With<HeldItem>>,
-    mut reader: MessageReader<MouseClickEvent>,
-) { 
-    for click in reader.read() {
-        if let MouseClickEvent::LeftClick(click_pos) = click {
-            if let Ok((mut anim, item)) = hand.single_mut() {
-                let item = item.last_held;
-                if anim.active {
-                    continue;
-                } else {
-                    anim.active = true;
-                    anim.duration = 0.2;
-                    anim.impact_triggered = false;
-                    anim.target = Some(*click_pos);
-                    anim.item = item;
-                }
-            }
-        }
-        
-    }
-}
 
 //NOTE you successfully started the kick animation, but now you have to define a impact msg and send it when impact triggered, "
 // in there you should place entity of item and pos of click. In destruction system, or A-la "apply dmg system" you have to 

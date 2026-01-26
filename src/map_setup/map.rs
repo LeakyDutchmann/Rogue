@@ -239,3 +239,9 @@ fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
     tile_type
 }
 
+
+pub fn world_to_tile(world: Vec2) -> IVec2 {
+    let x = ((world.x + (MAP_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
+    let y = ((world.y + (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
+    IVec2::new(x, y)
+}

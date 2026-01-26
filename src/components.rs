@@ -6,9 +6,6 @@ use bevy::prelude::Component;
 pub struct Speed(pub f32);
 
 
-#[derive(Component)]
-pub struct Wall;
-
 
 #[derive(Component)]
 pub struct MovementIntent {

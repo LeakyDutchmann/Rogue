@@ -8,6 +8,7 @@ use cave_generating::*;
 use crate::components::*;
 use crate::mouse::*;
 use crate::colision_manager::*;
+use crate::combat::*;
 
 
 
@@ -15,6 +16,7 @@ pub struct MapSetupPlugin;
 
 impl Plugin for MapSetupPlugin {
     fn build(&self, app: &mut App) {
+        app.add_message::<MapChanged>();
         app.add_systems(Startup, (setup_atlas, floor_setup, map_setup).chain());
         app.add_systems(Update, update_map);
     }
@@ -68,9 +70,21 @@ pub struct MapTile {
     pub tile_type: TileType,
 }
 
+#[derive(Component)]
+pub struct Wall;
+
 
 //Constants Here!!
 
 pub const MAP_HEIGHT: usize = 50;
 pub const MAP_WIDTH: usize = 80;
 pub const TILE_SIZE: f32 = 32.0;
+
+
+
+//messages 
+
+#[derive(Message)]
+pub struct MapChanged {
+    pub position: IVec2,
+}
