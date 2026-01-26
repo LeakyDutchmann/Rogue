@@ -6,6 +6,9 @@ use bevy::prelude::Component;
 pub struct Speed(pub f32);
 
 
+#[derive(Component)]
+pub struct Health(pub i32);
+
 
 #[derive(Component)]
 pub struct MovementIntent {

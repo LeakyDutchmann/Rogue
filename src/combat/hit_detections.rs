@@ -16,7 +16,12 @@ pub fn detect_hit_system(
             for entity in cell_vec.iter() {
                 if let Ok(tile) = query.get(*entity) {
                     if tile.tile_type != TileType::Floor && tile.tile_type != TileType::Empty {
-                        println!("hit!!!");
+                        println!("hitted tile");
+                        writer.write(ApplyDestruction {
+                            entity: *entity,
+                            position: world_to_tile(impact_pos),
+                            damage: 30,
+                        });
                     }
                 }
 

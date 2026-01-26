@@ -90,6 +90,7 @@ pub fn map_setup(
                     offsety: 0.0,
                     sensor: true,
                 },
+                Health(100),
             ));
             }
         }
