@@ -66,22 +66,24 @@ which was hit.
 
 ### Item 
 
-As i said above - i'll have `item` component.  
-I think, it will be really nice to store all the  
-characteristics of the item in there.  
-
-Characteristics i might have:
+As i said above - i'll have `Item` component.  
+And also `WeaponStats` and `ToolStats`.   
+`Item` stores `image`, `name` and `usable`.
+`WeaponStats` stores:
 
 - `attack_speed`
 - `swing_angle` - to calculate `max_angle`.
 - `enemy_damage`
+- `durability`
+
+`ToolStats` stores:
+- `attack_speed`
 - `structure_damage`
 - `durability`
-- `usable`
+- `swing_angle`
 
-Also in component we'll store image, name and everything  
-we'll
-need to indentify the item.
+And component `CanAttack` helps to avoid attacking  
+and mining with empty hands or potions in hands.
 
 
 ## Potential issues and benefits
