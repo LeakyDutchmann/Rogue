@@ -10,7 +10,6 @@ pub fn insert_entities(
         let cell_x = (pos.x / CELL_SIZE).floor() as i32;
         let cell_y = (pos.y / CELL_SIZE).floor() as i32;
         world.cells.entry((cell_x, cell_y)).or_default().push(entity);
-        println!("inserted entities succesfuly");
     }
 }
 
