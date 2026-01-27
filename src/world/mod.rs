@@ -25,21 +25,12 @@ impl Plugin for WorldPlugin {
     }
 }
 
-//resources
 
 #[derive(Resource, PartialEq, Clone,)]
 pub struct WorldGrid {
     pub cells: HashMap<(i32, i32), Vec<Entity>>,
 }
 
-//components
-
-
-//enums
-
-
-
-//constants 
 
 pub const CELL_SIZE: f32 = TILE_SIZE as f32;
 

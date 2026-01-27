@@ -17,8 +17,6 @@ impl Plugin for ColisionPlugin {
 }
 
 
-//components 
-
 #[derive(Component)]
 pub struct Colider {
     pub shape: ColiderShape,
@@ -27,8 +25,6 @@ pub struct Colider {
     
 }
 
-
-//impls
 
 impl Colider {
     pub fn check_colisions(&self, pos1: Vec2, other: &Colider, pos2: Vec2) -> bool {
@@ -55,13 +51,6 @@ impl Colider {
     }
 }
 
-
-//resoursec
-
-
-
-
-//enums 
 
 pub enum ColiderShape {
     Circle { radius: f32},

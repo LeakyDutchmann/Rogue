@@ -61,10 +61,6 @@ fn setup(
         },
         OnGround,
     ));
-    
-    //making ui inventory
-    
-    
 }
 
 

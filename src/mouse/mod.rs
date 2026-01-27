@@ -25,7 +25,6 @@ impl Plugin for MouseInputPlugin {
 }
 
 
-
 #[derive(Resource, Default)]
 pub struct CursorWorldPos(pub Option<Vec2>);
 

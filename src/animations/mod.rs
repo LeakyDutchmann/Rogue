@@ -28,17 +28,16 @@ impl Plugin for AnimationSetupPlugin {
     }
 }
 
-//resourses
+
 #[derive(Resource)]
 pub struct AnimationSet {
     pub indices: HashMap<AnimationId, (usize, usize)>
 }
 
 
-//components
-
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
+
 
 #[derive(Component, PartialEq)]
 pub struct ActiveAnimation{
@@ -46,8 +45,6 @@ pub struct ActiveAnimation{
     pub previous: AnimationId,
 }
 
-
-//enums
 
 #[derive(Hash, Eq, PartialEq, Copy, Clone)]
 pub enum AnimationId {

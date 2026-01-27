@@ -16,10 +16,6 @@ impl Plugin for ItemsPlugin {
 }
 
 
-
-
-//components
-
 #[derive(Component)]
 pub struct Item {
     pub image: Handle<Image>,
@@ -41,16 +37,11 @@ pub struct Inventory {
     pub items: Vec<Option<Entity>>,
 }
 
+
 #[derive(Component)]
 pub struct IntentPickingUp {
     pub target: Entity,
 }
-
-
-//resources
-
-
-//enums
 
 
 

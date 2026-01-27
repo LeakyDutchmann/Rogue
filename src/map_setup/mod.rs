@@ -20,7 +20,6 @@ impl Plugin for MapSetupPlugin {
     }
 }
 
-//Resources HERE!!!
 
 #[derive(Resource)]
 pub struct MapAtlas {
@@ -33,10 +32,6 @@ pub struct MapAtlas {
 pub struct GameMap {
     tiles: Vec<TileType>,
 }
-
-
-
-//Acosiated Enums and components here!!
 
 
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -68,17 +63,11 @@ pub struct MapTile {
     pub tile_type: TileType,
 }
 
+
 #[derive(Component)]
 pub struct Wall;
 
 
-//Constants Here!!
-
 pub const MAP_HEIGHT: usize = 50;
 pub const MAP_WIDTH: usize = 80;
 pub const TILE_SIZE: f32 = 32.0;
-
-
-
-//messages 
-
