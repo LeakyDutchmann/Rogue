@@ -4,9 +4,7 @@ mod hit_detections;
 use bevy::prelude::*;
 use hit_detections::*;
 use damage_applying::*;
-use crate::mouse::*;
 use crate::map_setup::*;
-use crate::player::*;
 use crate::world::*;
 use crate::components::Health;
 use crate::messages::{HitMessage, ApplyDamage, MapChanged};
@@ -20,16 +18,6 @@ impl Plugin for CombatPlugin {
     }
 }
 
-//messages 
-
-
-
-
-
-
-
-
-//enums
 
 #[derive(Component)]
 pub struct AttackAnimation {
@@ -41,11 +29,5 @@ pub struct AttackAnimation {
     pub target: Option<Vec2>,
     pub item: Option<Entity>,
 }
-
-
-//resources
-
-
-//components
 
 

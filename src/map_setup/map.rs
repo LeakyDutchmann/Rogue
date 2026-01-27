@@ -87,8 +87,8 @@ pub fn map_setup(
                         width: TILE_SIZE,
                         height: TILE_SIZE,
                     },
-                    offsety: 0.0,
-                    sensor: true,
+                    _offsety: 0.0,
+                    _sensor: true,
                 },
                 Health(100),
             ));

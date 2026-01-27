@@ -22,8 +22,8 @@ impl Plugin for ColisionPlugin {
 #[derive(Component)]
 pub struct Colider {
     pub shape: ColiderShape,
-    pub offsety: f32,
-    pub sensor: bool,
+    pub _offsety: f32,
+    pub _sensor: bool,
     
 }
 
@@ -48,7 +48,7 @@ impl Colider {
                             
                 pos1.distance_squared(closest) < radius * radius
             },
-            (ColiderShape::Rectangle { width, height}, ColiderShape::Rectangle { width: width2, height: height2}) => {
+            (ColiderShape::Rectangle { width: _width, height: _height}, ColiderShape::Rectangle { width: _width2, height: _height2}) => {
                 false
             }
         }

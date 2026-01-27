@@ -9,7 +9,7 @@ pub fn hit_detection_system(
 ) {
     for impact in reader.read() {
         let impact_pos = impact.target.unwrap();
-        let item_used = impact.item;
+        let _item_used = impact.item;
         let cell_x = (impact_pos.x / CELL_SIZE).round() as i32;
         let cell_y = (impact_pos.y / CELL_SIZE).round() as i32;
         if let Some(cell_vec) = world.cells.get(&(cell_x, cell_y)) {

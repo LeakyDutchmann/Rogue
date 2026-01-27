@@ -34,7 +34,7 @@ pub fn item_click_system(
     mut player: Query<Entity, With<Player>>,
     mut reader: MessageReader<MouseClickEvent>,
 ) {
-    let mut player = player.single_mut().unwrap();
+    let player = player.single_mut().unwrap();
     for click in reader.read() {
         if let MouseClickEvent::LeftClick(click_pos) = click {
             for (entity, transform) in query.iter_mut() {

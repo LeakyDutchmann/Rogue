@@ -39,8 +39,8 @@ pub fn player_setup(
         Speed(125.0),
         Colider {
             shape: ColiderShape::Circle { radius: 3.0},
-            offsety: -5.0,
-            sensor: true,
+            _offsety: -5.0,
+            _sensor: true,
         },
         Inventory {
             capacity: 9,
