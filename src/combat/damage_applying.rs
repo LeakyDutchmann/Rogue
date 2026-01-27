@@ -2,9 +2,9 @@ use super::*;
 
 
 
-pub fn destruction_system(
+pub fn damage_execution_system(
     mut commands: Commands,
-    mut reader: MessageReader<ApplyDestruction>,
+    mut reader: MessageReader<ApplyDamage>,
     mut writer: MessageWriter<MapChanged>,
     mut health: Query<&mut Health>,
 ) {

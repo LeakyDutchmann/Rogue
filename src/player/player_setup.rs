@@ -57,12 +57,12 @@ pub fn player_setup(
                 last_held: None,
             },
             Transform::default(),
-            KickAnimation {
+            AttackAnimation {
                 progress: 0.0,
                 duration: 0.0,
                 max_angle: std::f32::consts::PI / 4.0,
                 active: false,
-                impact_triggered: false,
+                hit_triggered: false,
                 target: None,
                 item: None,
                 

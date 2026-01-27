@@ -1,9 +1,9 @@
 use super::*;
 
-pub fn animate_kick( mut commands: Commands,
+pub fn animate_attack( mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(Entity,&mut Transform, &mut KickAnimation)>,
-    mut writer: MessageWriter<ImpactTrigger>,
+    mut query: Query<(Entity,&mut Transform, &mut AttackAnimation)>,
+    mut writer: MessageWriter<HitMessage>,
 ) {
     for (entity, mut transform, mut anim) in query.iter_mut() {
         if anim.active {
@@ -15,9 +15,9 @@ pub fn animate_kick( mut commands: Commands,
             
             transform.rotation = Quat::from_rotation_z(angle);
             
-            if !anim.impact_triggered && anim.progress >= 0.5 {
-                anim.impact_triggered = true;
-                writer.write(ImpactTrigger {
+            if !anim.hit_triggered && anim.progress >= 0.5 {
+                anim.hit_triggered = true;
+                writer.write(HitMessage {
                     item: anim.item,
                     target: anim.target,
                 });
@@ -28,7 +28,7 @@ pub fn animate_kick( mut commands: Commands,
                 anim.active = false;
                 anim.progress = 0.0;
                 anim.duration = 0.0;
-                anim.impact_triggered = false;
+                anim.hit_triggered = false;
             } 
         }
     } 

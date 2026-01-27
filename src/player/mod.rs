@@ -18,29 +18,23 @@ use bevy::prelude::Component;
 use crate::animations::*;
 use crate::colision_manager::*;
 use crate::items::*;
+use crate::messages::{HitMessage, MouseClickEvent, ItemDropped};
+use crate::combat::AttackAnimation;
+
+
 
 
 pub struct PlayerSetupPlugin;
 
 impl Plugin for PlayerSetupPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<ItemDropped>();
-        app.add_message::<ImpactTrigger>();
         app.add_systems(Startup, (player_setup, setup_inventory));
         app.add_systems(FixedUpdate, move_player);
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
-            pick_active_slot, show_active_slot, drop_item, draw_helditem, update_held_item_dir, animate_kick, start_kick));
+            pick_active_slot, show_active_slot, drop_item, draw_helditem, update_held_item_dir, animate_attack, start_kick));
         
     }
 }
-
-
-//resources
-
-
-
-
-//components
 
 
 #[derive(Component, Copy, Clone, Eq, PartialEq, Debug)]
@@ -74,25 +68,12 @@ pub struct HeldItem {
 }
 
 
-#[derive(Component)]
-struct KickAnimation {
-    progress: f32,      // 0..1
-    duration: f32,      // seconds
-    max_angle: f32,     // radians
-    active: bool,
-    impact_triggered: bool,
-    target: Option<Vec2>,
-    item: Option<Entity>,
-}
-
-
-//enums
-
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum PlayerState {
     Idle,
     Walking,
 }
+
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Facing {
@@ -102,16 +83,3 @@ pub enum Facing {
     Right,
 }
 
-//messages
-
-#[derive(Message)]
-pub struct ItemDropped {
-    pub item: Option<Entity>,
-}
-
-
-#[derive(Message)]
-pub struct ImpactTrigger {
-    pub item: Option<Entity>,
-    pub target: Option<Vec2>,
-}

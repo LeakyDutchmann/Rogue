@@ -9,6 +9,7 @@ use crate::components::*;
 use crate::mouse::*;
 use crate::colision_manager::*;
 use crate::combat::*;
+use crate::messages::MapChanged;
 
 
 
@@ -16,7 +17,6 @@ pub struct MapSetupPlugin;
 
 impl Plugin for MapSetupPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<MapChanged>();
         app.add_systems(Startup, (setup_atlas, floor_setup, map_setup).chain());
         app.add_systems(Update, update_map);
     }
@@ -84,7 +84,3 @@ pub const TILE_SIZE: f32 = 32.0;
 
 //messages 
 
-#[derive(Message)]
-pub struct MapChanged {
-    pub position: IVec2,
-}

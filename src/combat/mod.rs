@@ -9,26 +9,21 @@ use crate::map_setup::*;
 use crate::player::*;
 use crate::world::*;
 use crate::components::Health;
+use crate::messages::{HitMessage, ApplyDamage, MapChanged};
 
 
 pub struct CombatPlugin;
 
 impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<ApplyDestruction>();
-        app.add_systems(Update, (detect_hit_system, destruction_system));
+        app.add_systems(Update, (hit_detection_system, damage_execution_system));
     }
 }
 
 //messages 
 
 
-#[derive(Message)]
-pub struct ApplyDestruction {
-    pub entity: Entity,
-    pub position: IVec2,
-    pub damage: i32,
-}
+
 
 
 
@@ -36,7 +31,16 @@ pub struct ApplyDestruction {
 
 //enums
 
-
+#[derive(Component)]
+pub struct AttackAnimation {
+    pub progress: f32,      // 0..1
+    pub duration: f32,      // seconds
+    pub max_angle: f32,     // radians
+    pub active: bool,
+    pub hit_triggered: bool,
+    pub target: Option<Vec2>,
+    pub item: Option<Entity>,
+}
 
 
 //resources

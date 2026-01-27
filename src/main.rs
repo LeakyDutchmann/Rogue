@@ -9,6 +9,7 @@ mod movement;
 mod world;
 mod items;
 mod combat;
+mod messages;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -22,10 +23,12 @@ use colision_manager::*;
 use world::*;
 use items::*;
 use combat::*;
+use messages::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.build().set(ImagePlugin::default_nearest()))
+        .add_plugins(MessagesPlugin)
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
         .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin))

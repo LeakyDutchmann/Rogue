@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn start_kick(
-    mut hand: Query<(&mut KickAnimation, &HeldItem), With<HeldItem>>,
+    mut hand: Query<(&mut AttackAnimation, &HeldItem), With<HeldItem>>,
     mut reader: MessageReader<MouseClickEvent>,
 ) { 
     for click in reader.read() {
@@ -13,7 +13,7 @@ pub fn start_kick(
                 } else {
                     anim.active = true;
                     anim.duration = 0.2;
-                    anim.impact_triggered = false;
+                    anim.hit_triggered = false;
                     anim.target = Some(*click_pos);
                     anim.item = item;
                 }

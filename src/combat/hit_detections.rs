@@ -1,11 +1,11 @@
 use super::*;
 
 
-pub fn detect_hit_system(
+pub fn hit_detection_system(
     world: Res<WorldGrid>,
     query: Query<&mut MapTile, With<Wall>>,
-    mut reader: MessageReader<ImpactTrigger>,
-    mut writer: MessageWriter<ApplyDestruction>,
+    mut reader: MessageReader<HitMessage>,
+    mut writer: MessageWriter<ApplyDamage>,
 ) {
     for impact in reader.read() {
         let impact_pos = impact.target.unwrap();
@@ -17,7 +17,7 @@ pub fn detect_hit_system(
                 if let Ok(tile) = query.get(*entity) {
                     if tile.tile_type != TileType::Floor && tile.tile_type != TileType::Empty {
                         println!("hitted tile");
-                        writer.write(ApplyDestruction {
+                        writer.write(ApplyDamage {
                             entity: *entity,
                             position: world_to_tile(impact_pos),
                             damage: 30,

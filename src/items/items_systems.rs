@@ -1,5 +1,3 @@
-use rand::Rng;
-
 use super::*;
 
 pub fn pick_up_item(
