@@ -1,4 +1,4 @@
-# Introduction to my `Combat system`  
+# Introduction to my ***A.H.D*** `Combat system`  
 
 ## Goal
 
@@ -10,27 +10,27 @@ To implement these, i am thinking about making
 unified system which will handle all related actions.
 
 So the idea is to split all combat into five steps:  
-1. Kick initialization
-2. Kick animation
+1. Attack initialization
+2. Attack animation
 2. Hit detection
 3. Damage calculation
 4. Damage execution
 
 ## Implementation
 
-**Kick initialization** is going to be system which  
-reacts on mouse clicks and starts kick animation.  
+**Attack initialization** is going to be system which  
+reacts on mouse clicks and starts attack animation.  
 For enemys we'll have different system to handle initialization.  
-Kick animation is going to be a component:
+Attack animation is going to be a component:
 
 ```Rust
 #[derive(Component)]
-struct KickAnimation {
+struct AttackAnimation {
     progress: f32,      
     duration: f32,      
     max_angle: f32,     
     active: bool,
-    impact_triggered: bool,
+    hit_triggered: bool,
     target: Option<Vec2>,
     item: Option<Entity>,
 }
@@ -43,23 +43,22 @@ to handle case when haven't clicked yet.
 Also we set `item` field to store the `Entity` player  
 was holding in hands when clicked. 
 
-**Kick animation** is going to rotate the entity  
-with `KickAnimation` component with `active = true` field,  
+**Attack animation** is going to rotate the entity  
+with `AttackAnimation` component with `active = true` field,  
 depended on `max_angle` and `duration`. Each turn it   
 changes the `progress` field and when it hits 0,5 -  
-sends `the message` to hit detection system.  
-Also it sets the `impact_triggered` field to  
+sends `HitMessage` to hit detection system.  
+Also it sets the `hit_triggered = true` to  
 avoid multiple impacts at once, because it sends  
 only if it's false.
 
-**Hit detection** reads the `ImpactTrigger` message  
+**Hit detection** reads the `HitMessage` message  
 to see who hit and what it hit. It decides did it hit  
 tile or enemy or nothing. For each case it calculates  
 damage except the last one and sends message to the last system.  
-To calculate damage i think to use other function calles  
-to add some flexibility to the code. Because if i place  
-it in the `hit detection` function - it's going to be really  
-messy there.
+To calculate damage i think to use other function  
+called `damage_calculation`. Doing that will save  
+a lot of space in `hit_detection` fn.
 
 **Damage execution** is going to read messages from   
 previous system and apply calculated damage to entity  
@@ -80,7 +79,8 @@ Characteristics i might have:
 - `durability`
 - `usable`
 
-Also in component we'll store image, name and all we'll  
+Also in component we'll store image, name and everything  
+we'll
 need to indentify the item.
 
 
@@ -95,7 +95,10 @@ everything. In programming it looks good.
 
 ### issues
 
-Can't see for now.
+It might have problem with optimization when a lot of  
+entities are trying to hit something, but i think,  
+chunk-based rendering will solve that.
+
 
 
 
