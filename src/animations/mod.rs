@@ -1,7 +1,9 @@
 mod animations_setup; 
+mod components;
 
 
 use animations_setup::*;
+pub use components::*;
 use std::collections::HashMap;
 use crate::player::{Player, Facing, PlayerState};
 
@@ -28,35 +30,7 @@ impl Plugin for AnimationSetupPlugin {
     }
 }
 
-#[derive(Hash, Eq, PartialEq, Copy, Clone)]
-pub enum AnimationId {
-    IdleRight,
-    IdleLeft,
-    WalkRight,
-    WalkLeft,
-    WalkUp,
-    WalkDown,
-}
 
-impl AnimationId {
-    pub fn idle_from(facing: Facing) -> Self {
-        match facing {
-            Facing::Right =>  AnimationId::IdleRight,
-            Facing::Left =>  AnimationId::IdleLeft,
-            Facing::Up =>  AnimationId::IdleRight,
-            Facing::Down =>  AnimationId::IdleRight,
-        }
-    }
-    
-    pub fn walk_from(facing: Facing) -> Self {
-        match facing {
-            Facing::Right =>  AnimationId::WalkRight,
-            Facing::Left =>  AnimationId::WalkLeft,
-            Facing::Up =>  AnimationId::WalkUp,
-            Facing::Down =>  AnimationId::WalkDown,
-        }
-    }
-}
 
 
 #[derive(Resource)]
@@ -65,15 +39,7 @@ pub struct AnimationSet {
 }
 
 
-#[derive(Component, Deref, DerefMut)]
-pub struct AnimationTimer(pub Timer);
 
-
-#[derive(Component, PartialEq)]
-pub struct ActiveAnimation{
-    pub current: AnimationId,
-    pub previous: AnimationId,
-}
 
 
 
