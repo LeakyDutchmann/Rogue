@@ -61,26 +61,4 @@ pub fn update_dropped_items(
     }
 }
 
-// pub fn sync_player_inventory(
-//     mut commands: Commands,
-//     inventory: Query<&Inventory, (With<Player>, Changed<Inventory>)>,
-//     mut slots: Query<(Entity, &mut SlotIcon)>, item_query: Query<&Item>,
-// ) {
-//     if let Ok(inventory) = inventory.single() {
-//         // println!("foundi nventory");
-//         for (slot_e, slot_icon) in slots.iter_mut() {
-//             let slot_idx = slot_icon.index;
-//             // println!("found idx");
-//             if let Some(Some(item_entity)) = inventory.items.get(slot_idx) {
-//                 let texture = item_query.get(*item_entity).unwrap();
-//                 let image = texture.image.clone();
-//                 commands.entity(slot_e).insert(ImageNode::new(image));
-//                 // println!("inserted img");
-//             } else {
-//                 commands.entity(slot_e).remove::<ImageNode>();
-//             } 
-//         } 
-//     } 
-// }
-
 
