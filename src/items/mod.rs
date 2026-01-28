@@ -19,7 +19,7 @@ impl Plugin for ItemsPlugin {
 #[derive(Component)]
 pub struct Item {
     pub image: Handle<Image>,
-    pub name: String,
+    pub _name: String,
 }
 
 
