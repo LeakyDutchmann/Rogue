@@ -167,9 +167,9 @@ pub fn update_map(
                 
                 let idx = xy_idx(x as usize, y as usize);
                 let mut tile_type = copied[idx];
-                println!("Now Saw tile with type: {:?} at ({}, {})", tile_type, x, y);
+                // println!("Now Saw tile with type: {:?} at ({}, {})", tile_type, x, y); for debug
                 tile_type = pick_tile_type(&copied, x as usize, y as usize);
-                println!("changed tile type to {:?}", tile_type);
+                // println!("changed tile type to {:?}", tile_type); for debug
                 map.tiles[idx] = tile_type;
                 
                 for (mut sprite, mut tile) in query.iter_mut() {
