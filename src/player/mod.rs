@@ -5,8 +5,8 @@ mod player_keyboard;
 mod player_animations;
 mod player_combat;
 
-use crate::components::*;
-use crate::mouse::*;
+use crate::components::{Speed, MovementIntent};
+use crate::mouse::CursorWorldPos;
 use player_setup::*;
 use player_movement::*;
 use player_inventory::*;
@@ -15,9 +15,9 @@ use player_animations::*;
 use bevy::prelude::*;
 use player_combat::*;
 use bevy::prelude::Component;
-use crate::animations::*;
-use crate::colision_manager::*;
-use crate::items::*;
+use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
+use crate::colision_manager::{Colider, ColiderShape};
+use crate::items::{Item, Inventory};
 use crate::messages::{HitMessage, MouseClickEvent, ItemDropped};
 use crate::combat::AttackAnimation;
 
@@ -34,6 +34,21 @@ impl Plugin for PlayerSetupPlugin {
             pick_active_slot, show_active_slot, drop_item, draw_helditem, update_held_item_dir, animate_attack, start_kick));
         
     }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+pub enum PlayerState {
+    Idle,
+    Walking,
+}
+
+
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+pub enum Facing {
+    Up,
+    Down,
+    Left,
+    Right,
 }
 
 
@@ -68,18 +83,4 @@ pub struct HeldItem {
 }
 
 
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum PlayerState {
-    Idle,
-    Walking,
-}
-
-
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum Facing {
-    Up,
-    Down,
-    Left,
-    Right,
-}
 

@@ -4,7 +4,7 @@ mod world_systems;
 pub use world_systems::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
-use crate::map_setup::*;
+use crate::map_setup::TILE_SIZE;
 use crate::map_setup::map_setup;
 
 
