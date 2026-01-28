@@ -1,4 +1,4 @@
-use crate::animations::*;
+use super::*;
 
 pub fn animate_sprite(
     time: Res<Time>,

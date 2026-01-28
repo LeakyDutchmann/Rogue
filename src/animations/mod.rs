@@ -3,7 +3,7 @@ mod animations_setup;
 
 use animations_setup::*;
 use std::collections::HashMap;
-use crate::player::*;
+use crate::player::{Player, Facing, PlayerState};
 
 use bevy::prelude::*;
 
@@ -28,6 +28,16 @@ impl Plugin for AnimationSetupPlugin {
     }
 }
 
+#[derive(Hash, Eq, PartialEq, Copy, Clone)]
+pub enum AnimationId {
+    IdleRight,
+    IdleLeft,
+    WalkRight,
+    WalkLeft,
+    WalkUp,
+    WalkDown,
+}
+
 
 #[derive(Resource)]
 pub struct AnimationSet {
@@ -46,15 +56,7 @@ pub struct ActiveAnimation{
 }
 
 
-#[derive(Hash, Eq, PartialEq, Copy, Clone)]
-pub enum AnimationId {
-    IdleRight,
-    IdleLeft,
-    WalkRight,
-    WalkLeft,
-    WalkUp,
-    WalkDown,
-}
+
 
 
 
