@@ -1,9 +1,11 @@
 mod map;
 mod cave_generating;
+mod components;
 
 use bevy::prelude::*;
 use rand::Rng;
 pub use map::*;
+pub use components::*;
 use cave_generating::*;
 use crate::components::Health;
 use crate::colision_manager::{Colider, ColiderShape};
@@ -21,29 +23,6 @@ impl Plugin for MapSetupPlugin {
 }
 
 
-#[derive(Debug, PartialEq, Copy, Clone)]
-pub enum TileType {
-    Floor, // atlas index = 1..3 **
-    WallSideEast,
-    WallSideWest,
-    WallSideSouth,
-    WallSideNorth,
-    WallCentre,
-    WallCornerSE,
-    WallCornerSW,
-    WallCornerNE,
-    WallCornerNW,
-    WallEndEast,
-    WallEndWest,
-    WallEndNorth,
-    WallEndSouth,
-    WallEastWest,
-    WallNorthSouth,
-    WallSingle,
-    Empty, //no tile here. Going to use for corridors
-}
-
-
 #[derive(Resource)]
 pub struct MapAtlas {
     pub texture: Handle<Image>,
@@ -55,17 +34,6 @@ pub struct MapAtlas {
 pub struct GameMap {
     tiles: Vec<TileType>,
 }
-
-
-#[derive(Component)]
-pub struct MapTile {
-    pub position: IVec2,
-    pub tile_type: TileType,
-}
-
-
-#[derive(Component)]
-pub struct Wall;
 
 
 pub const MAP_HEIGHT: usize = 50;

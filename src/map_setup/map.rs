@@ -64,7 +64,7 @@ pub fn map_setup(
                 tile_type = pick_tile_type(&map, x, y);
             }
             // Select sprite index from atlas
-            let sprite_index = tile_type_to_index(tile_type);
+            let sprite_index = tile_type.tile_type_to_index();
 
             // Calculate position (centered on screen)
             let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
@@ -145,29 +145,7 @@ fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     right_tile_type != TileType::Empty
 }
 
-fn tile_type_to_index(tile_type: TileType) -> usize {
-    let sprite_index = match tile_type {
-        TileType::Floor => 0, // First tile in spritesheet, takes first 3 spirtes.
-        TileType::Empty => 19,
-        TileType::WallSideEast => 4,
-        TileType::WallSideWest => 3,
-        TileType::WallSideSouth => 5,
-        TileType::WallSideNorth => 6,
-        TileType::WallCentre => 7,
-        TileType::WallCornerSE => 8,
-        TileType::WallCornerSW => 9,
-        TileType::WallCornerNE => 10,
-        TileType::WallCornerNW => 11,
-        TileType::WallEndEast => 13,
-        TileType::WallEndWest => 12,
-        TileType::WallEndNorth => 14,
-        TileType::WallEndSouth => 15,
-        TileType::WallSingle => 16,
-        TileType::WallNorthSouth => 18,
-        TileType::WallEastWest => 17,
-    };
-    sprite_index
-}
+
 
 
 pub fn update_map(
@@ -199,7 +177,7 @@ pub fn update_map(
                         let tile_idx = xy_idx(tile.position.x as usize, tile.position.y as usize);
                         tile.tile_type = map.tiles[tile_idx];
                         if let Some(atlas) = sprite.texture_atlas.as_mut() {
-                            atlas.index = tile_type_to_index(tile.tile_type);
+                            atlas.index = tile.tile_type.tile_type_to_index();
                         }
                     } 
                 }
@@ -241,7 +219,7 @@ fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
 }
 
 
-pub fn world_to_tile(world: Vec2) -> IVec2 {
+pub fn world_pos_to_tile_pos(world: Vec2) -> IVec2 {
     let x = ((world.x + (MAP_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
     let y = ((world.y + (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
     IVec2::new(x, y)

@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use hit_detections::*;
 use damage_applying::*;
 
-use crate::map_setup::{MapTile, Wall, TileType, world_to_tile};
+use crate::map_setup::{MapTile, Wall, TileType, world_pos_to_tile_pos};
 use crate::world::{WorldGrid, CELL_SIZE};
 use crate::components::Health;
 use crate::messages::{HitMessage, ApplyDamage, MapChanged};

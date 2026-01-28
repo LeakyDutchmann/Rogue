@@ -19,7 +19,7 @@ pub fn hit_detection_system(
                         println!("hitted tile");
                         writer.write(ApplyDamage {
                             entity: *entity,
-                            position: world_to_tile(impact_pos),
+                            position: world_pos_to_tile_pos(impact_pos),
                             damage: 30,
                         });
                     }
