@@ -36,7 +36,7 @@ pub struct HitMessage {
 #[derive(Message)]
 pub enum MouseClickEvent {
     LeftClick(Vec2),
-    RightClick(Vec2),
+    _RightClick(Vec2),
 }
 
 
