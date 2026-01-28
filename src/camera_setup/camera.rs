@@ -18,15 +18,15 @@ pub fn camera_follow_player(
     player: Query<&Transform, With<Player>>,
     time: Res<Time>
 ) {
-    if let Ok(player_transform) = player.single() {
-        if let Ok(mut camera_transform) = camera.single_mut() {
+    match (player.single(), camera.single_mut()) {
+        (Ok(player_pos), Ok(mut camera_pos)) => {
             let follow_speed = 5.0;
-            camera_transform.translation.x += (player_transform.translation.x - camera_transform.translation.x)
+            camera_pos.translation.x += (player_pos.translation.x - camera_pos.translation.x)
                 * follow_speed * time.delta_secs();
-            camera_transform.translation.y += (player_transform.translation.y - camera_transform.translation.y)
+            camera_pos.translation.y += (player_pos.translation.y - camera_pos.translation.y)
                 * follow_speed * time.delta_secs();
-
-        }
+                }
+        _ => { panic!("failed to find player or camera. You're fucked up")}
     }
 }
 
