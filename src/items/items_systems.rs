@@ -29,6 +29,13 @@ pub fn pick_up_item(
     }
 }
 
+fn generate_random_coords(pos: Vec2) -> Vec2 {
+    let mut rng = rand::rng();
+    let dx = rng.random_range(-30.0..30.0);
+    let dy = rng.random_range(-30.0..30.0);
+    Vec2::new(pos.x + dx, pos.y + dy)
+}
+
 pub fn update_dropped_items(
     mut commands: Commands,
     player_pos: Query<&Transform, With<Player>>,
@@ -52,13 +59,6 @@ pub fn update_dropped_items(
             }
         } 
     }
-}
-
-fn generate_random_coords(pos: Vec2) -> Vec2 {
-    let mut rng = rand::rng();
-    let dx = rng.random_range(-30.0..30.0);
-    let dy = rng.random_range(-30.0..30.0);
-    Vec2::new(pos.x + dx, pos.y + dy)
 }
 
 pub fn sync_player_inventory(
