@@ -16,6 +16,11 @@ impl Plugin for ColisionPlugin {
     }
 }
 
+pub enum ColiderShape {
+    Circle { radius: f32},
+    Rectangle {width: f32, height: f32}
+}
+
 
 #[derive(Component)]
 pub struct Colider {
@@ -52,8 +57,4 @@ impl Colider {
 }
 
 
-pub enum ColiderShape {
-    Circle { radius: f32},
-    Rectangle {width: f32, height: f32}
-}
 
