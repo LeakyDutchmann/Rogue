@@ -5,8 +5,8 @@ use bevy::prelude::*;
 use rand::Rng;
 pub use map::*;
 use cave_generating::*;
-use crate::components::*;
-use crate::colision_manager::*;
+use crate::components::Health;
+use crate::colision_manager::{Colider, ColiderShape};
 use crate::messages::MapChanged;
 
 
@@ -18,19 +18,6 @@ impl Plugin for MapSetupPlugin {
         app.add_systems(Startup, (setup_atlas, floor_setup, map_setup).chain());
         app.add_systems(Update, update_map);
     }
-}
-
-
-#[derive(Resource)]
-pub struct MapAtlas {
-    pub texture: Handle<Image>,
-    pub layout: Handle<TextureAtlasLayout>,
-}
-
-
-#[derive(Resource)]
-pub struct GameMap {
-    tiles: Vec<TileType>,
 }
 
 
@@ -54,6 +41,19 @@ pub enum TileType {
     WallNorthSouth,
     WallSingle,
     Empty, //no tile here. Going to use for corridors
+}
+
+
+#[derive(Resource)]
+pub struct MapAtlas {
+    pub texture: Handle<Image>,
+    pub layout: Handle<TextureAtlasLayout>,
+}
+
+
+#[derive(Resource)]
+pub struct GameMap {
+    tiles: Vec<TileType>,
 }
 
 
