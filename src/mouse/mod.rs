@@ -2,8 +2,8 @@ mod mouse_input;
 
 pub use mouse_input::*;
 use bevy::prelude::*;
-use crate::items::*;
-use crate::player::*;
+use crate::items::{Item, IntentPickingUp, OnGround};
+use crate::player::Player;
 use crate::messages::{MouseClickEvent, ScrollMessage, ScrollDir};
 
 use bevy::camera::{Camera};
