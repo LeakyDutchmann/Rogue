@@ -38,6 +38,26 @@ pub enum AnimationId {
     WalkDown,
 }
 
+impl AnimationId {
+    pub fn idle_from(facing: Facing) -> Self {
+        match facing {
+            Facing::Right =>  AnimationId::IdleRight,
+            Facing::Left =>  AnimationId::IdleLeft,
+            Facing::Up =>  AnimationId::IdleRight,
+            Facing::Down =>  AnimationId::IdleRight,
+        }
+    }
+    
+    pub fn walk_from(facing: Facing) -> Self {
+        match facing {
+            Facing::Right =>  AnimationId::WalkRight,
+            Facing::Left =>  AnimationId::WalkLeft,
+            Facing::Up =>  AnimationId::WalkUp,
+            Facing::Down =>  AnimationId::WalkDown,
+        }
+    }
+}
+
 
 #[derive(Resource)]
 pub struct AnimationSet {

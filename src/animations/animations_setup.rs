@@ -29,19 +29,9 @@ pub fn update_animation(
 ) {
     for (mut animation, player) in query.iter_mut() {
         let new_animation = if player.state == PlayerState::Idle {
-            match player.facing {
-                Facing::Right =>  AnimationId::IdleRight,
-                Facing::Left =>  AnimationId::IdleLeft,
-                Facing::Up =>  AnimationId::IdleRight,
-                Facing::Down =>  AnimationId::IdleRight,
-            }
+            AnimationId::idle_from(player.facing)
         } else if player.state == PlayerState::Walking {
-            match player.facing {
-                Facing::Right =>  AnimationId::WalkRight,
-                Facing::Left =>  AnimationId::WalkLeft,
-                Facing::Up =>  AnimationId::WalkUp,
-                Facing::Down =>  AnimationId::WalkDown,
-            }
+            AnimationId::walk_from(player.facing)
         } else {
             AnimationId::IdleRight
         };
