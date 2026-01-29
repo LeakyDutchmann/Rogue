@@ -11,7 +11,7 @@ unified system which will handle all related actions.
 
 So the idea is to split all combat into five steps:  
 1. Attack initialization
-2. Attack animation
+2. Attack progression && Attack animation
 2. Hit detection
 3. Damage calculation
 4. Damage execution
@@ -28,14 +28,13 @@ Attack animation is going to be a component:
 struct AttackAnimation {
     progress: f32,      
     duration: f32,      
-    max_angle: f32,     
-    active: bool,
-    hit_triggered: bool,
+    max_angle: f32,
+    impact_triggered: bool,
     target: Option<Vec2>,
     item: Option<Entity>,
 }
 ```
-So when clicked we set `active` field to true and we set  
+So when clicked we add `AttackAnimation`  to `Entity` and we set  
 duration and max_angle depended on the attack_speed of   
 item-entity. Also we store click position in `target` field  
 to find the tile we clicked if it was tile. I am using `Option`  
@@ -43,14 +42,14 @@ to handle case when haven't clicked yet.
 Also we set `item` field to store the `Entity` player  
 was holding in hands when clicked. 
 
-**Attack animation** is going to rotate the entity  
-with `AttackAnimation` component with `active = true` field,  
-depended on `max_angle` and `duration`. Each turn it   
-changes the `progress` field and when it hits 0,5 -  
-sends `HitMessage` to hit detection system.  
-Also it sets the `hit_triggered = true` to  
-avoid multiple impacts at once, because it sends  
-only if it's false.
+**Attack progression** is going to update  
+`progress` field based on `duration` and `max_angle`
+when `progress` >= 0.5  
+it sends `HitMessage` and set's impact_triggered to true. 
+other fuction called `attack_animation` is reading  
+`progress` field and rotates the entity. When progress  
+== 1 it removes `AttackAnimation` from entity.
+
 
 **Hit detection** reads the `HitMessage` message  
 to see who hit and what it hit. It decides did it hit  
@@ -67,23 +66,22 @@ which was hit.
 ### Item 
 
 As i said above - i'll have `Item` component.  
-And also `WeaponStats` and `ToolStats`.   
+And also `CombatStates`,`WeaponStats` and `ToolStats`.  
 `Item` stores `image`, `name` and `usable`.
-`WeaponStats` stores:
-
+`CombatStates` stores:
 - `attack_speed`
-- `swing_angle` - to calculate `max_angle`.
-- `enemy_damage`
+- `swing_angle` 
 - `durability`
+
+`WeaponStats` stores:
+- `enemy_damage`
+- `radius`
 
 `ToolStats` stores:
-- `attack_speed`
 - `structure_damage`
-- `durability`
-- `swing_angle`
 
-And component `CanAttack` helps to avoid attacking  
-and mining with empty hands or potions in hands.
+So if some entity hasn't `CombatStates` component  
+We don't initialize attack and save our CPU from exploding.
 
 
 ## Potential issues and benefits
