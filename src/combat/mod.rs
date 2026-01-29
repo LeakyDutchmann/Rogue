@@ -25,7 +25,6 @@ pub struct AttackAnimation {
     pub progress: f32,      // 0..1
     pub duration: f32,      // seconds
     pub max_angle: f32,     // radians
-    pub active: bool,
     pub hit_triggered: bool,
     pub target: Option<Vec2>,
     pub item: Option<Entity>,

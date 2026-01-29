@@ -55,8 +55,7 @@ pub fn setup_inventory(
 pub fn sync_player_inventory(
     mut commands: Commands,
     inventory: Query<&Inventory, (With<Player>, Changed<Inventory>)>,
-    mut slots: Query<(Entity, &mut SlotIcon)>,
-    item_query: Query<&Item>,
+    mut slots: Query<(Entity, &mut SlotIcon)>, item_query: Query<&Item>,
 ) {
     if let Ok(inventory) = inventory.single() {
         // println!("foundi nventory");
@@ -69,10 +68,10 @@ pub fn sync_player_inventory(
                 commands.entity(slot_e).insert(ImageNode::new(image));
                 // println!("inserted img");
             } else {
-                continue;
-            }
-        }
-    }  
+                commands.entity(slot_e).remove::<ImageNode>();
+            } 
+        } 
+    } 
 }
 
 pub fn show_active_slot(

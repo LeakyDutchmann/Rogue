@@ -1,22 +1,26 @@
+use bevy::ecs::system::command;
+
 use super::*;
 
-pub fn start_kick(
-    mut hand: Query<(&mut AttackAnimation, &HeldItem), With<HeldItem>>,
+pub fn initialize_attack(
+    mut commands: Commands,
+    mut hand: Query<(Entity, &HeldItem), (With<HeldItem>, Without<AttackAnimation>)>,
     mut reader: MessageReader<MouseClickEvent>,
 ) { 
     for click in reader.read() {
         if let MouseClickEvent::LeftClick(click_pos) = click {
-            if let Ok((mut anim, item)) = hand.single_mut() {
+            if let Ok((hend_e, item)) = hand.single_mut() {
                 let item = item.last_held;
-                if anim.active {
-                    continue;
-                } else {
-                    anim.active = true;
-                    anim.duration = 0.2;
-                    anim.hit_triggered = false;
-                    anim.target = Some(*click_pos);
-                    anim.item = item;
-                }
+                commands.entity(hend_e).insert(
+                    AttackAnimation {
+                        progress: 0.0,      // 0..1
+                        duration: 0.2,      // seconds
+                        max_angle: std::f32::consts::PI / 4.0,     // radians
+                        hit_triggered: false,
+                        target: Some(*click_pos),
+                        item: item,
+                    }
+                );
             }
         }
         

@@ -1,37 +1,39 @@
 use super::*;
 
-pub fn animate_attack(
+
+pub fn attack_progression(
     time: Res<Time>,
-    mut query: Query<(&mut Transform, &mut AttackAnimation)>,
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut AttackAnimation)>,
     mut writer: MessageWriter<HitMessage>,
 ) {
-    for (mut transform, mut anim) in query.iter_mut() {
-        if anim.active {
-
-            anim.progress += time.delta_secs() / anim.duration;
+    for (entity, mut anim) in query.iter_mut() {
+        anim.progress += time.delta_secs() / anim.duration;
+        anim.progress = anim.progress.clamp(0.0, 1.0);
+        
+        if !anim.hit_triggered && anim.progress >= 0.5 {
+            anim.hit_triggered = true;
+            writer.write(HitMessage {
+                item: anim.item,
+                target: anim.target,
+            });
             
-            anim.progress = anim.progress.clamp(0.0, 1.0);
-            let angle = swing_angle(anim.progress, anim.max_angle);
-            
-            transform.rotation = Quat::from_rotation_z(angle);
-            
-            if !anim.hit_triggered && anim.progress >= 0.5 {
-                anim.hit_triggered = true;
-                writer.write(HitMessage {
-                    item: anim.item,
-                    target: anim.target,
-                });
-                 println!("Impact send!");
-            }
-            
-            if anim.progress >= 1.0 {
-                anim.active = false;
-                anim.progress = 0.0;
-                anim.duration = 0.0;
-                anim.hit_triggered = false;
-            } 
+            println!("Impact send!");
+        }
+        if anim.hit_triggered && anim.progress >= 1.0 {
+            commands.entity(entity).remove::<AttackAnimation>();
         }
     } 
+}
+
+pub fn attack_animation(
+    mut query: Query<(&mut Transform, &mut AttackAnimation)>,
+) {
+    for (mut transform, anim) in query.iter_mut() {
+        let angle = swing_angle(anim.progress, anim.max_angle);
+        
+        transform.rotation = Quat::from_rotation_z(angle);
+    }
 } 
 
 fn swing_angle(progress: f32, max_angle_rad: f32) -> f32 {

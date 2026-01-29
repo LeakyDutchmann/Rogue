@@ -31,8 +31,8 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(Startup, (player_setup, setup_inventory));
         app.add_systems(FixedUpdate, move_player);
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
-            pick_active_slot, show_active_slot, drop_item, draw_helditem, update_held_item_dir, animate_attack, start_kick));
-        
+            pick_active_slot, show_active_slot, drop_item, draw_helditem, update_held_item_dir));
+        app.add_systems(Update, (initialize_attack, attack_progression, attack_animation ));
     }
 }
 
