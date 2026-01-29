@@ -35,7 +35,10 @@ pub fn update_animation(
         } else {
             AnimationId::IdleRight
         };
-        animation.set_animation(new_animation);
+        if new_animation != animation.current {
+             animation.set_animation(new_animation);
+        }
+       
     }
 }
 

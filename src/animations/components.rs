@@ -44,9 +44,7 @@ pub struct ActiveAnimation{
 
 impl ActiveAnimation {
     pub fn set_animation(&mut self, new_animation: AnimationId) {
-        if self.current != new_animation {
             self.previous = self.current;
             self.current = new_animation;
-        }
     }
 }
