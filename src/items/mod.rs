@@ -45,21 +45,28 @@ pub struct IntentPickingUp {
 
 #[derive(Component)]
 pub struct CombatStats {
-    attack_speed: f32,
-    swing_angle: f32,
-    radius: f32,
-    duravility: f32,
+    pub attack_speed: f32,
+    pub swing_angle: f32,
+    pub radius: f32,
 }
 
 #[derive(Component)]
 pub struct WeaponStats {
-    enemy_damage: f32,
+    pub enemy_damage: f32,
 }
+
 
 #[derive(Component)]
 pub struct ToolStats {
-    structure_damage: f32,
+    pub structure_damage: f32,
 }
+
 
 #[derive(Component)]
 pub struct Usable;
+
+
+#[derive(Component)]
+pub struct Durability {
+    pub durability: f32,
+}

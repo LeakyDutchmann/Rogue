@@ -17,9 +17,10 @@ use player_combat::*;
 use bevy::prelude::Component;
 use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::items::{Item, Inventory};
+use crate::items::{Item, Inventory, WeaponStats, CombatStats, ToolStats, Usable};
 use crate::messages::{HitMessage, MouseClickEvent, ItemDropped};
 use crate::combat::AttackAnimation;
+
 
 
 

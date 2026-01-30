@@ -60,6 +60,17 @@ fn setup(
             name: "Pickaxe".to_string(),
         },
         OnGround,
+        CombatStats {
+            attack_speed: 400.0,
+            swing_angle: std::f32::consts::PI / 4.0,
+            radius: 80.0,
+        },
+        ToolStats {
+            structure_damage: 25.0,
+        },
+        Durability {
+            durability: 100.0,
+        }
     ));
 }
 
