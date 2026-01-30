@@ -43,7 +43,23 @@ pub struct IntentPickingUp {
     pub target: Entity,
 }
 
+#[derive(Component)]
+pub struct CombatStats {
+    attack_speed: f32,
+    swing_angle: f32,
+    radius: f32,
+    duravility: f32,
+}
 
+#[derive(Component)]
+pub struct WeaponStats {
+    enemy_damage: f32,
+}
 
+#[derive(Component)]
+pub struct ToolStats {
+    structure_damage: f32,
+}
 
-
+#[derive(Component)]
+pub struct Usable;
