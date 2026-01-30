@@ -66,16 +66,17 @@ which was hit.
 ### Item 
 
 As i said above - i'll have `Item` component.  
-And also `CombatStates`,`WeaponStats` and `ToolStats`.  
+And also `CombatStats`,`WeaponStats` and `ToolStats`.  
 `Item` stores `image`, `name` and `usable`.  
-`CombatStates` stores:
+`CombatStats` stores:
 - `attack_speed`
 - `swing_angle` 
 - `durability`
+- `radius`
 
 `WeaponStats` stores:
 - `enemy_damage`
-- `radius`
+
 
 `ToolStats` stores:
 - `structure_damage`
