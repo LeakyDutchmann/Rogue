@@ -52,13 +52,13 @@ pub struct CombatStats {
 
 #[derive(Component)]
 pub struct WeaponStats {
-    pub enemy_damage: f32,
+    pub enemy_damage: i32,
 }
 
 
 #[derive(Component)]
 pub struct ToolStats {
-    pub structure_damage: f32,
+    pub structure_damage: i32,
 }
 
 
@@ -70,3 +70,4 @@ pub struct Usable;
 pub struct Durability {
     pub durability: f32,
 }
+

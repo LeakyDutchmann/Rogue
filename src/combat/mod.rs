@@ -8,14 +8,15 @@ use damage_applying::*;
 use crate::map_setup::{MapTile, Wall, TileType, world_pos_to_tile_pos};
 use crate::world::{WorldGrid, CELL_SIZE};
 use crate::components::Health;
-use crate::messages::{HitMessage, ApplyDamage, MapChanged};
+use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType};
+use crate::items::{WeaponStats, ToolStats};
 
 
 pub struct CombatPlugin;
 
 impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (hit_detection_system, damage_execution_system));
+        app.add_systems(Update, (hit_detection_system, calculate_damage, damage_execution_system));
     }
 }
 

@@ -66,7 +66,7 @@ fn setup(
             radius: 80.0,
         },
         ToolStats {
-            structure_damage: 25.0,
+            structure_damage: 25,
         },
         Durability {
             durability: 100.0,

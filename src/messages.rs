@@ -9,7 +9,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<MouseClickEvent>()
             .add_message::<ScrollMessage>()
             .add_message::<MapChanged>()
-            .add_message::<ApplyDamage>();
+            .add_message::<ApplyDamage>()
+            .add_message::<CalculateDamage>();
     }
 }
 
@@ -57,4 +58,19 @@ pub struct ApplyDamage {
     pub entity: Entity,
     pub position: IVec2,
     pub damage: i32,
+}
+
+#[derive(PartialEq, Clone)]
+pub enum DamageType {
+    ToTileDamage,
+    ToEnemyDamage,
+}
+
+
+#[derive(Message)]
+pub struct CalculateDamage {
+    pub attack_item: Entity,
+    pub target: Entity,
+    pub position: IVec2,
+    pub damage_type: DamageType,
 }
