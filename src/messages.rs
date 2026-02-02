@@ -58,7 +58,7 @@ pub struct MapChanged {
 #[derive(Message)]
 pub struct ApplyDamage {
     pub entity: Entity,
-    pub position: IVec2,
+    pub position: Vec2,
     pub damage: i32,
 }
 
@@ -73,6 +73,6 @@ pub enum DamageType {
 pub struct CalculateDamage {
     pub attack_item: Entity,
     pub target: Entity,
-    pub position: IVec2,
+    pub position: Vec2,
     pub damage_type: DamageType,
 }

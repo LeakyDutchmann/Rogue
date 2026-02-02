@@ -4,6 +4,7 @@ use super::*;
 pub fn hit_detection_system(
     world: Res<WorldGrid>,
     query: Query<(&mut MapTile, &Transform), With<Wall>>,
+    transform: Query<&Transform>,
     mut reader: MessageReader<HitMessage>,
     mut writer: MessageWriter<CalculateDamage>,
 ) {
@@ -21,13 +22,38 @@ pub fn hit_detection_system(
                                 writer.write(CalculateDamage {
                                     attack_item: item_used,
                                     target: *entity,
-                                    position: world_pos_to_tile_pos(impact_pos),
+                                    position: impact_pos,
                                     damage_type: DamageType::ToTileDamage,
                                 });
+                            } else {
+                                println!("to far");
                             }
                         } 
                     } else {
                         println!("hitting in radius then");
+                        let item_cell_x = (impact.item_pos.x / CELL_SIZE).round() as i32;
+                        let item_cell_y = (impact.item_pos.y / CELL_SIZE).round() as i32;
+                        let cells = get_cells_in_radius((item_cell_x, item_cell_y), impact.item_radius);
+                        let entities_in_cells = get_entities_in_cells(cells, &world);
+                        let mut min_distance = impact.item_radius;
+                        let mut closest_entity: Option<Entity> = None;
+                        let mut closest_entity_pos = None;
+                        for entity in entities_in_cells {
+                            if let Ok(entity_pos) = transform.get(entity) {
+                                let distance = impact.item_pos.distance(entity_pos.translation.truncate());
+                                if distance < min_distance {
+                                    min_distance = distance;
+                                    closest_entity = Some(entity);
+                                    closest_entity_pos = Some(entity_pos.translation.truncate());
+                                }
+                            }
+                        }
+                        writer.write( CalculateDamage {
+                            attack_item: item_used,
+                            target: closest_entity.unwrap(),
+                            position: closest_entity_pos.unwrap(),
+                            damage_type: DamageType::ToEnemyDamage,
+                        });
                     }
     
                 } 

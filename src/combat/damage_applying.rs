@@ -14,8 +14,9 @@ pub fn damage_execution_system(
             if hp.0 <= 0 {
                 commands.entity(destruction.entity).despawn();
                 writer.write(MapChanged {
-                    position: destruction.position
+                    position: world_pos_to_tile_pos(destruction.position),
                 });
+                println!("msg sent");
             }
         }
     }
