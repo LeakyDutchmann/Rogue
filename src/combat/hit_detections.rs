@@ -3,7 +3,7 @@ use super::*;
 
 pub fn hit_detection_system(
     world: Res<WorldGrid>,
-    query: Query<&mut MapTile, With<Wall>>,
+    query: Query<(&mut MapTile, &Transform), With<Wall>>,
     mut reader: MessageReader<HitMessage>,
     mut writer: MessageWriter<CalculateDamage>,
 ) {
@@ -14,19 +14,23 @@ pub fn hit_detection_system(
             let cell_y = (impact_pos.y / CELL_SIZE).round() as i32;
             if let Some(cell_vec) = world.cells.get(&(cell_x, cell_y)) {
                 for entity in cell_vec.iter() {
-                    if let Ok(tile) = query.get(*entity) {
+                    if let Ok((tile, tile_pos)) = query.get(*entity) {
                         if tile.tile_type != TileType::Floor && tile.tile_type != TileType::Empty {
-                            println!("hitted tile");
-                            writer.write(CalculateDamage {
-                                attack_item: item_used,
-                                target: *entity,
-                                position: world_pos_to_tile_pos(impact_pos),
-                                damage_type: DamageType::ToTileDamage,
-                            });
-                        }
+                            if impact.item_pos.distance(tile_pos.translation.truncate()) <= impact.item_radius {
+                                println!("hitted tile");
+                                writer.write(CalculateDamage {
+                                    attack_item: item_used,
+                                    target: *entity,
+                                    position: world_pos_to_tile_pos(impact_pos),
+                                    damage_type: DamageType::ToTileDamage,
+                                });
+                            }
+                        } 
+                    } else {
+                        println!("hitting in radius then");
                     }
     
-                }
+                } 
             }
         }
     }

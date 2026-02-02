@@ -4,7 +4,8 @@ mod colisions;
 use bevy::prelude::*;
 pub use colisions::*;
 use crate::components::{MovementIntent, MovementResolved, Speed};
-use crate::world::{WorldGrid, CELL_SIZE};
+use crate::world::{WorldGrid, CELL_SIZE, get_cells_3x3, get_entities_in_cells};
+
 
 
 

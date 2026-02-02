@@ -31,6 +31,8 @@ pub struct ItemDropped {
 pub struct HitMessage {
     pub item: Option<Entity>,
     pub target: Option<Vec2>,
+    pub item_radius: f32,
+    pub item_pos: Vec2,
 }
 
 

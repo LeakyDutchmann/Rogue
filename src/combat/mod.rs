@@ -6,7 +6,7 @@ use hit_detections::*;
 use damage_applying::*;
 
 use crate::map_setup::{MapTile, Wall, TileType, world_pos_to_tile_pos};
-use crate::world::{WorldGrid, CELL_SIZE};
+use crate::world::{WorldGrid, CELL_SIZE, get_cells_in_radius};
 use crate::components::Health;
 use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType};
 use crate::items::{WeaponStats, ToolStats};
@@ -29,6 +29,8 @@ pub struct AttackAnimation {
     pub hit_triggered: bool,
     pub target: Option<Vec2>,
     pub item: Option<Entity>,
+    pub item_radius: f32,
+    pub item_pos: Vec2,
 }
 
 

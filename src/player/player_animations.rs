@@ -16,6 +16,8 @@ pub fn attack_progression(
             writer.write(HitMessage {
                 item: anim.item,
                 target: anim.target,
+                item_radius: anim.item_radius,
+                item_pos: anim.item_pos,
             });
             
             println!("Impact send!");
