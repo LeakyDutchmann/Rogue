@@ -7,8 +7,8 @@ pub fn insert_entities(
 ) {
     for (entity, transform) in entities.iter_mut() {
         let pos = transform.translation.truncate();
-        let cell_x = (pos.x / CELL_SIZE).floor() as i32;
-        let cell_y = (pos.y / CELL_SIZE).floor() as i32;
+        let cell_x = (pos.x / CELL_SIZE).round() as i32;
+        let cell_y = (pos.y / CELL_SIZE).round() as i32;
         world.cells.entry((cell_x, cell_y)).or_default().push(entity);
     }
 }
