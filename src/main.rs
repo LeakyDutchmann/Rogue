@@ -41,17 +41,8 @@ fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    let texture = asset_server.load("potion.png");
     let pickaxe_texture = asset_server.load("pickaxe.png");
-    commands.spawn((
-        Sprite::from_image(texture.clone()),
-        Transform::from_xyz(90.0, 0.0, 1.0),
-        Item {
-            image: texture.clone(),
-            name: "Potion".to_string(),
-        },
-        OnGround,
-    ));
+    let sword_texture = asset_server.load("sword.png");
     commands.spawn((
         Sprite::from_image(pickaxe_texture.clone()),
         Transform::from_xyz(44.0, 0.0, 1.0),
@@ -67,6 +58,26 @@ fn setup(
         },
         ToolStats {
             structure_damage: 25,
+        },
+        Durability {
+            durability: 100.0,
+        }
+    ));
+    commands.spawn((
+        Sprite::from_image(sword_texture.clone()),
+        Transform::from_xyz(44.0, 0.0, 1.0),
+        Item {
+            image: sword_texture.clone(),
+            name: "Sword".to_string(),
+        },
+        OnGround,
+        CombatStats {
+            attack_speed: 250.0,
+            swing_angle: std::f32::consts::PI / 1.0,
+            radius: 120.0,
+        },
+        WeaponStats {
+            enemy_damage: 50,
         },
         Durability {
             durability: 100.0,
