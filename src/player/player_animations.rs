@@ -29,10 +29,10 @@ pub fn attack_progression(
 }
 
 pub fn attack_animation(
-    mut query: Query<(&mut Transform, &mut AttackAnimation, &ChildOf)>,
+    mut query: Query<(&mut Transform, &mut AttackAnimation, &ChildOf, &mut Sprite)>,
     parent_tf: Query<&Transform, Without<AttackAnimation>>,
 ) {
-    for (mut transform, anim, child_of) in query.iter_mut() {
+    for (mut transform, anim, child_of, mut sprite) in query.iter_mut() {
         if let Ok(parent_tf) = parent_tf.get(child_of.0) {
             if let Some(cursor_pos) = anim.target {
                 let player_pos = parent_tf.translation;
@@ -47,6 +47,8 @@ pub fn attack_animation(
                     
                     let point_x = offset * angle.cos();
                     let point_y = offset * angle.sin();
+                    
+                    sprite.flip_x = true;
                     transform.translation.x = point_x;
                     transform.translation.y = point_y;
                     
@@ -58,6 +60,8 @@ pub fn attack_animation(
                     let angle = start_angle + (end_angle - start_angle) * anim.progress;
                     let point_x = offset * angle.cos();
                     let point_y = offset * angle.sin();
+                    
+                    sprite.flip_x = false;
                     transform.translation.x = point_x;
                     transform.translation.y = point_y;
                     
