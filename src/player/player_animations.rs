@@ -29,29 +29,43 @@ pub fn attack_progression(
 }
 
 pub fn attack_animation(
-    mut query: Query<(&mut Transform, &mut AttackAnimation)>,
-    player_query: Query<&Transform, (With<Player>, Without<AttackAnimation>)>,
+    mut query: Query<(&mut Transform, &mut AttackAnimation, &ChildOf)>,
+    parent_tf: Query<&Transform, Without<AttackAnimation>>,
 ) {
-    for (mut transform, anim) in query.iter_mut() {
-        for player_tf in player_query.iter() {
+    for (mut transform, anim, child_of) in query.iter_mut() {
+        if let Ok(parent_tf) = parent_tf.get(child_of.0) {
             if let Some(cursor_pos) = anim.target {
-                let player_pos = player_tf.translation;
+                let player_pos = parent_tf.translation;
                 let to_cursor = (cursor_pos - player_pos.xy()).normalize();
                 let to_cursor_angle = to_cursor.to_angle();
-                let start_angle = to_cursor_angle - anim.max_angle / 2.0;
-                let end_angle = to_cursor_angle + anim.max_angle / 2.0;
-                let angle = start_angle + (end_angle - start_angle) * anim.progress;
                 let offset = 20.0;
-                let point_x = offset * angle.cos();
-                let point_y = offset * angle.sin();
-                transform.translation.x = point_x;
-                transform.translation.y = point_y;
-            
-                transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);
-
+                if cursor_pos.x <= player_pos.x {
+                   
+                    let start_angle = to_cursor_angle - anim.max_angle / 2.0;
+                    let end_angle = to_cursor_angle + anim.max_angle / 2.0;
+                    let angle = start_angle + (end_angle - start_angle) * anim.progress;
+                    
+                    let point_x = offset * angle.cos();
+                    let point_y = offset * angle.sin();
+                    transform.translation.x = point_x;
+                    transform.translation.y = point_y;
+                    
+                    transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);  
+                } else {
+                    
+                    let start_angle = to_cursor_angle + anim.max_angle / 2.0;
+                    let end_angle = to_cursor_angle - anim.max_angle / 2.0;
+                    let angle = start_angle + (end_angle - start_angle) * anim.progress;
+                    let point_x = offset * angle.cos();
+                    let point_y = offset * angle.sin();
+                    transform.translation.x = point_x;
+                    transform.translation.y = point_y;
+                    
+                    transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);
+                    
+                }
             } 
-        }
-        
+        }    
     }
 } 
 
