@@ -119,17 +119,22 @@ pub fn draw_helditem(
 
 
 pub fn update_held_item_dir(
-    mut held_item: Query<(&mut Transform, &mut Sprite), (With<HeldItem>, Without<AttackAnimation>)>,
-    player: Query<&Player>,
+    mut held_item: Query<(&mut Transform, &mut Sprite, &ChildOf), (With<HeldItem>, Without<AttackAnimation>)>,
+    player: Query<&Transform, (With<Player>, Without<HeldItem>)>,
+    cursor: Res<CursorWorldPos>,
 ) {
-    let Ok(player) = player.single() else { return };
-    let Ok((mut transform, mut sprite)) = held_item.single_mut() else { return };
-    sprite.flip_x = matches!(player.facing, Facing::Left);
-    if player.facing == Facing::Right {
-        transform.rotation = (Quat::from_rotation_z((30.0_f32).to_radians()));
-    } else if player.facing == Facing::Left {
-        transform.rotation = (Quat::from_rotation_z(-(30.0_f32).to_radians()));
-        sprite.flip_x = true;
+    for (mut transform, mut sprite, parent) in held_item.iter_mut() {
+        if let Ok(player_pos) = player.get(parent.0) {
+            if let Some(cursor_pos) = cursor.0 {
+                if cursor_pos.x < player_pos.translation.x {
+                    transform.rotation = (Quat::from_rotation_z(-(30.0_f32).to_radians()));
+                    sprite.flip_x = true;
+                } else {
+                    transform.rotation = (Quat::from_rotation_z((30.0_f32).to_radians()));
+                    sprite.flip_x = false;
+                } 
+            }   
+        }
     }
 }
 

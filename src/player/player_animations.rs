@@ -69,13 +69,3 @@ pub fn attack_animation(
     }
 } 
 
-fn swing_angle(progress: f32, max_angle_rad: f32) -> f32 {
-let p = progress.clamp(0.0, 1.0);
-// 0..1..0 
-let t = if p <= 0.5 {
-    p * 2.0 
-} else {
-    (1.0 - p) * 2.0 
-};
-t * max_angle_rad
-}
