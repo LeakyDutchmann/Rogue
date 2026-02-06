@@ -30,11 +30,28 @@ pub fn attack_progression(
 
 pub fn attack_animation(
     mut query: Query<(&mut Transform, &mut AttackAnimation)>,
+    player_query: Query<&Transform, (With<Player>, Without<AttackAnimation>)>,
 ) {
     for (mut transform, anim) in query.iter_mut() {
-        let angle = swing_angle(anim.progress, anim.max_angle);
+        for player_tf in player_query.iter() {
+            if let Some(cursor_pos) = anim.target {
+                let player_pos = player_tf.translation;
+                let to_cursor = (cursor_pos - player_pos.xy()).normalize();
+                let to_cursor_angle = to_cursor.to_angle();
+                let start_angle = to_cursor_angle - anim.max_angle / 2.0;
+                let end_angle = to_cursor_angle + anim.max_angle / 2.0;
+                let angle = start_angle + (end_angle - start_angle) * anim.progress;
+                let offset = 20.0;
+                let point_x = offset * angle.cos();
+                let point_y = offset * angle.sin();
+                transform.translation.x = point_x;
+                transform.translation.y = point_y;
+            
+                transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);
+
+            } 
+        }
         
-        transform.rotation = Quat::from_rotation_z(angle);
     }
 } 
 

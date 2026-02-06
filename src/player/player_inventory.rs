@@ -91,11 +91,11 @@ pub fn show_active_slot(
 
 pub fn draw_helditem(
     mut commands: Commands,
-    mut held_item: Query<(Entity, &mut HeldItem), With<HeldItem>>,
+    mut held_item: Query<(Entity, &mut HeldItem, &mut Transform), (With<HeldItem>, Without<AttackAnimation>)>,
     inventory: Query<(&Inventory, &ActiveSlot), With<Player>>,
     item_query: Query<&Item>,
 ) {
-    if let Ok((player_hand, mut held_item)) = held_item.single_mut() {
+    if let Ok((player_hand, mut held_item, mut hand_pos)) = held_item.single_mut() {
         if let Ok((inventory, active_slot)) = inventory.single() {
             if let Some(Some(item_entity)) = inventory.items.get(active_slot.index) {
                 // Only update if we're holding a different item (or None)
@@ -112,19 +112,25 @@ pub fn draw_helditem(
                     held_item.last_held = None;
                 }
             }
+            hand_pos.translation = Vec3::new(0.0, 0.0, 0.0);
         }
     }
 }
 
 
 pub fn update_held_item_dir(
-    mut held_item: Query<&mut Sprite, With<HeldItem>>,
+    mut held_item: Query<(&mut Transform, &mut Sprite), (With<HeldItem>, Without<AttackAnimation>)>,
     player: Query<&Player>,
 ) {
     let Ok(player) = player.single() else { return };
-    let Ok(mut sprite) = held_item.single_mut() else { return };
-
-    sprite.flip_x = matches!(player.facing, Facing::Right);
+    let Ok((mut transform, mut sprite)) = held_item.single_mut() else { return };
+    sprite.flip_x = matches!(player.facing, Facing::Left);
+    if player.facing == Facing::Right {
+        transform.rotation = (Quat::from_rotation_z((30.0_f32).to_radians()));
+    } else if player.facing == Facing::Left {
+        transform.rotation = (Quat::from_rotation_z(-(30.0_f32).to_radians()));
+        sprite.flip_x = true;
+    }
 }
 
 
