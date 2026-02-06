@@ -9,7 +9,7 @@ use crate::map_setup::{MapTile, Wall, TileType, world_pos_to_tile_pos, MAP_HEIGH
 use crate::world::{WorldGrid, CELL_SIZE, get_cells_in_radius, get_entities_in_cells};
 use crate::components::Health;
 use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType};
-use crate::items::{WeaponStats, ToolStats};
+use crate::items::{WeaponStats, ToolStats, AnimationStyle};
 
 
 pub struct CombatPlugin;
@@ -23,6 +23,7 @@ impl Plugin for CombatPlugin {
 
 #[derive(Component)]
 pub struct AttackAnimation {
+    pub anim_pattern: AnimationStyle,
     pub progress: f32,      // 0..1
     pub duration: f32,      // seconds
     pub max_angle: f32,     // radians

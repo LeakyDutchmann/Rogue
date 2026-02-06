@@ -23,6 +23,18 @@ pub struct Item {
 }
 
 
+#[derive(PartialEq, Clone, Copy)]
+pub enum AnimationStyle {
+    PickAxe,
+    Sword,
+}
+
+#[derive(Component)]
+pub struct AnimationPattern {
+    pub pattern: AnimationStyle,
+}
+
+
 #[derive(Component)]
 pub struct OnGround;
 

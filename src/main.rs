@@ -56,6 +56,9 @@ fn setup(
             swing_angle: std::f32::consts::PI / 4.0,
             radius: 80.0,
         },
+        AnimationPattern{
+            pattern: AnimationStyle::PickAxe,
+        },
         ToolStats {
             structure_damage: 25,
         },
@@ -75,6 +78,9 @@ fn setup(
             attack_speed: 250.0,
             swing_angle: std::f32::consts::PI / 1.0,
             radius: 120.0,
+        },
+        AnimationPattern {
+            pattern: AnimationStyle::Sword,
         },
         WeaponStats {
             enemy_damage: 50,
