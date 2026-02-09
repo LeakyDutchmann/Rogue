@@ -94,6 +94,7 @@ pub fn calculate_damage(
                 entity: msg.target,
                 position: msg.position,
                 damage: damage,
+                damage_type: msg.damage_type,
             });
     } 
 }

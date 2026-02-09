@@ -6,6 +6,8 @@ use animations_setup::*;
 pub use components::*;
 use std::collections::HashMap;
 use crate::player::{Player, Facing, PlayerState};
+use crate::items::{Item, Inventory, WeaponStats, CombatStats, ToolStats, Usable, AnimationPattern, AnimationStyle};
+use crate::combat::{AttackAnimation};
 
 use bevy::prelude::*;
 
@@ -27,6 +29,7 @@ impl Plugin for AnimationSetupPlugin {
         app.add_systems(Update, animate_sprite);
         app.add_systems(Update, update_animation);
         app.add_systems(Update, reset_animation_index.before(animate_sprite));
+        app.add_systems(Update, attack_animation);
     }
 }
 

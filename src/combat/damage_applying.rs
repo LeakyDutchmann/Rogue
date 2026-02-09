@@ -13,10 +13,12 @@ pub fn damage_execution_system(
             hp.0 -= destruction.damage;
             if hp.0 <= 0 {
                 commands.entity(destruction.entity).despawn();
-                writer.write(MapChanged {
-                    position: world_pos_to_tile_pos(destruction.position),
-                });
-                println!("msg sent");
+                if destruction.damage_type == DamageType::ToTileDamage {
+                    writer.write(MapChanged {
+                        position: world_pos_to_tile_pos(destruction.position),
+                    });
+                    println!("msg sent");
+                }
             }
         }
     }

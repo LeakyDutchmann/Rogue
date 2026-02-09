@@ -52,8 +52,8 @@ fn setup(
         },
         OnGround,
         CombatStats {
-            attack_speed: 400.0,
-            swing_angle: std::f32::consts::PI / 4.0,
+            attack_speed: 300.0,
+            swing_angle: std::f32::consts::PI / 3.0,
             radius: 80.0,
         },
         AnimationPattern{

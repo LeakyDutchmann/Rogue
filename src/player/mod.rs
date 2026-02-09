@@ -2,7 +2,6 @@ mod player_setup;
 mod player_movement;
 mod player_inventory;
 mod player_keyboard;
-mod player_animations;
 mod player_combat;
 
 use crate::components::{Speed, MovementIntent};
@@ -11,18 +10,14 @@ use player_setup::*;
 use player_movement::*;
 use player_inventory::*;
 use player_keyboard::*;
-use player_animations::*;
 use bevy::prelude::*;
 use player_combat::*;
 use bevy::prelude::Component;
 use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::items::{Item, Inventory, WeaponStats, CombatStats, ToolStats, Usable, AnimationPattern, AnimationStyle};
-use crate::messages::{HitMessage, MouseClickEvent, ItemDropped};
+use crate::items::{Item, Inventory,CombatStats, Usable, AnimationPattern};
+use crate::messages::{MouseClickEvent, ItemDropped};
 use crate::combat::AttackAnimation;
-
-
-
 
 
 pub struct PlayerSetupPlugin;
@@ -33,7 +28,7 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(FixedUpdate, move_player);
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
             pick_active_slot, show_active_slot, drop_item, draw_helditem, update_held_item_dir));
-        app.add_systems(Update, (initialize_attack, attack_progression, attack_animation,));
+        app.add_systems(Update, initialize_attack);
     }
 }
 

@@ -29,6 +29,7 @@ pub enum AnimationStyle {
     Sword,
 }
 
+
 #[derive(Component)]
 pub struct AnimationPattern {
     pub pattern: AnimationStyle,

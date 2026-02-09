@@ -60,9 +60,10 @@ pub struct ApplyDamage {
     pub entity: Entity,
     pub position: Vec2,
     pub damage: i32,
+    pub damage_type: DamageType,
 }
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Copy)]
 pub enum DamageType {
     ToTileDamage,
     ToEnemyDamage,
