@@ -6,7 +6,7 @@ use animations_setup::*;
 pub use components::*;
 use std::collections::HashMap;
 use crate::player::{Player, Facing, PlayerState};
-use crate::items::{Item, Inventory, WeaponStats, CombatStats, ToolStats, Usable, AnimationPattern, AnimationStyle};
+use crate::items::{AnimationStyle};
 use crate::combat::{AttackAnimation};
 
 use bevy::prelude::*;

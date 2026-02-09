@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use items_systems::*;
 use rand::Rng;
 
-use crate::player::{Player, SlotIcon};
+use crate::player::{Player};
 use crate::messages::{ItemDropped};
 
 pub struct ItemsPlugin;

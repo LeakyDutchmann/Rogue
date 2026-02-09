@@ -126,9 +126,9 @@ pub fn update_held_item_dir(
     let Ok((mut transform, mut sprite)) = held_item.single_mut() else { return };
     sprite.flip_x = matches!(player.facing, Facing::Left);
     if player.facing == Facing::Right {
-        transform.rotation = (Quat::from_rotation_z((30.0_f32).to_radians()));
+        transform.rotation = Quat::from_rotation_z((30.0_f32).to_radians());
     } else if player.facing == Facing::Left {
-        transform.rotation = (Quat::from_rotation_z(-(30.0_f32).to_radians()));
+        transform.rotation = Quat::from_rotation_z(-(30.0_f32).to_radians());
         sprite.flip_x = true;
     }
 }
