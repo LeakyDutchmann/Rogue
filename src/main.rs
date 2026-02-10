@@ -10,6 +10,7 @@ mod world;
 mod items;
 mod combat;
 mod messages;
+mod development;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -24,10 +25,19 @@ use world::*;
 use items::*;
 use combat::*;
 use messages::*;
+use development::*;
+
+struct OverlayColor;
+
+impl OverlayColor {
+    const RED: Color = Color::srgb(1.0, 0.0, 0.0);
+    const GREEN: Color = Color::srgb(0.0, 1.0, 0.0);
+}
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.build().set(ImagePlugin::default_nearest()))
+        .add_plugins(DevPlugin) // FPS COUNTER e.t.c
         .add_plugins(MessagesPlugin)
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
