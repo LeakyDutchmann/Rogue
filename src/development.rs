@@ -6,6 +6,13 @@ use bevy::{
     text::FontSmoothing,
 };
 
+struct OverlayColor;
+
+impl OverlayColor {
+    const RED: Color = Color::srgb(1.0, 0.0, 0.0);
+    const GREEN: Color = Color::srgb(0.0, 1.0, 0.0);
+}
+
 pub struct DevPlugin;
 
 impl Plugin for DevPlugin {
@@ -39,4 +46,5 @@ impl Plugin for DevPlugin {
                 ));
     }
 }
+
 
