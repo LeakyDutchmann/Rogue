@@ -51,7 +51,7 @@ fn setup(
     let sword_texture = asset_server.load("sword.png");
     commands.spawn((
         Sprite::from_image(pickaxe_texture.clone()),
-        Transform::from_xyz(44.0, 0.0, 1.0),
+        Transform::from_xyz(-44.0, 0.0, 1.0),
         Item {
             image: pickaxe_texture.clone(),
             name: "Pickaxe".to_string(),
@@ -60,7 +60,7 @@ fn setup(
         CombatStats {
             attack_speed: 300.0,
             swing_angle: std::f32::consts::PI / 3.0,
-            radius: 80.0,
+            radius: 32.0,
         },
         AnimationPattern{
             pattern: AnimationStyle::PickAxe,
@@ -74,7 +74,7 @@ fn setup(
     ));
     commands.spawn((
         Sprite::from_image(sword_texture.clone()),
-        Transform::from_xyz(44.0, 0.0, 1.0),
+        Transform::from_xyz(-44.0, 0.0, 1.0),
         Item {
             image: sword_texture.clone(),
             name: "Sword".to_string(),
@@ -83,7 +83,7 @@ fn setup(
         CombatStats {
             attack_speed: 250.0,
             swing_angle: std::f32::consts::PI / 1.0,
-            radius: 120.0,
+            radius: 64.0,
         },
         AnimationPattern {
             pattern: AnimationStyle::Sword,

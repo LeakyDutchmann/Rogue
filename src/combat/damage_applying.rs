@@ -11,6 +11,7 @@ pub fn damage_execution_system(
     for destruction in reader.read() {
         if let Ok(mut hp) = health.get_mut(destruction.entity) {
             hp.0 -= destruction.damage;
+            println!("Damage applied");
             if hp.0 <= 0 {
                 commands.entity(destruction.entity).despawn();
                 if destruction.damage_type == DamageType::ToTileDamage {
@@ -20,6 +21,8 @@ pub fn damage_execution_system(
                     println!("msg sent");
                 }
             }
+        } else {
+            println!("Health not found");
         }
     }
 }

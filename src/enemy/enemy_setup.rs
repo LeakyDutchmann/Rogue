@@ -35,6 +35,25 @@ pub fn setup_enemy(
             current: AnimationId::IdleRight,
             previous: AnimationId::IdleRight,
         },
+        Health(100),
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-    ));
+    )).with_children(|parent| {
+        parent.spawn((
+            Text2d::new(100.to_string()),
+            TextFont {
+                font_size: 10.0,
+                ..Default::default()
+            },
+            Marker
+        ));
+    });
+}
+
+pub fn update_hp_on_marker(
+    mut text_query: Query<&mut Text2d, With<Marker>>,
+    health_query: Query<&Health>,
+) {
+    for (mut text, health) in text_query.iter_mut().zip(health_query.iter()) {
+        text.0 = health.0.to_string();
+    }
 }

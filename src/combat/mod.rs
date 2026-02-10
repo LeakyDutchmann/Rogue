@@ -12,6 +12,7 @@ use crate::world::{WorldGrid, CELL_SIZE, get_cells_in_radius, get_entities_in_ce
 use crate::components::Health;
 use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType};
 use crate::items::{WeaponStats, ToolStats, AnimationStyle};
+use crate::enemy::Enemy;
 
 
 pub struct CombatPlugin;
