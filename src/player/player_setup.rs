@@ -1,3 +1,5 @@
+use bevy::render::render_resource::Face;
+
 use crate::player::*;
 
 
@@ -26,9 +28,12 @@ pub fn player_setup(
                 index: 0
             }
         ),
-        Player {
-            state: PlayerState::Idle,
+        Player,
+        FacingDirection {
             facing: Facing::Right,
+        },
+        ActorState {
+            state: ActorStateType::Idle
         },
         ActiveAnimation {
             current: AnimationId::IdleRight,

@@ -4,7 +4,7 @@ mod player_inventory;
 mod player_keyboard;
 mod player_combat;
 
-use crate::components::{Speed, MovementIntent};
+use crate::components::{Speed, MovementIntent, Facing, FacingDirection, ActorState, ActorStateType};
 use crate::mouse::CursorWorldPos;
 use player_setup::*;
 use player_movement::*;
@@ -32,27 +32,14 @@ impl Plugin for PlayerSetupPlugin {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum PlayerState {
-    Idle,
-    Walking,
-}
 
 
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum Facing {
-    Up,
-    Down,
-    Left,
-    Right,
-}
 
 
-#[derive(Component, Copy, Clone, Eq, PartialEq, Debug)]
-pub struct Player {
-    pub state: PlayerState,
-    pub facing: Facing,
-}
+
+
+#[derive(Component)]
+pub struct Player;
 
 
 #[derive(Component)]

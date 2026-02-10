@@ -54,6 +54,7 @@ pub fn hit_detection_system(
                             position: closest_entity_pos.unwrap(),
                             damage_type: DamageType::ToEnemyDamage,
                         });
+                        println!("Hit enemy!")
                     }
     
                 } 

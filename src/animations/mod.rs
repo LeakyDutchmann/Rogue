@@ -4,8 +4,9 @@ mod components;
 
 use animations_setup::*;
 pub use components::*;
+use crate::components::{Facing, ActorState, ActorStateType, FacingDirection};
 use std::collections::HashMap;
-use crate::player::{Player, Facing, PlayerState};
+use crate::player::{Player};
 use crate::items::{AnimationStyle};
 use crate::combat::{AttackAnimation};
 

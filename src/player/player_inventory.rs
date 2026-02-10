@@ -120,14 +120,14 @@ pub fn draw_helditem(
 
 pub fn update_held_item_dir(
     mut held_item: Query<(&mut Transform, &mut Sprite), (With<HeldItem>, Without<AttackAnimation>)>,
-    player: Query<&Player>,
+    player: Query<(&Player, &FacingDirection)>,
 ) {
-    let Ok(player) = player.single() else { return };
+    let Ok((player, facing_dir)) = player.single() else { return };
     let Ok((mut transform, mut sprite)) = held_item.single_mut() else { return };
-    sprite.flip_x = matches!(player.facing, Facing::Left);
-    if player.facing == Facing::Right {
+    sprite.flip_x = matches!(facing_dir.facing, Facing::Left);
+    if facing_dir.facing == Facing::Right {
         transform.rotation = Quat::from_rotation_z((30.0_f32).to_radians());
-    } else if player.facing == Facing::Left {
+    } else if facing_dir.facing == Facing::Left {
         transform.rotation = Quat::from_rotation_z(-(30.0_f32).to_radians());
         sprite.flip_x = true;
     }

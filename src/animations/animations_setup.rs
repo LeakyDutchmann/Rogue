@@ -25,13 +25,13 @@ pub fn animate_sprite(
 }
 
 pub fn update_animation(
-    mut query: Query<(&mut ActiveAnimation, &Player)>,
+    mut query: Query<(&mut ActiveAnimation, &ActorState, &FacingDirection)>,
 ) {
-    for (mut animation, player) in query.iter_mut() {
-        let new_animation = if player.state == PlayerState::Idle {
-            AnimationId::idle_from(player.facing)
-        } else if player.state == PlayerState::Walking {
-            AnimationId::walk_from(player.facing)
+    for (mut animation, actor_state, facing_dir) in query.iter_mut() {
+        let new_animation = if actor_state.state == ActorStateType::Idle {
+            AnimationId::idle_from(facing_dir.facing)
+        } else if actor_state.state == ActorStateType::Walking {
+            AnimationId::walk_from(facing_dir.facing)
         } else {
             AnimationId::IdleRight
         };

@@ -24,6 +24,17 @@ pub fn setup_enemy(
             }
         ),
         Transform::from_xyz(40.0, 0.0, 1.0),
-        
+        Enemy,
+        FacingDirection {
+            facing: Facing::Right,
+        },
+        ActorState {
+            state: ActorStateType::Idle,
+        },
+        ActiveAnimation {
+            current: AnimationId::IdleRight,
+            previous: AnimationId::IdleRight,
+        },
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
     ));
 }

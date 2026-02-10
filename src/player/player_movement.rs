@@ -1,12 +1,12 @@
-use crate::player::*;
+use super::*;
 
 
 pub fn move_player(
     mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
-    mut player: Query<(Entity, &mut Player), With<Player>>,
+    mut player: Query<(Entity, &mut ActorState, &mut FacingDirection), With<Player>>,
 ) {
-    for (player_e, mut player_c) in &mut player {
+    for (player_e, mut player_state, mut facing_dir) in &mut player {
         let mut direction = Vec2::ZERO;
         if keys.pressed(KeyCode::KeyW) {
             direction.y += 1.0;
@@ -24,10 +24,10 @@ pub fn move_player(
         
         if direction != Vec2::ZERO {
             commands.entity(player_e).insert(MovementIntent { direction });
-            player_c.state = PlayerState::Walking;
-            player_c.facing = direction_to_facing(direction);
+            player_state.state = ActorStateType::Walking;
+            facing_dir.facing = direction_to_facing(direction);
         } else {
-            player_c.state = PlayerState::Idle;
+            player_state.state = ActorStateType::Idle;
         }
     }
 }
@@ -50,16 +50,16 @@ fn direction_to_facing(direction: Vec2)-> Facing {
 
 pub fn player_idle_direction(
     cursor: ResMut<CursorWorldPos>,
-    mut player: Query<(&Transform, &mut Player), With<Player>>,
+    mut player: Query<(&Transform, &mut Player, &mut FacingDirection, &ActorState), With<Player>>,
 ) {
-    for (transform, mut player) in player.iter_mut() {
-        if player.state == PlayerState::Idle {
+    for (transform, _player, mut facing_dir, actor_state) in player.iter_mut() {
+        if actor_state.state == ActorStateType::Idle {
             if let Some(cursor_pos) = cursor.0 {
                 let player_pos = transform.translation.truncate();
                 if player_pos.x >= cursor_pos.x {
-                    player.facing = Facing::Left
+                    facing_dir.facing = Facing::Left
                 } else {
-                    player.facing = Facing::Right
+                    facing_dir.facing = Facing::Right
                 }
             }
             

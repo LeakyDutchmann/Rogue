@@ -22,4 +22,28 @@ pub struct MovementResolved{
 }
 
 
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+pub enum Facing {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+#[derive(Component)]
+pub struct FacingDirection {
+    pub facing: Facing,
+}
+
+#[derive(PartialEq)]
+pub enum ActorStateType {
+    Idle,
+    Walking,
+}
+
+#[derive(Component)]
+pub struct ActorState {
+    pub state: ActorStateType,
+}
+
 
