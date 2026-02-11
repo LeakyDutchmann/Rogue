@@ -47,19 +47,22 @@ pub fn setup_enemy(
         parent.spawn((
             Text2d::new(100.to_string()),
             TextFont {
-                font_size: 10.0,
+                font_size: 6.0,
                 ..Default::default()
             },
+            Transform::from_xyz(0.0, 14.0, 1.0),
             Marker
         ));
     });
 }
 
 pub fn update_hp_on_marker(
-    mut text_query: Query<&mut Text2d, With<Marker>>,
+    mut text_query: Query<(&mut Text2d, &ChildOf), With<Marker>>,
     health_query: Query<&Health>,
 ) {
-    for (mut text, health) in text_query.iter_mut().zip(health_query.iter()) {
-        text.0 = health.0.to_string();
+    for (mut text, parent) in text_query.iter_mut() {
+        if let Ok(health) = health_query.get(parent.0) {
+            text.0 = health.0.to_string();
+        }
     }
 }

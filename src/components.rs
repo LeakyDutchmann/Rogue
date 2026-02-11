@@ -30,6 +30,16 @@ pub enum Facing {
     Right,
 }
 
+impl Facing {
+    pub fn from_direction(direction: Vec2) -> Facing {
+        if direction.x.abs() >= direction.y.abs() {
+                if direction.x > 0.0 { Facing::Right } else { Facing::Left }
+            } else {
+                if direction.y > 0.0 { Facing::Up } else { Facing::Down }
+            } 
+    }
+}
+
 #[derive(Component)]
 pub struct FacingDirection {
     pub facing: Facing,

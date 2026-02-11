@@ -112,7 +112,7 @@ pub fn draw_helditem(
                     held_item.last_held = None;
                 }
             }
-            hand_pos.translation = Vec3::new(0.0, 0.0, 0.0);
+            hand_pos.translation = Vec3::new(0.0, 0.0, 1.0);
         }
     }
 }

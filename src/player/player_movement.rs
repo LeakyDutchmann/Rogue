@@ -25,20 +25,13 @@ pub fn move_player(
         if direction != Vec2::ZERO {
             commands.entity(player_e).insert(MovementIntent { direction });
             player_state.state = ActorStateType::Walking;
-            facing_dir.facing = direction_to_facing(direction);
+            facing_dir.facing = Facing::from_direction(direction);
         } else {
             player_state.state = ActorStateType::Idle;
         }
     }
 }
 
-fn direction_to_facing(direction: Vec2)-> Facing {
-    if direction.x.abs() >= direction.y.abs() {
-            if direction.x > 0.0 { Facing::Right } else { Facing::Left }
-        } else {
-            if direction.y > 0.0 { Facing::Up } else { Facing::Down }
-        } 
-}
 
 // pub fn print_state(
 //     player: Query<&Player, With<Player>>,
