@@ -2,7 +2,7 @@ use crate::colision_manager::*;
 
 
 pub fn resolve_movement(
-    time: Res<Time<Fixed>>,
+    time: Res<Time>,
     mut commands: Commands,
     intender: Query<(Entity, &Transform, &MovementIntent, &Colider, &Speed), With<MovementIntent>>,
     others: Query<(&Transform, &Colider)>,

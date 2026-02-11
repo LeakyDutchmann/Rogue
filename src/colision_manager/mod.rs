@@ -13,7 +13,7 @@ pub struct ColisionPlugin;
 
 impl Plugin for ColisionPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, resolve_movement);
+        app.add_systems(FixedUpdate, resolve_movement);
     }
 }
 

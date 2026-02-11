@@ -36,6 +36,12 @@ pub fn setup_enemy(
             previous: AnimationId::IdleRight,
         },
         Health(100),
+        Speed(100.0),
+        Colider {
+            shape: ColiderShape::Circle { radius: 3.0},
+            _offsety: -5.0,
+            _sensor: true,
+        },
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
     )).with_children(|parent| {
         parent.spawn((

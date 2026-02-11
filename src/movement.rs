@@ -9,13 +9,12 @@ pub struct MovementPlugin;
 
 impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, apply_movement.after(resolve_movement));
+        app.add_systems(FixedUpdate, apply_movement.after(resolve_movement));
     }
 }
 
 
 pub fn apply_movement(
-    _time: Res<Time<Fixed>>,
     mut commands: Commands,
     mut intender: Query<(Entity, &mut Transform, &Speed, &MovementResolved), With<MovementResolved>>,
     mut world: ResMut<WorldGrid>,
