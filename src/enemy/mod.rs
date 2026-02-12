@@ -4,6 +4,7 @@ mod ai;
 use super::*;
 use enemy_setup::*;
 use ai::*;
+use crate::world::{EmptyCells, get_cells_in_radius};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
     ActorState, ActorStateType, MovementIntent};

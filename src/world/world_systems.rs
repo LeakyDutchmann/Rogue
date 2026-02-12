@@ -1,15 +1,16 @@
-use crate::world::*;
 
+use super::*;
 
-pub fn insert_entities(
-    mut entities: Query<(Entity, &Transform)>,
-    mut world: ResMut<WorldGrid>,
-) {
+pub fn insert_entities(mut entities: Query<(Entity, &Transform)>, mut world: ResMut<WorldGrid>) {
     for (entity, transform) in entities.iter_mut() {
         let pos = transform.translation.truncate();
         let cell_x = (pos.x / CELL_SIZE).round() as i32;
         let cell_y = (pos.y / CELL_SIZE).round() as i32;
-        world.cells.entry((cell_x, cell_y)).or_default().push(entity);
+        world
+            .cells
+            .entry((cell_x, cell_y))
+            .or_default()
+            .push(entity);
     }
 }
 
@@ -38,7 +39,6 @@ pub fn get_cells_3x3(central: (i32, i32)) -> Vec<(i32, i32)> {
     neighbour_cells
 }
 
-
 pub fn get_entities_in_cells(cells: Vec<(i32, i32)>, world: &WorldGrid) -> Vec<Entity> {
     let mut entities = Vec::new();
     for cell in cells {
@@ -64,3 +64,40 @@ pub fn get_entities_in_cells(cells: Vec<(i32, i32)>, world: &WorldGrid) -> Vec<E
 //     }
 // }
 
+pub fn find_empty_space(
+    world: Res<WorldGrid>,
+    mut empty: ResMut<EmptyCells>,
+    tile_type: Query<&MapTile>
+) {
+    let dx = MAP_WIDTH as i32 / 2;
+    let dy = MAP_HEIGHT as i32 / 2;
+    for x in -dx..dx {
+        for y in -dy..dy {
+            let cell = world.cells.get(&(x, y));
+            if let Some(cell) = cell { 
+                let mut found_floor = false;
+                let mut found_wall = false; 
+                for entity in cell {
+                    if let Ok(tile) = tile_type.get(*entity) {
+                        if tile.tile_type == TileType::Floor {
+                            found_floor = true;
+                        } else {
+                            found_wall = true;
+                        }
+                    }
+                }
+                if found_floor && !found_wall {
+                    empty.position.push((x, y));
+                }
+            }
+        }
+    }
+}
+
+// pub fn check_empty(
+//     empty: Res<EmptyCells>,
+// ) {
+//     for (x, y) in &empty.position {
+//         println!("Empty space at: ({}, {})", x, y);
+//     }
+// }
