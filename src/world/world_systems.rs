@@ -51,6 +51,22 @@ pub fn get_entities_in_cells(cells: Vec<(i32, i32)>, world: &WorldGrid) -> Vec<E
     entities
 }
 
+pub fn find_empty_cells(
+    world: Res<WorldGrid>,
+    mut empty_cells: ResMut<EmptyCells>,
+    wall: Query<(), With<Wall>>,
+) {
+    for (&coords, entities) in world.cells.iter() {
+        let blocked = entities.iter()
+            .any(|e| wall.get(*e).is_ok());
+        if !blocked {
+            empty_cells.cells.push(coords);
+        }
+        
+    }
+    
+}
+
 // pub fn check_grid(
 //     player: Query<&Transform, With<Player>>,
 //     world: Res<WorldGrid>,
