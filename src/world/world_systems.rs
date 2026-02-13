@@ -1,5 +1,5 @@
 use crate::world::*;
-
+use bevy::{color::palettes::basic::PURPLE, prelude::*};
 
 pub fn insert_entities(
     mut entities: Query<(Entity, &Transform)>,
@@ -53,19 +53,37 @@ pub fn get_entities_in_cells(cells: Vec<(i32, i32)>, world: &WorldGrid) -> Vec<E
 
 pub fn find_empty_cells(
     world: Res<WorldGrid>,
-    mut empty_cells: ResMut<EmptyCells>,
-    wall: Query<(), With<Wall>>,
+    mut empty_cells: ResMut<EmptyCellsWorldPos>,
+    wall: Query<&Wall>,
 ) {
     for (&coords, entities) in world.cells.iter() {
         let blocked = entities.iter()
             .any(|e| wall.get(*e).is_ok());
         if !blocked {
-            empty_cells.cells.push(coords);
+            empty_cells.cells.push(Vec2::from(
+                (coords.0 as f32 * TILE_SIZE, coords.1 as f32 * TILE_SIZE)
+            ));
         }
         
     }
     
 }
+
+// pub fn modify_empty(
+//     mut commands: Commands,
+//     cells: Res<EmptyCellsWorldPos>,
+//     mut meshes: ResMut<Assets<Mesh>>,
+//     mut materials: ResMut<Assets<ColorMaterial>>,
+// ) {
+//     for &pos in cells.cells.iter(){
+//         commands.spawn((
+//                 Mesh2d(meshes.add(Rectangle::default())),
+//                 MeshMaterial2d(materials.add(Color::from(PURPLE))),
+//                 Transform::from_xyz(pos.x, pos.y, 2.0).with_scale(Vec3::splat(32.0)),
+//             ));
+//         println!("spawned at {:?}", pos);
+//     }
+// }
 
 // pub fn check_grid(
 //     player: Query<&Transform, With<Player>>,

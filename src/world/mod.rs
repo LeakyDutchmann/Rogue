@@ -19,11 +19,12 @@ impl Plugin for WorldPlugin {
         app.insert_resource(WorldGrid {
             cells: HashMap::new(),
         });
-        app.insert_resource(EmptyCells {
+        app.insert_resource(EmptyCellsWorldPos {
             cells: Vec::new(),
         });
         app.add_systems(Startup, insert_entities.after(map_setup));
         app.add_systems(Startup, find_empty_cells.after(insert_entities));
+        // app.add_systems(Startup, modify_empty.after(find_empty_cells));
         // app.add_systems(Update, check_grid.after(apply_movement));
         
     }
@@ -36,8 +37,8 @@ pub struct WorldGrid {
 }
 
 #[derive(Resource, PartialEq, Clone,)]
-pub struct EmptyCells {
-    pub cells: Vec<(i32, i32)>,
+pub struct EmptyCellsWorldPos {
+    pub cells: Vec<Vec2>,
 }
 
 

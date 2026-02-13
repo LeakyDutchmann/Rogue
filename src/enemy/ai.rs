@@ -22,9 +22,5 @@ pub fn ai_movement(
         } else {
             actor_state.state = ActorStateType::Idle;
         }
-        
-        
-        println!("Enemy AI movement");
-        
     }
 }

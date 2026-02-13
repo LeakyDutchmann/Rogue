@@ -13,7 +13,7 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_enemy);
+        app.add_systems(Startup, setup_enemy.after(find_empty_cells));
         app.add_systems(Update, update_hp_on_marker);
         app.add_systems(FixedUpdate, ai_movement);
     }

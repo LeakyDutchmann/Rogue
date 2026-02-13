@@ -1,9 +1,28 @@
 use super::*;
+use rand::rng;
+use rand::seq::IndexedRandom;
+
+pub fn generate_position_near(cells: &Vec<(Vec2)>, target: Vec2) -> Vec2 {
+    let mut final_pos = Vec2::from((33.0, 33.0));
+    let mut rng = rand::rng();
+    let filtered: Vec<_> = cells
+        .iter()
+        .filter(|&&pos| {
+                pos.distance(target) <= 400.0
+                })
+        .cloned()
+        .collect();
+    if let Some(cell) = filtered.choose(&mut rng) {
+        final_pos = Vec2::from((cell.x, cell.y));
+    }
+    final_pos
+}
 
 pub fn setup_enemy(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    empty_cells: Res<EmptyCellsWorldPos>,
 ) {
     let texture = asset_server.load("enemy_spitesheet.png");
     let texture_atlas = TextureAtlasLayout::from_grid (
@@ -15,45 +34,50 @@ pub fn setup_enemy(
     );
     let texture_atlas_layout = texture_atlas_layouts.add(texture_atlas);
     
-    commands.spawn((
-        Sprite::from_atlas_image(
-            texture,
-            TextureAtlas {
-                layout: texture_atlas_layout,
-                index: 0,
-            }
-        ),
-        Transform::from_xyz(40.0, 0.0, 1.0),
-        Enemy,
-        FacingDirection {
-            facing: Facing::Right,
-        },
-        ActorState {
-            state: ActorStateType::Idle,
-        },
-        ActiveAnimation {
-            current: AnimationId::IdleRight,
-            previous: AnimationId::IdleRight,
-        },
-        Health(100),
-        Speed(100.0),
-        Colider {
-            shape: ColiderShape::Circle { radius: 3.0},
-            _offsety: -5.0,
-            _sensor: true,
-        },
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-    )).with_children(|parent| {
-        parent.spawn((
-            Text2d::new(100.to_string()),
-            TextFont {
-                font_size: 6.0,
-                ..Default::default()
+    for _ in 0..5 {
+        let pos = generate_position_near(&empty_cells.cells, Vec2::from((0.0, 0.0)));
+    
+        
+        commands.spawn((
+            Sprite::from_atlas_image(
+                texture.clone(),
+                TextureAtlas {
+                    layout: texture_atlas_layout.clone(),
+                    index: 0,
+                }
+            ),
+            Transform::from_xyz(pos.x, pos.y, 1.0),
+            Enemy,
+            FacingDirection {
+                facing: Facing::Right,
             },
-            Transform::from_xyz(0.0, 14.0, 1.0),
-            Marker
-        ));
-    });
+            ActorState {
+                state: ActorStateType::Idle,
+            },
+            ActiveAnimation {
+                current: AnimationId::IdleRight,
+                previous: AnimationId::IdleRight,
+            },
+            Health(100),
+            Speed(100.0),
+            Colider {
+                shape: ColiderShape::Circle { radius: 3.0},
+                _offsety: -5.0,
+                _sensor: true,
+            },
+            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+        )).with_children(|parent| {
+            parent.spawn((
+                Text2d::new(100.to_string()),
+                TextFont {
+                    font_size: 6.0,
+                    ..Default::default()
+                },
+                Transform::from_xyz(0.0, 14.0, 1.0),
+                Marker
+            ));
+        });
+    }
 }
 
 pub fn update_hp_on_marker(
@@ -66,3 +90,4 @@ pub fn update_hp_on_marker(
         }
     }
 }
+
