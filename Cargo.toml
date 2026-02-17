@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 bevy = { version = "0.18.0", features = ["bevy_dev_tools"] }
+futures-lite = "2.6.1"
 rand = "0.9.2"
 
 

@@ -36,6 +36,7 @@ pub struct WorldGrid {
     pub cells: HashMap<(i32, i32), Vec<Entity>>,
 }
 
+
 #[derive(Resource, PartialEq, Clone,)]
 pub struct EmptyCellsWorldPos {
     pub cells: Vec<Vec2>,

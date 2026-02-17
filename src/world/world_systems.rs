@@ -69,21 +69,21 @@ pub fn find_empty_cells(
     
 }
 
-// pub fn modify_empty(
-//     mut commands: Commands,
-//     cells: Res<EmptyCellsWorldPos>,
-//     mut meshes: ResMut<Assets<Mesh>>,
-//     mut materials: ResMut<Assets<ColorMaterial>>,
-// ) {
-//     for &pos in cells.cells.iter(){
-//         commands.spawn((
-//                 Mesh2d(meshes.add(Rectangle::default())),
-//                 MeshMaterial2d(materials.add(Color::from(PURPLE))),
-//                 Transform::from_xyz(pos.x, pos.y, 2.0).with_scale(Vec3::splat(32.0)),
-//             ));
-//         println!("spawned at {:?}", pos);
-//     }
-// }
+pub fn modify_empty(
+    mut commands: Commands,
+    cells: Res<EmptyCellsWorldPos>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for &pos in cells.cells.iter(){
+        commands.spawn((
+                Mesh2d(meshes.add(Rectangle::default())),
+                MeshMaterial2d(materials.add(Color::from(PURPLE))),
+                Transform::from_xyz(pos.x, pos.y, 2.0).with_scale(Vec3::splat(32.0)),
+            ));
+        println!("spawned at {:?}", pos);
+    }
+}
 
 // pub fn check_grid(
 //     player: Query<&Transform, With<Player>>,

@@ -20,7 +20,7 @@ pub fn hit_detection_system(
                         if let Ok((tile, tile_pos)) = query.get(*entity) {
                             if tile.tile_type != TileType::Floor && tile.tile_type != TileType::Empty {
                                 if impact.item_pos.distance(tile_pos.translation.truncate()) <= impact.item_radius {
-                                    println!("hitted tile");
+                                    // println!("hitted tile");
                                     writer.write(CalculateDamage {
                                         attack_item: item_used,
                                         target: *entity,
@@ -28,11 +28,11 @@ pub fn hit_detection_system(
                                         damage_type: DamageType::ToTileDamage,
                                     });
                                 } else {
-                                    println!("to far");
+                                    // println!("to far");
                                 }
                             } 
                         } else {
-                            println!("hitting in radius then");
+                            // println!("hitting in radius then");
                             let item_cell_x = (impact.item_pos.x / CELL_SIZE).round() as i32;
                             let item_cell_y = (impact.item_pos.y / CELL_SIZE).round() as i32;
                             let cells = get_cells_in_radius((item_cell_x, item_cell_y), impact.item_radius);
@@ -61,9 +61,9 @@ pub fn hit_detection_system(
                                         damage_type: DamageType::ToEnemyDamage,
                                     });
                                     hit_registered = true;
-                                    println!("Hit enemy!")
+                                    // println!("Hit enemy!")
                                 } else {
-                                    println!("No enemy in radius!")
+                                    // println!("No enemy in radius!")
                                 }
                             }
                         }

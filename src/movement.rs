@@ -41,6 +41,7 @@ pub fn apply_movement(
         }
         transform.translation.x += direction.x;
         transform.translation.y += direction.y;
+        println!("Moved entity to new position");
         
         commands.entity(entity).remove::<MovementResolved>();
     }
