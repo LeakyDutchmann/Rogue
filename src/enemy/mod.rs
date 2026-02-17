@@ -9,6 +9,9 @@ use pathfinding::*;
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
     ActorState, ActorStateType, MovementIntent};
+use std::collections::{HashMap, HashSet, VecDeque};
+use bevy::tasks::{AsyncComputeTaskPool, Task};
+use futures_lite::future;
 
 
 pub struct EnemyPlugin;
@@ -22,10 +25,24 @@ impl Plugin for EnemyPlugin {
     }
 }
 
-
-
 #[derive(Component)]
 pub struct Enemy;
 
+
 #[derive(Component)]
 pub struct Marker;
+
+
+#[derive(Component)]
+pub struct PathfindingTask(Task<Result<Vec<Position>, PathfindingError>>);
+
+
+#[derive(Component)]
+pub struct AiPath {
+    pub steps: VecDeque<Vec2>,
+}
+
+
+
+
+

@@ -1,7 +1,5 @@
 use super::*;
-use std::collections::{HashMap, HashSet, VecDeque};
-use bevy::tasks::{AsyncComputeTaskPool, Task};
-use futures_lite::future;
+
 use bevy::color::palettes::basic::PURPLE;
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq)]
@@ -32,7 +30,6 @@ pub enum PathfindingError {
     StartNotInBounds,
     GoalNotInBounds,
 }
-
 
 pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) -> Result<Vec<Position>, PathfindingError> {
     if !bounds.contains(&start) {
@@ -128,11 +125,6 @@ pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) ->
     Ok(path)
 }
 
-
-#[derive(Component)]
-pub struct PathfindingTask(Task<Result<Vec<Position>, PathfindingError>>);
- 
-
 fn spawn_optimized_pathfinding_task(
     commands: &mut Commands,
     target: Entity,
@@ -150,8 +142,6 @@ fn spawn_optimized_pathfinding_task(
      println!("Task spawned");
      commands.entity(target).insert(PathfindingTask(task));
 }
-
-
 
 pub fn generate_trial(
     mut commands: Commands,
@@ -197,19 +187,18 @@ pub fn generate_trial(
     }
 }
 
-
-#[derive(Component)]
-pub struct AiPath {
-    pub steps: VecDeque<Vec2>,
-}
-
-
 pub fn apply_pathfinding_to_ai(
     mut commands: Commands,
     mut tasks: Query<(Entity, &mut PathfindingTask)>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    grid: Res<EmptyCellsWorldPos>,
 ) {
+    let mut empty_cells_grid_pos: HashSet<(i32, i32)> = HashSet::new();
+    for cell in grid.cells.iter() {
+        let grid_pos = ((cell.x / CELL_SIZE) as i32, (cell.y / CELL_SIZE) as i32);
+        empty_cells_grid_pos.insert(grid_pos);
+    }
     for (task_entity, mut task) in &mut tasks {
         if let Some(result) = future::block_on(future::poll_once(&mut task.0)) {
             commands.entity(task_entity).remove::<PathfindingTask>();
@@ -220,19 +209,69 @@ pub fn apply_pathfinding_to_ai(
                     let y = position.y as f32 * CELL_SIZE;
                     steps.push_front(Vec2::new(x, y));
                 }
-                for step in &steps {
-                    println!("Step: {:?}", step);
-                    commands.spawn((
-                            Mesh2d(meshes.add(Rectangle::default())),
-                            MeshMaterial2d(materials.add(Color::from(PURPLE))),
-                            Transform::from_xyz(step.x, step.y, 2.0).with_scale(Vec3::splat(16.0)),
-                        ));
-                }
-                commands.entity(task_entity).insert( AiPath {
-                    steps: steps,
-                });
-                println!("Path applied");
+                if let Ok(optimized) = optimize_path(&mut steps, &empty_cells_grid_pos) {
+                    for step in &optimized {
+                        println!("Step: {:?}", step);
+                        commands.spawn((
+                                Mesh2d(meshes.add(Rectangle::default())),
+                                MeshMaterial2d(materials.add(Color::from(PURPLE))),
+                                Transform::from_xyz(step.x, step.y, 2.0).with_scale(Vec3::splat(16.0)),
+                            ));
+                    }
+                    commands.entity(task_entity).insert( AiPath {
+                        steps: optimized,
+                    });
+                    println!("Path applied");
+                } 
             }
         }
     }
+}
+
+
+fn grid_cells_in_rect(start: Vec2, end: Vec2) -> Vec<(i32, i32)> {
+    let min_x = (start.x.min(end.x) / CELL_SIZE).floor() as i32;
+    let max_x = (start.x.max(end.x) / CELL_SIZE).floor() as i32;
+    let min_y = (start.y.min(end.y) / CELL_SIZE).floor() as i32;
+    let max_y = (start.y.max(end.y) / CELL_SIZE).floor() as i32;
+
+    let mut cells = Vec::new();
+    for y in min_y..=max_y {
+        for x in min_x..=max_x {
+            cells.push((x, y));
+        }
+    }
+    cells
+}
+
+fn is_rect_walkable(start: Vec2, end: Vec2, walkable_cells: &HashSet<(i32, i32)>) -> bool {
+    grid_cells_in_rect(start, end)
+        .into_iter()
+        .all(|cell| walkable_cells.contains(&cell))
+}
+
+#[derive(Debug)]
+pub struct PathOptimizationError;
+
+fn optimize_path(path: &mut VecDeque<Vec2>, empty_cells: &HashSet<(i32, i32)>  ) -> Result<VecDeque<Vec2>, PathOptimizationError> {
+    if path.is_empty() {
+        return Err(PathOptimizationError);
+
+    }
+    
+        let mut simplified = VecDeque::new();
+        simplified.push_front(*path.front().unwrap());
+        let mut last = 0;
+    
+        for current in 1..path.len() {
+            if !is_rect_walkable(path[last], path[current], empty_cells) {
+                // cannot skip, so add previous point
+                simplified.push_back(path[current - 1]);
+                last = current - 1;
+            }
+        }
+    
+        // always add last point
+        simplified.push_back(*path.back().unwrap());
+        Ok(simplified)
 }
