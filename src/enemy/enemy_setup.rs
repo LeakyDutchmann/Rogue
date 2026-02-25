@@ -66,6 +66,11 @@ pub fn setup_enemy(
                 _sensor: true,
             },
             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+            EnemyVision {
+                state: EnemyVisionState::Idle,
+                last_seen_pos: None,
+                fov_radius: 200.0,
+            },
         )).with_children(|parent| {
             parent.spawn((
                 Text2d::new(100.to_string()),

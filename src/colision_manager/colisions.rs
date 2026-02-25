@@ -56,7 +56,6 @@ pub fn resolve_movement(
         }
         if resolved_dir != Vec2::ZERO {
             commands.entity(entity).insert(MovementResolved{ direction: resolved_dir});
-            println!("Movement resolved {:?}", resolved_dir);
         }
         
     

@@ -16,16 +16,28 @@ pub struct VisionPlugin;
 
 impl Plugin for VisionPlugin {
     fn build(&self, app: &mut App) {
-        
+        app.add_systems(Update, enemy_vision_system);
     }
 }
-
 
 #[derive(Component)]
 pub struct FieldOfView {
     pub triangles: Option<Vec<(Vec3, Vec3, Vec3)>>,
 }
 
-
 #[derive(Component)]
 pub struct CustomShape;
+
+
+pub enum EnemyVisionState {
+    Idle,
+    Direct,
+    PathFinding,
+}
+
+#[derive(Component)]
+pub struct EnemyVision {
+    pub state: EnemyVisionState,
+    pub last_seen_pos: Option<Vec2>,
+    pub fov_radius: f32,
+}

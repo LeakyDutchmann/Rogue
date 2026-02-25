@@ -10,7 +10,6 @@ pub fn ai_movement(
         let enemy_position = enemy_transform.translation.truncate();
         
         if let Some(step) = ai_path.steps.front() {
-            println!("going from: {:?} to {:?}", enemy_position, step);
             let threshold = 1.66; // or speed * delta_time
             let direction = step - enemy_position;
             let distance = direction.length();
