@@ -54,8 +54,9 @@ pub fn player_setup(
         ActiveSlot {
             index: 1,
         },
-        
-        
+        FieldOfView {
+            triangles: None,
+        }
     )).with_children(|parent| {
         parent.spawn((
             HeldItem {
@@ -63,6 +64,7 @@ pub fn player_setup(
             },
             Transform::default(),
         ));
+
     });
     
     //Spawning entity to test colisions, don't forget to remove!

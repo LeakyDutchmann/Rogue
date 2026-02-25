@@ -18,6 +18,7 @@ use crate::colision_manager::{Colider, ColiderShape};
 use crate::items::{Item, Inventory,CombatStats, AnimationPattern};
 use crate::messages::{MouseClickEvent, ItemDropped};
 use crate::combat::AttackAnimation;
+use super::FieldOfView;
 
 
 pub struct PlayerSetupPlugin;

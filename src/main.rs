@@ -12,6 +12,7 @@ mod combat;
 mod messages;
 mod development;
 mod enemy;
+mod raycasting;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -28,6 +29,9 @@ use combat::*;
 use messages::*;
 use development::*;
 use enemy::*;
+use raycasting::*;
+use bevy::gizmos;
+
 
 fn main() {
     App::new()
@@ -38,6 +42,7 @@ fn main() {
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
         .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin))
+        .add_plugins((VisionPlugin))
         .add_systems(Startup, setup)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();
@@ -96,9 +101,6 @@ fn setup(
         }
     ));
 }
-
-
-
 
 // fn check_inventory(
 //      mut inventory: Query<&mut Inventory, With<Player>>,
