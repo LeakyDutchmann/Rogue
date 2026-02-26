@@ -145,9 +145,8 @@ fn spawn_optimized_pathfinding_task(
 
 pub fn generate_trial(
     mut commands: Commands,
-    enemies: Query<(Entity, &Transform), With<Enemy>>,
     grid: Res<EmptyCellsWorldPos>,
-    player: Single<&Transform, With<Player>>,
+    mut reader: MessageReader<FindPath>,
 ) {
     let mut empty_cells_grid_pos: HashSet<Position> = HashSet::new();
     for cell in grid.cells.iter() {
@@ -157,10 +156,10 @@ pub fn generate_trial(
         };
         empty_cells_grid_pos.insert(grid_pos);
     }
-    
-    for (enemy_e, enemy_transform) in enemies.iter() {
-        let player_pos = player.translation.truncate();
-        let enemy_pos = enemy_transform.translation.truncate();
+    for msg in reader.read() {
+        let player_pos = msg.target_pos;
+        let enemy_pos = msg.seeker_pos;
+        let enemy_e = msg.seeker;
         let start = Position {
             x: (enemy_pos.x / CELL_SIZE).round() as i32,
             y: (enemy_pos.y / CELL_SIZE).round() as i32,
@@ -214,7 +213,7 @@ pub fn apply_pathfinding_to_ai(
                         println!("Step: {:?}", step);
                         commands.spawn((
                                 Mesh2d(meshes.add(Rectangle::default())),
-                                MeshMaterial2d(materials.add(Color::from(PURPLE))),
+                                MeshMaterial2d(materials.add(Color::srgba(0.5, 0.5, 0.5, 0.5))),
                                 Transform::from_xyz(step.x, step.y, 2.0).with_scale(Vec3::splat(16.0)),
                             ));
                     }

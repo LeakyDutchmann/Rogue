@@ -5,7 +5,7 @@ use bevy::prelude::*;
 pub use colisions::*;
 use crate::components::{MovementIntent, MovementResolved, Speed};
 use crate::world::{WorldGrid, CELL_SIZE, get_cells_3x3, get_entities_in_cells};
-
+use crate::player::move_player;
 
 
 
@@ -13,7 +13,7 @@ pub struct ColisionPlugin;
 
 impl Plugin for ColisionPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(FixedUpdate, resolve_movement);
+        app.add_systems(FixedUpdate, resolve_movement.after(move_player));
     }
 }
 

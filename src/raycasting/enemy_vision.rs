@@ -54,8 +54,10 @@ pub fn enemy_vision_system(
                         vision.state = EnemyVisionState::Direct;
                         vision.last_seen_pos = Some(player_pos);
                         gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
+                    } else {
+                        vision.state = EnemyVisionState::PathFinding;
                     }
-                } else {
+                } else if closest_hit.is_none() {
                     vision.state = EnemyVisionState::Direct;
                     vision.last_seen_pos = Some(player_pos);
                     gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);

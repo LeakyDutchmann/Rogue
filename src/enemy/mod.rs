@@ -4,7 +4,7 @@ mod pathfinding;
 
 use super::*;
 use enemy_setup::*;
-use ai::*;
+pub use ai::*;
 use pathfinding::*;
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
@@ -19,9 +19,10 @@ pub struct EnemyPlugin;
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup_enemy.after(find_empty_cells));
-        app.add_systems(Startup, generate_trial.after(setup_enemy));
-        app.add_systems(Update, (update_hp_on_marker, apply_pathfinding_to_ai));
-        app.add_systems(FixedUpdate, ai_movement);
+        app.add_systems(Update, generate_trial.after(setup_enemy));
+        app.add_systems(Update, (update_enemy_state, apply_pathfinding_to_ai));
+        app.add_systems(FixedUpdate, ai_movement.after(follow_path));
+        app.add_systems(FixedUpdate, follow_path);
     }
 }
 

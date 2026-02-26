@@ -10,7 +10,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<ScrollMessage>()
             .add_message::<MapChanged>()
             .add_message::<ApplyDamage>()
-            .add_message::<CalculateDamage>();
+            .add_message::<CalculateDamage>()
+            .add_message::<FindPath>();
     }
 }
 
@@ -46,6 +47,14 @@ pub enum MouseClickEvent {
 #[derive(Message)]
 pub struct ScrollMessage {
     pub event: ScrollDir,
+}
+
+
+#[derive(Message)]
+pub struct FindPath {
+    pub seeker: Entity,
+    pub seeker_pos: Vec2,
+    pub target_pos: Vec2,
 }
 
 

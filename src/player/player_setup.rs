@@ -56,7 +56,7 @@ pub fn player_setup(
         },
         FieldOfView {
             triangles: None,
-        }
+        },
     )).with_children(|parent| {
         parent.spawn((
             HeldItem {

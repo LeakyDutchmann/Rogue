@@ -71,6 +71,7 @@ pub fn setup_enemy(
                 last_seen_pos: None,
                 fov_radius: 200.0,
             },
+            
         )).with_children(|parent| {
             parent.spawn((
                 Text2d::new(100.to_string()),
@@ -85,14 +86,19 @@ pub fn setup_enemy(
     }
 }
 
-pub fn update_hp_on_marker(
+pub fn update_enemy_state(
     mut text_query: Query<(&mut Text2d, &ChildOf), With<Marker>>,
-    health_query: Query<&Health>,
+    health_query: Query<&EnemyVision>,
 ) {
     for (mut text, parent) in text_query.iter_mut() {
-        if let Ok(health) = health_query.get(parent.0) {
-            text.0 = health.0.to_string();
+        if let Ok(vision) = health_query.get(parent.0) {
+            text.0 = match vision.state {
+                EnemyVisionState::Idle => "Idle".to_string(),
+                EnemyVisionState::Direct => "Direct".to_string(),
+                EnemyVisionState::PathFinding => "PathFinding".to_string(),
+            }
         }
     }
 }
+
 
