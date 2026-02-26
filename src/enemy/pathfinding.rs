@@ -95,11 +95,18 @@ pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) ->
                 path = nodelist; 
                 break;
             }
-            let mut neighbors: Vec<Position> = vec![];
-                neighbors.push(Position { x: current_position.x + 1, y: current_position.y, });
-                neighbors.push(Position { x: current_position.x - 1, y: current_position.y, });
-                neighbors.push(Position { x: current_position.x, y: current_position.y + 1, });
-                neighbors.push(Position { x: current_position.x, y: current_position.y - 1, });
+            let mut neighbors: Vec<Position> = vec![
+                Position { x: current_position.x + 1, y: current_position.y },
+                Position { x: current_position.x - 1, y: current_position.y },
+                Position { x: current_position.x, y: current_position.y + 1 },
+                Position { x: current_position.x, y: current_position.y - 1 },
+                // діагоналі
+                Position { x: current_position.x + 1, y: current_position.y + 1 },
+                Position { x: current_position.x + 1, y: current_position.y - 1 },
+                Position { x: current_position.x - 1, y: current_position.y + 1 },
+                Position { x: current_position.x - 1, y: current_position.y - 1 },
+            ];
+                
             
                 for neighbor in neighbors {
                     if !bounds.contains(&neighbor) {
