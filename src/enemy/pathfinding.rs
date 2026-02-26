@@ -1,8 +1,10 @@
 use super::*;
 
 use bevy::color::palettes::basic::PURPLE;
+use std::collections::BinaryHeap;
+use std::cmp::Ordering;
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq, Copy)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
@@ -14,13 +16,33 @@ impl Position {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq)]
 struct Node {
     position: Position,
     g: i32,
     h: i32,
     f: i32,
     parent: Option<Position>,
+}
+
+impl Ord for Node {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // порівнюємо f, мінімальний f = найвищий пріоритет
+        other.f.cmp(&self.f)
+            .then_with(|| self.h.cmp(&other.h)) // tie-breaker
+    }
+}
+
+impl PartialOrd for Node {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        self.position == other.position
+    }
 }
 
 
@@ -31,6 +53,8 @@ pub enum PathfindingError {
     GoalNotInBounds,
 }
 
+
+
 pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) -> Result<Vec<Position>, PathfindingError> {
     if !bounds.contains(&start) {
         return Err(PathfindingError::StartNotInBounds)
@@ -39,88 +63,70 @@ pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) ->
         return Err(PathfindingError::GoalNotInBounds)
     }
     let mut path: Vec<Position> = Vec::new();
-    let mut to_search: HashMap<Position, Node> = HashMap::new();
+    let mut to_search: BinaryHeap<Node> = BinaryHeap::new();
     let mut processed: HashMap<Position, Node> = HashMap::new();
-    to_search.insert(start.clone(), Node {
+    let h = start.heuristic(&goal);
+    let f = 0 + h;
+    to_search.push(Node {
         position: start.clone(),
         g: 0,
-        h: 0,
-        f: 0,
+        h: h,
+        f: f,
         parent: None,
     });
     while !to_search.is_empty() {
-        let mut current_node = None;
-        let mut lowest_f = -1;
-        for (position, node) in to_search.iter() {
-            if lowest_f == -1 || node.f < lowest_f {
-                current_node = Some(node);
-                lowest_f = node.f;
-            }
-        }
-        if let None = current_node {
-            break;
-        }
-        let current_node = current_node.unwrap().clone();
-        let mut current_position = current_node.position.clone();
-        to_search.remove(&current_position);
-        // Add n to the CLOSED list
-        let g = current_node.g + 1;
-        let h = current_position.heuristic(&goal);
-        let f = g + h;
-        processed.insert(current_position.clone(), Node {
-            position: current_position.clone(),
-            g: g,
-            h: h,
-            f: f,
-            parent: current_node.parent,
-        });
-        if current_position == goal {
-            let mut nodelist: Vec<Position> = vec![];
-            loop {
-                nodelist.push(current_position.clone());
-                if let Some(node) = processed.get(&current_position) {
-                    match &node.parent {
-                        Some(parent_pos) => current_position = parent_pos.clone(),
-                        None => break, // досягли старту
+        if let Some(current_node) = to_search.pop() {
+            // current_node — це вузол з мінімальним f
+            // let mut current_position = current_node.position.clone();
+            // Add n to the CLOSED list
+            let mut current_position = current_node.position;
+            processed.insert(current_position.clone(), current_node.clone());
+            if current_position == goal {
+                let mut nodelist: Vec<Position> = vec![];
+                loop {
+                    nodelist.push(current_position.clone());
+                    if let Some(node) = processed.get(&current_position) {
+                        match &node.parent {
+                            Some(parent_pos) => current_position = parent_pos.clone(),
+                            None => break, // досягли старту
+                        }
                     }
                 }
+                path = nodelist; 
+                break;
             }
-            path = nodelist; 
-            break;
-        }
-        let mut neighbors: Vec<Position> = vec![];
-            neighbors.push(Position { x: current_position.x + 1, y: current_position.y, });
-            neighbors.push(Position { x: current_position.x - 1, y: current_position.y, });
-            neighbors.push(Position { x: current_position.x, y: current_position.y + 1, });
-            neighbors.push(Position { x: current_position.x, y: current_position.y - 1, });
-        
-            for neighbor in neighbors {
-                if !bounds.contains(&neighbor) {
-                    continue;
-                }
-                let h = neighbor.heuristic(&goal);
-                let g = current_node.g + 1;
-                let f = g + h;
-                if to_search.contains_key(&neighbor) {
-                    if g > to_search.get(&neighbor).unwrap().g {
+            let mut neighbors: Vec<Position> = vec![];
+                neighbors.push(Position { x: current_position.x + 1, y: current_position.y, });
+                neighbors.push(Position { x: current_position.x - 1, y: current_position.y, });
+                neighbors.push(Position { x: current_position.x, y: current_position.y + 1, });
+                neighbors.push(Position { x: current_position.x, y: current_position.y - 1, });
+            
+                for neighbor in neighbors {
+                    if !bounds.contains(&neighbor) {
                         continue;
                     }
-                }
-                if processed.contains_key(&neighbor) {
-                    if g > processed.get(&neighbor).unwrap().g {
-                        continue;
+                    let h = neighbor.heuristic(&goal);
+                    let g = current_node.g + 1;
+                    let f = g + h;
+                    
+                    if processed.contains_key(&neighbor) {
+                        if g > processed.get(&neighbor).unwrap().g {
+                            continue;
+                        }
                     }
+                    // processed.remove(&neighbor);
+                    to_search.push(Node {
+                        position: neighbor.clone(),
+                        g: g,
+                        h: h,
+                        f: f,
+                        parent: Some(current_position.clone()) });
+            
                 }
-                to_search.remove(&neighbor);
-                processed.remove(&neighbor);
-                to_search.insert(neighbor.clone(), Node {
-                    position: neighbor.clone(),
-                    g: g,
-                    h: h,
-                    f: f,
-                    parent: Some(current_position.clone()) });
+        } else {
+            break;
+        }
         
-            }
     }
     Ok(path)
 }
@@ -272,5 +278,6 @@ fn optimize_path(path: &mut VecDeque<Vec2>, empty_cells: &HashSet<(i32, i32)>  )
     
         // always add last point
         simplified.push_back(*path.back().unwrap());
+        simplified.pop_front();
         Ok(simplified)
 }

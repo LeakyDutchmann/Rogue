@@ -1,13 +1,14 @@
 use super::*;
 
 pub fn enemy_vision_system(
-    mut enemies: Query<(&mut EnemyVision, &Transform), With<Enemy>>,
+    mut commands: Commands,
+    mut enemies: Query<(Entity,&mut EnemyVision, &Transform), With<Enemy>>,
     player: Query<&Transform, With<Player>>,
     wall_qr: Query<(&Transform, &Colider), With<Wall>>,
     world: Res<WorldGrid>,
     mut gizmos: Gizmos,
 ) {
-    for (mut vision, enemy_tf) in enemies.iter_mut() {
+    for (enemy_e, mut vision, enemy_tf) in enemies.iter_mut() {
         for player_tf in player.iter() {
             let enemy_pos = enemy_tf.translation.truncate();
             let player_pos = player_tf.translation.truncate();
@@ -54,6 +55,7 @@ pub fn enemy_vision_system(
                         vision.state = EnemyVisionState::Direct;
                         vision.last_seen_pos = Some(player_pos);
                         gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
+                        commands.entity(enemy_e).remove::<AiPath>();
                     } else {
                         vision.state = EnemyVisionState::PathFinding;
                     }
@@ -61,6 +63,7 @@ pub fn enemy_vision_system(
                     vision.state = EnemyVisionState::Direct;
                     vision.last_seen_pos = Some(player_pos);
                     gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
+                    commands.entity(enemy_e).remove::<AiPath>();
                 }
             }
         }
