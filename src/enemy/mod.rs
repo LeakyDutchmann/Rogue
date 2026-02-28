@@ -9,6 +9,7 @@ use pathfinding::*;
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
     ActorState, ActorStateType, MovementIntent};
+use crate::raycasting::{EnemyAwareness, AwarenessType};
 use std::collections::{HashMap, HashSet, VecDeque};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;

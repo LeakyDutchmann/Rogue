@@ -29,15 +29,17 @@ pub struct FieldOfView {
 pub struct CustomShape;
 
 
-pub enum EnemyVisionState {
-    Idle,
+pub enum AwarenessType {
+    Unaware,
     Direct,
-    PathFinding,
+    Indirect,
 }
 
 #[derive(Component)]
-pub struct EnemyVision {
-    pub state: EnemyVisionState,
-    pub last_seen_pos: Option<Vec2>,
-    pub fov_radius: f32,
+pub struct EnemyAwareness {
+    pub state: AwarenessType,
+    pub player_seen: bool,
+    pub radius: f32,
+    pub awareness_timer: Timer,
 }
+

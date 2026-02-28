@@ -14,7 +14,7 @@ pub fn insert_entities(
 }
 
 fn radius_to_cells(radius: f32) -> i32 {
-    (radius / CELL_SIZE).ceil() as i32
+    (radius / CELL_SIZE).floor() as i32
 }
 
 pub fn get_cells_in_radius(central: (i32, i32), radius: f32) -> Vec<(i32, i32)> {

@@ -66,10 +66,11 @@ pub fn setup_enemy(
                 _sensor: true,
             },
             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-            EnemyVision {
-                state: EnemyVisionState::Idle,
-                last_seen_pos: None,
-                fov_radius: 200.0,
+            EnemyAwareness {
+                state: AwarenessType::Unaware,
+                player_seen: false,
+                radius: 200.0,
+                awareness_timer: Timer::from_seconds(5.0, TimerMode::Once),
             },
             
         )).with_children(|parent| {
@@ -88,14 +89,14 @@ pub fn setup_enemy(
 
 pub fn update_enemy_state(
     mut text_query: Query<(&mut Text2d, &ChildOf), With<Marker>>,
-    health_query: Query<&EnemyVision>,
+    health_query: Query<&EnemyAwareness>,
 ) {
     for (mut text, parent) in text_query.iter_mut() {
         if let Ok(vision) = health_query.get(parent.0) {
             text.0 = match vision.state {
-                EnemyVisionState::Idle => "Idle".to_string(),
-                EnemyVisionState::Direct => "Direct".to_string(),
-                EnemyVisionState::PathFinding => "PathFinding".to_string(),
+                AwarenessType::Unaware => "Unaware".to_string(),
+                AwarenessType::Direct => "Direct".to_string(),
+                AwarenessType::Indirect => "Indirect".to_string(),
             }
         }
     }

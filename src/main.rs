@@ -71,7 +71,7 @@ fn setup(
             pattern: AnimationStyle::PickAxe,
         },
         ToolStats {
-            structure_damage: 25,
+            structure_damage: 50,
         },
         Durability {
             durability: 100.0,

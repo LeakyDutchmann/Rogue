@@ -1,25 +1,27 @@
 use super::*;
 
 pub fn enemy_vision_system(
+    time: Res<Time>,
     mut commands: Commands,
-    mut enemies: Query<(Entity,&mut EnemyVision, &Transform), With<Enemy>>,
+    mut enemies: Query<(Entity, &Transform, &mut EnemyAwareness), With<Enemy>>,
     player: Query<&Transform, With<Player>>,
     wall_qr: Query<(&Transform, &Colider), With<Wall>>,
     world: Res<WorldGrid>,
     mut gizmos: Gizmos,
 ) {
-    for (enemy_e, mut vision, enemy_tf) in enemies.iter_mut() {
+    for (enemy_e, enemy_tf, mut awareness) in enemies.iter_mut() {
         for player_tf in player.iter() {
             let enemy_pos = enemy_tf.translation.truncate();
             let player_pos = player_tf.translation.truncate();
             let d = (enemy_pos - player_pos).length_squared();
-            if d > vision.fov_radius * vision.fov_radius {
+            if d > awareness.radius * awareness.radius {
+                awareness.state = AwarenessType::Unaware;
                 continue
             }
             let cell_x = (enemy_pos.x / CELL_SIZE ).floor() as i32;
             let cell_y = (enemy_pos.y / CELL_SIZE ).floor() as i32;
             let central_cell = (cell_x, cell_y);
-            let mut cells = get_cells_in_radius(central_cell, vision.fov_radius);
+            let mut cells = get_cells_in_radius(central_cell, awareness.radius);
             let entities = get_entities_in_cells(cells, &world);
             let mut coliders_to_check: Vec<(&Transform, &Colider)> = Vec::new();
             for entity in entities {
@@ -52,18 +54,27 @@ pub fn enemy_vision_system(
                 }
                 if let Some(hit) = closest_hit {
                     if closest_distance >= d - 0.01 {
-                        vision.state = EnemyVisionState::Direct;
-                        vision.last_seen_pos = Some(player_pos);
+                        awareness.state = AwarenessType::Direct;
+                        awareness.player_seen = true;
                         gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
                         commands.entity(enemy_e).remove::<AiPath>();
+                        awareness.awareness_timer.reset();
                     } else {
-                        vision.state = EnemyVisionState::PathFinding;
+                        if awareness.player_seen {
+                            awareness.state = AwarenessType::Indirect;
+                            awareness.awareness_timer.tick(time.delta());
+                            if awareness.awareness_timer.just_finished() {
+                                awareness.state = AwarenessType::Unaware;
+                                awareness.player_seen = false;
+                            }
+                        }
                     }
                 } else if closest_hit.is_none() {
-                    vision.state = EnemyVisionState::Direct;
-                    vision.last_seen_pos = Some(player_pos);
+                    awareness.state = AwarenessType::Direct;
+                    awareness.player_seen = true;
                     gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
                     commands.entity(enemy_e).remove::<AiPath>();
+                    awareness.awareness_timer.reset();
                 }
             }
         }
