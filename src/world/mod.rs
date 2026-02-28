@@ -3,9 +3,10 @@ mod world_systems;
 
 pub use world_systems::*;
 use bevy::prelude::*;
+use crate::messages::MapChanged;
 use std::collections::HashMap;
 use crate::map_setup::{TILE_SIZE, MAP_WIDTH, MAP_HEIGHT, Wall};
-use crate::map_setup::map_setup;
+use crate::map_setup::{map_setup, tile_pos_to_world_pos};
 
 
 
@@ -24,6 +25,7 @@ impl Plugin for WorldPlugin {
         });
         app.add_systems(Startup, insert_entities.after(map_setup));
         app.add_systems(Startup, find_empty_cells.after(insert_entities));
+        app.add_systems(Update, update_empty_cells);
         // app.add_systems(Startup, modify_empty.after(find_empty_cells));
         // app.add_systems(Update, check_grid.after(apply_movement));
         

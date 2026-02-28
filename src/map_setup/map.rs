@@ -224,3 +224,13 @@ pub fn world_pos_to_tile_pos(world: Vec2) -> IVec2 {
     let y = ((world.y + (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
     IVec2::new(x, y)
 }
+
+pub fn tile_pos_to_world_pos(tile: IVec2) -> Vec2 {
+    let x = tile.x as f32 * TILE_SIZE
+        - (MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
+
+    let y = tile.y as f32 * TILE_SIZE
+        - (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
+
+    Vec2::new(x, y)
+}

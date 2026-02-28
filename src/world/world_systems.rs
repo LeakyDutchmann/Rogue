@@ -69,6 +69,19 @@ pub fn find_empty_cells(
     
 }
 
+pub fn update_empty_cells(
+    mut world: ResMut<WorldGrid>,
+    mut reader: MessageReader<MapChanged>,
+    mut empty_cells: ResMut<EmptyCellsWorldPos>,
+    wall: Query<&Wall>,
+) {
+    for msg in reader.read() {
+        let cell_pos = tile_pos_to_world_pos(msg.position);
+        empty_cells.cells.push(cell_pos);
+        println!("removed cell at ({}, {})", cell_pos.x, cell_pos.y);
+    } 
+}
+
 pub fn modify_empty(
     mut commands: Commands,
     cells: Res<EmptyCellsWorldPos>,
