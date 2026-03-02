@@ -19,7 +19,7 @@ use crate::items::{Item, Inventory,CombatStats, AnimationPattern};
 use crate::messages::{MouseClickEvent, ItemDropped};
 use crate::combat::AttackAnimation;
 use super::FieldOfView;
-use crate::enemy::ai_movement;
+use crate::enemy::{ai_steering, ai_movement};
 
 
 pub struct PlayerSetupPlugin;
@@ -27,7 +27,7 @@ pub struct PlayerSetupPlugin;
 impl Plugin for PlayerSetupPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, (player_setup, setup_inventory));
-        app.add_systems(FixedUpdate, move_player.after(ai_movement));
+        app.add_systems(FixedUpdate, move_player.after(ai_steering));
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
             pick_active_slot, show_active_slot, drop_item, draw_helditem, update_held_item_dir));
         app.add_systems(Update, initialize_attack);

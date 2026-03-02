@@ -82,6 +82,36 @@ pub fn update_empty_cells(
     } 
 }
 
+pub fn setup_bounds(
+    mut shared: ResMut<SharedBounds>,
+    grid: Res<EmptyCellsWorldPos>,
+) {
+    let mut bounds = shared.0.write().unwrap();
+    for cell in grid.cells.iter() {
+        bounds.insert(Position {
+            x: (cell.x / CELL_SIZE) as i32,
+            y: (cell.y / CELL_SIZE) as i32,
+        });
+    }
+}
+
+pub fn update_bounds(
+    mut shared: ResMut<SharedBounds>,
+    grid: Res<EmptyCellsWorldPos>,
+) {
+    // Bevy's change detection - only runs when EmptyCellsWorldPos mutated
+    if !grid.is_changed() { return; }
+    
+    let mut bounds = shared.0.write().unwrap();
+    bounds.clear();
+    for cell in grid.cells.iter() {
+        bounds.insert(Position {
+            x: (cell.x / CELL_SIZE) as i32,
+            y: (cell.y / CELL_SIZE) as i32,
+        });
+    }
+}
+
 pub fn modify_empty(
     mut commands: Commands,
     cells: Res<EmptyCellsWorldPos>,

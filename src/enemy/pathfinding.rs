@@ -11,7 +11,7 @@ pub struct Position {
 }
 
 impl Position {
-    fn heuristic(&self, b: &Position) -> i32 {
+    pub fn heuristic(&self, b: &Position) -> i32 {
         (self.x - b.x).abs() + (self.y - b.y).abs()
     }
 }
@@ -54,12 +54,14 @@ pub enum PathfindingError {
 }
 
 
-
-pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) -> Result<Vec<Position>, PathfindingError> {
+pub fn find_path(start: Position, goal: Position, bounds: &HashSet<Position>, radius: i32) -> Result<Vec<Position>, PathfindingError> {
     if !bounds.contains(&start) {
         return Err(PathfindingError::StartNotInBounds)
     }
     if !bounds.contains(&goal) {
+        return Err(PathfindingError::GoalNotInBounds)
+    }
+    if start.heuristic(&goal) > radius * 2  {
         return Err(PathfindingError::GoalNotInBounds)
     }
     let mut path: Vec<Position> = Vec::new();
@@ -107,6 +109,9 @@ pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) ->
                     if !bounds.contains(&neighbor) {
                         continue;
                     }
+                    if neighbor.heuristic(&start) > radius {
+                        continue;
+                    }
                     let h = neighbor.heuristic(&goal);
                     let g = current_node.g + 1;
                     let f = g + h;
@@ -136,34 +141,25 @@ pub fn find_path(start: Position, goal: Position, bounds: HashSet<Position> ) ->
 fn spawn_optimized_pathfinding_task(
     commands: &mut Commands,
     target: Entity,
-    bounds: HashSet<Position>,
+    bounds: Arc<RwLock<HashSet<Position>>>,  // clone the Arc, not the HashSet
     start: Position,
     goal: Position,
+    radius: i32,
 ) {
-
-     let thread_pool = AsyncComputeTaskPool::get();
- 
-     let task = thread_pool.spawn(async move {
-         let path = find_path(start, goal, bounds );
-         path
-     });
-     println!("Task spawned");
-     commands.entity(target).insert(PathfindingTask(task));
+    let thread_pool = AsyncComputeTaskPool::get();
+    let task = thread_pool.spawn(async move {
+        let bounds_read = bounds.read().unwrap();
+        find_path(start, goal, &*bounds_read, radius)
+    });
+    commands.entity(target).insert(PathfindingTask(task));
+    println!("task spawned");
 }
 
 pub fn generate_trial(
     mut commands: Commands,
-    grid: Res<EmptyCellsWorldPos>,
+    shared: Res<SharedBounds>,
     mut reader: MessageReader<FindPath>,
 ) {
-    let mut empty_cells_grid_pos: HashSet<Position> = HashSet::new();
-    for cell in grid.cells.iter() {
-        let grid_pos = Position {
-            x: (cell.x / CELL_SIZE) as i32,
-            y: (cell.y / CELL_SIZE) as i32,
-        };
-        empty_cells_grid_pos.insert(grid_pos);
-    }
     for msg in reader.read() {
         let player_pos = msg.target_pos;
         let enemy_pos = msg.seeker_pos;
@@ -175,37 +171,24 @@ pub fn generate_trial(
         let goal = Position {
             x: (player_pos.x / CELL_SIZE).round() as i32,
             y: (player_pos.y / CELL_SIZE).round() as i32,
-        };
-        
-        let mut bounds = HashSet::new();
-        let central_cell = (start.x, start.y);
-        let cells_in_bounds = get_cells_in_radius(central_cell, 400.0);
-        for cell in cells_in_bounds {
-            let pos = Position {
-                x: cell.0,
-                y: cell.1,
-            };
-            if empty_cells_grid_pos.get(&pos).is_some() {
-                bounds.insert(pos);
-            }
-        }
-        
-        spawn_optimized_pathfinding_task(&mut commands, enemy_e, bounds, start, goal);
+        };         
+        spawn_optimized_pathfinding_task(
+                    &mut commands,
+                    msg.seeker,
+                    Arc::clone(&shared.0),  // cheap! no HashSet copy
+                    start,
+                    goal,
+                    200,
+                );
     }
 }
 
 pub fn apply_pathfinding_to_ai(
     mut commands: Commands,
     mut tasks: Query<(Entity, &mut PathfindingTask)>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-    grid: Res<EmptyCellsWorldPos>,
+    grid: Res<SharedBounds>,
 ) {
-    let mut empty_cells_grid_pos: HashSet<(i32, i32)> = HashSet::new();
-    for cell in grid.cells.iter() {
-        let grid_pos = ((cell.x / CELL_SIZE) as i32, (cell.y / CELL_SIZE) as i32);
-        empty_cells_grid_pos.insert(grid_pos);
-    }
+    let mut empty_cells_grid_pos = grid.0.read().unwrap();
     for (task_entity, mut task) in &mut tasks {
         if let Some(result) = future::block_on(future::poll_once(&mut task.0)) {
             commands.entity(task_entity).remove::<PathfindingTask>();
@@ -217,41 +200,35 @@ pub fn apply_pathfinding_to_ai(
                     steps.push_front(Vec2::new(x, y));
                 }
                 if let Ok(optimized) = optimize_path(&mut steps, &empty_cells_grid_pos) {
-                    for step in &optimized {
-                        println!("Step: {:?}", step);
-                        commands.spawn((
-                                Mesh2d(meshes.add(Rectangle::default())),
-                                MeshMaterial2d(materials.add(Color::srgba(0.5, 0.5, 0.5, 0.5))),
-                                Transform::from_xyz(step.x, step.y, 2.0).with_scale(Vec3::splat(16.0)),
-                            ));
-                    }
                     commands.entity(task_entity).insert( AiPath {
                         steps: optimized,
                     });
                     println!("Path applied");
                 } 
+            } else if let Err(e) = result {
+                println!("Pathfinding error: {:?}", e);
             }
         }
     }
 }
 
 
-fn grid_cells_in_rect(start: Vec2, end: Vec2) -> Vec<(i32, i32)> {
+fn grid_cells_in_rect(start: Vec2, end: Vec2) -> Vec<Position> {
     let min_x = (start.x.min(end.x) / CELL_SIZE).floor() as i32;
     let max_x = (start.x.max(end.x) / CELL_SIZE).floor() as i32;
     let min_y = (start.y.min(end.y) / CELL_SIZE).floor() as i32;
     let max_y = (start.y.max(end.y) / CELL_SIZE).floor() as i32;
 
-    let mut cells = Vec::new();
+    let mut cells: Vec<Position> = Vec::new();
     for y in min_y..=max_y {
         for x in min_x..=max_x {
-            cells.push((x, y));
+            cells.push(Position { x, y });
         }
     }
     cells
 }
 
-fn is_rect_walkable(start: Vec2, end: Vec2, walkable_cells: &HashSet<(i32, i32)>) -> bool {
+fn is_rect_walkable(start: Vec2, end: Vec2, walkable_cells: &HashSet<Position>) -> bool {
     grid_cells_in_rect(start, end)
         .into_iter()
         .all(|cell| walkable_cells.contains(&cell))
@@ -260,7 +237,7 @@ fn is_rect_walkable(start: Vec2, end: Vec2, walkable_cells: &HashSet<(i32, i32)>
 #[derive(Debug)]
 pub struct PathOptimizationError;
 
-fn optimize_path(path: &mut VecDeque<Vec2>, empty_cells: &HashSet<(i32, i32)>  ) -> Result<VecDeque<Vec2>, PathOptimizationError> {
+fn optimize_path(path: &mut VecDeque<Vec2>, empty_cells: &HashSet<Position>  ) -> Result<VecDeque<Vec2>, PathOptimizationError> {
     if path.is_empty() {
         return Err(PathOptimizationError);
 

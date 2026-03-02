@@ -36,8 +36,7 @@ impl Colider {
     pub fn check_colisions(&self, pos1: Vec2, other: &Colider, pos2: Vec2) -> bool {
         match (&self.shape, &other.shape) {
             (ColiderShape::Circle {radius: r1},ColiderShape::Circle {radius: r2}) => {
-                let combined_radius = r1 + r2;
-                pos1.distance_squared(pos2) < combined_radius * combined_radius
+                false
             },
             (ColiderShape::Circle { radius }, ColiderShape::Rectangle { width, height }) |
             (ColiderShape::Rectangle { width, height }, ColiderShape::Circle { radius }) => {

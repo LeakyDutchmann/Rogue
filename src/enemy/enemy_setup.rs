@@ -34,7 +34,7 @@ pub fn setup_enemy(
     );
     let texture_atlas_layout = texture_atlas_layouts.add(texture_atlas);
     
-    for _ in 0..5 {
+    for _ in 0..200 {
         let pos = generate_position_near(&empty_cells.cells, Vec2::from((0.0, 0.0)));
     
         
@@ -74,15 +74,15 @@ pub fn setup_enemy(
             },
             
         )).with_children(|parent| {
-            parent.spawn((
-                Text2d::new(100.to_string()),
-                TextFont {
-                    font_size: 6.0,
-                    ..Default::default()
-                },
-                Transform::from_xyz(0.0, 14.0, 1.0),
-                Marker
-            ));
+            // parent.spawn((
+            //     Text2d::new(100.to_string()),
+            //     TextFont {
+            //         font_size: 6.0,
+            //         ..Default::default()
+            //     },
+            //     Transform::from_xyz(0.0, 14.0, 1.0),
+            //     Marker
+            // ));
         });
     }
 }

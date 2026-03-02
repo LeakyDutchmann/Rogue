@@ -1,3 +1,5 @@
+use bevy::math::curve::cores::InterpolationDatum;
+
 use super::*;
 
 pub fn follow_path(
@@ -65,5 +67,61 @@ pub fn ai_movement(
                 facing_direction.facing = Facing::from_direction(to_player);
             }
         }         
+    }
+}
+
+pub fn ai_steering(
+    mut enemy_qr: Query<(Entity, &Transform, &mut MovementIntent), With<Enemy>>,
+    colider_qr: Query<(&Transform, &Colider)>,
+    world: Res<WorldGrid>,
+) {
+    for (intender_e, intender_tf, mut intent) in enemy_qr.iter_mut() {
+        let intender_pos = intender_tf.translation.truncate();
+        let intender_dir = intent.direction.normalize();
+
+        let cell_x = (intender_pos.x / CELL_SIZE).floor() as i32;
+        let cell_y = (intender_pos.y / CELL_SIZE).floor() as i32;
+        let cells = get_cells_3x3((cell_x, cell_y));
+        let entities = get_entities_in_cells(cells, &world);
+
+        let mut avoidance = Vec2::ZERO;
+
+        for entity in entities {
+            if entity == intender_e {
+                continue;
+            }
+            if let Ok((tf, _colider)) = colider_qr.get(entity) {
+                let to_colider_raw = tf.translation.truncate() - intender_pos;
+                let distance = to_colider_raw.length();
+
+                // Уникаємо дуже близьких нулів
+                if distance < 0.001 {
+                    continue;
+                }
+
+                let to_colider = to_colider_raw / distance; // нормалізуємо
+                let dot = intender_dir.dot(to_colider);
+
+                // тільки передні перешкоди
+                if dot <= 0.0 {
+                    continue;
+                }
+
+                // Вага: сильніше відштовхує ближні і прямо попереду
+                let distance_weight = 1.0 / distance;        // або 1.0 / (distance^2)
+                let angle_weight = dot.clamp(0.0, 1.0);      // 0 збоку, 1 прямо
+                let weight = distance_weight * angle_weight;
+
+                // Вектор відштовхування від перешкоди
+                avoidance += -to_colider * weight;
+            }
+        }
+
+        // Оновлюємо напрямок з врахуванням відштовхування
+        if avoidance != Vec2::ZERO {
+            intent.direction = (intender_dir + avoidance).normalize();
+        } else {
+            intent.direction = intender_dir;
+        }
     }
 }

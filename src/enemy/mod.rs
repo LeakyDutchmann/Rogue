@@ -5,7 +5,7 @@ mod pathfinding;
 use super::*;
 use enemy_setup::*;
 pub use ai::*;
-use pathfinding::*;
+pub use pathfinding::*;
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
     ActorState, ActorStateType, MovementIntent};
@@ -13,6 +13,7 @@ use crate::raycasting::{EnemyAwareness, AwarenessType};
 use std::collections::{HashMap, HashSet, VecDeque};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
+use std::sync::{Arc, RwLock};
 
 
 pub struct EnemyPlugin;
@@ -24,6 +25,7 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, (update_enemy_state, apply_pathfinding_to_ai));
         app.add_systems(FixedUpdate, ai_movement.after(follow_path));
         app.add_systems(FixedUpdate, follow_path);
+        app.add_systems(FixedUpdate, ai_steering.after(ai_movement));
     }
 }
 

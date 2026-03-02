@@ -56,7 +56,7 @@ pub fn enemy_vision_system(
                     if closest_distance >= d - 0.01 {
                         awareness.state = AwarenessType::Direct;
                         awareness.player_seen = true;
-                        gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
+                        // gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
                         commands.entity(enemy_e).remove::<AiPath>();
                         awareness.awareness_timer.reset();
                     } else {
@@ -72,7 +72,7 @@ pub fn enemy_vision_system(
                 } else if closest_hit.is_none() {
                     awareness.state = AwarenessType::Direct;
                     awareness.player_seen = true;
-                    gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
+                    // gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
                     commands.entity(enemy_e).remove::<AiPath>();
                     awareness.awareness_timer.reset();
                 }
