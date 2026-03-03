@@ -79,7 +79,7 @@ pub fn map_setup(
                                 index: sprite_index,
                             },
                         ),
-                Transform::from_xyz(pos_x, pos_y, 0.0),
+                Transform::from_xyz(pos_x, pos_y, (MAX_Y - pos_y)),
                 MapTile { position, tile_type },
                 Wall,
                 Colider {

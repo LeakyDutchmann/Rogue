@@ -9,6 +9,7 @@ use std::collections::HashMap;
 use crate::player::{Player};
 use crate::items::{AnimationStyle};
 use crate::combat::{AttackAnimation};
+use crate::map_setup::MAX_Y;
 
 use bevy::prelude::*;
 
@@ -31,6 +32,7 @@ impl Plugin for AnimationSetupPlugin {
         app.add_systems(Update, update_animation);
         app.add_systems(Update, reset_animation_index.before(animate_sprite));
         app.add_systems(Update, attack_animation);
+        app.add_systems(Update, auto_zorder);
     }
 }
 

@@ -124,3 +124,12 @@ pub fn attack_animation(
         }    
     }
 } 
+
+//i should repalace ActorState with other compomnent here
+pub fn auto_zorder(
+    mut movers: Query<&mut Transform, With<ActorState>>,
+) {
+    for mut tf in movers.iter_mut() {
+         tf.translation.z = MAX_Y - tf.translation.y + 1.0
+    }
+}

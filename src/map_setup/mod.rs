@@ -39,3 +39,4 @@ pub struct GameMap {
 pub const MAP_HEIGHT: usize = 50;
 pub const MAP_WIDTH: usize = 80;
 pub const TILE_SIZE: f32 = 32.0;
+pub const MAX_Y: f32 = ((MAP_HEIGHT / 2) * TILE_SIZE as usize) as f32;
