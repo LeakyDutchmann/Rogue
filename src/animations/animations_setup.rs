@@ -130,6 +130,6 @@ pub fn auto_zorder(
     mut movers: Query<&mut Transform, With<ActorState>>,
 ) {
     for mut tf in movers.iter_mut() {
-         tf.translation.z = MAX_Y - tf.translation.y + 1.0
+         tf.translation.z = (MAX_Y - tf.translation.y + 1.0) * 0.001
     }
 }
