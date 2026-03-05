@@ -8,7 +8,7 @@ use crate::components::{Facing, ActorState, ActorStateType, FacingDirection};
 use std::collections::HashMap;
 use crate::player::{Player};
 use crate::items::{AnimationStyle};
-use crate::combat::{AttackAnimation};
+use crate::combat::{AttackAnimation, damage_execution_system};
 use crate::map_setup::MAX_Y;
 
 use bevy::prelude::*;
@@ -26,13 +26,13 @@ impl Plugin for AnimationSetupPlugin {
                 (AnimationId::WalkLeft, (8, 11)),
                 (AnimationId::WalkUp, (20, 23)),
                 (AnimationId::WalkDown, (16, 19)),
+                (AnimationId::HurtRight, (24, 25)),
+                (AnimationId::HurtLeft, (26, 27)),
+                
             ])
         });
-        app.add_systems(Update, animate_sprite);
-        app.add_systems(Update, update_animation);
-        app.add_systems(Update, reset_animation_index.before(animate_sprite));
-        app.add_systems(Update, attack_animation);
-        app.add_systems(Update, auto_zorder);
+        app.add_systems(Update, (update_animation, reset_animation_index,
+            animate_sprite, attack_animation, auto_zorder).chain().after(damage_execution_system));
     }
 }
 

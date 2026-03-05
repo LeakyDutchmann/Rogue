@@ -9,6 +9,8 @@ pub enum AnimationId {
     WalkLeft,
     WalkUp,
     WalkDown,
+    HurtRight,
+    HurtLeft,
 }
 
 impl AnimationId {
@@ -27,6 +29,15 @@ impl AnimationId {
             Facing::Left =>  AnimationId::WalkLeft,
             Facing::Up =>  AnimationId::WalkUp,
             Facing::Down =>  AnimationId::WalkDown,
+        }
+    }
+    
+    pub fn hurt_from(facing: Facing) -> Self {
+        match facing {
+            Facing::Right =>  AnimationId::HurtRight,
+            Facing::Left =>  AnimationId::HurtLeft,
+            Facing::Up =>  AnimationId::HurtRight,
+            Facing::Down =>  AnimationId::HurtLeft,
         }
     }
 }

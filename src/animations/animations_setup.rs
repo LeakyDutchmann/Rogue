@@ -32,6 +32,8 @@ pub fn update_animation(
             AnimationId::idle_from(facing_dir.facing)
         } else if actor_state.state == ActorStateType::Walking {
             AnimationId::walk_from(facing_dir.facing)
+        } else if actor_state.state == ActorStateType::Hurt {
+            AnimationId::hurt_from(facing_dir.facing)
         } else {
             AnimationId::IdleRight
         };
@@ -62,65 +64,62 @@ pub fn attack_animation(
 ) {
     for (mut transform, anim, child_of, mut sprite) in query.iter_mut() {
         if let Ok(parent_tf) = parent_tf.get(child_of.0) {
-            if let Some(cursor_pos) = anim.target {
-                let player_pos = parent_tf.translation;
-                let to_cursor = (cursor_pos - player_pos.xy()).normalize();
-                let to_cursor_angle = to_cursor.to_angle();
-                let offset = 20.0;
-                match anim.anim_pattern {
-                    AnimationStyle::Sword => {
-                        if cursor_pos.x <= player_pos.x {
-                           
-                            let start_angle = to_cursor_angle - anim.max_angle / 2.0;
-                            let end_angle = to_cursor_angle + anim.max_angle / 2.0;
-                            let angle = start_angle + (end_angle - start_angle) * anim.progress;
-                            
-                            let point_x = offset * angle.cos();
-                            let point_y = offset * angle.sin();
-                            
-                            sprite.flip_x = true;
-                            transform.translation.x = point_x;
-                            transform.translation.y = point_y;
-                            
-                            transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);  
-                        } else {
-                            
-                            let start_angle = to_cursor_angle + anim.max_angle / 2.0;
-                            let end_angle = to_cursor_angle - anim.max_angle / 2.0;
-                            let angle = start_angle + (end_angle - start_angle) * anim.progress;
-                            let point_x = offset * angle.cos();
-                            let point_y = offset * angle.sin();
-                            
-                            sprite.flip_x = false;
-                            transform.translation.x = point_x;
-                            transform.translation.y = point_y;
-                            
-                            transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);
-                            
-                        }
-                    }
-                    AnimationStyle::PickAxe => {
-                        if cursor_pos.x <= player_pos.x {
-                           
-                            let start_angle = to_cursor_angle - anim.max_angle / 2.0;
-                            let end_angle = to_cursor_angle + anim.max_angle / 2.0;
-                            let angle = start_angle + (end_angle - start_angle) * anim.progress;                     
-                            sprite.flip_x = true;
-                            transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);  
-                        } else {
-                            
-                            let start_angle = to_cursor_angle + anim.max_angle / 2.0;
-                            let end_angle = to_cursor_angle - anim.max_angle / 2.0;
-                            let angle = start_angle + (end_angle - start_angle) * anim.progress;                    
-                            sprite.flip_x = false;                      
-                            transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);
-                            
-                        }
+            let cursor_pos = anim.cursor_pos;
+            let player_pos = parent_tf.translation;
+            let to_cursor = (cursor_pos - player_pos.xy()).normalize();
+            let to_cursor_angle = to_cursor.to_angle();
+            let offset = 20.0;
+            match anim.anim_pattern {
+                AnimationStyle::Sword => {
+                    if cursor_pos.x <= player_pos.x {
+                       
+                        let start_angle = to_cursor_angle - anim.max_angle / 2.0;
+                        let end_angle = to_cursor_angle + anim.max_angle / 2.0;
+                        let angle = start_angle + (end_angle - start_angle) * anim.progress;
+                        
+                        let point_x = offset * angle.cos();
+                        let point_y = offset * angle.sin();
+                        
+                        sprite.flip_x = true;
+                        transform.translation.x = point_x;
+                        transform.translation.y = point_y;
+                        
+                        transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);  
+                    } else {
+                        
+                        let start_angle = to_cursor_angle + anim.max_angle / 2.0;
+                        let end_angle = to_cursor_angle - anim.max_angle / 2.0;
+                        let angle = start_angle + (end_angle - start_angle) * anim.progress;
+                        let point_x = offset * angle.cos();
+                        let point_y = offset * angle.sin();
+                        
+                        sprite.flip_x = false;
+                        transform.translation.x = point_x;
+                        transform.translation.y = point_y;
+                        
+                        transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);
+                        
                     }
                 }
-                
-                
-            } 
+                AnimationStyle::PickAxe => {
+                    if cursor_pos.x <= player_pos.x {
+                       
+                        let start_angle = to_cursor_angle - anim.max_angle / 2.0;
+                        let end_angle = to_cursor_angle + anim.max_angle / 2.0;
+                        let angle = start_angle + (end_angle - start_angle) * anim.progress;                     
+                        sprite.flip_x = true;
+                        transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);  
+                    } else {
+                        
+                        let start_angle = to_cursor_angle + anim.max_angle / 2.0;
+                        let end_angle = to_cursor_angle - anim.max_angle / 2.0;
+                        let angle = start_angle + (end_angle - start_angle) * anim.progress;                    
+                        sprite.flip_x = false;                      
+                        transform.rotation = Quat::from_rotation_z(angle - std::f32::consts::FRAC_PI_2);
+                        
+                    }
+                }
+            }
         }    
     }
 } 

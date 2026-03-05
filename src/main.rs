@@ -48,6 +48,9 @@ fn main() {
         .run();
 }
 
+#[derive(Component)]
+pub struct UiMarker;
+
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -87,8 +90,8 @@ fn setup(
         OnGround,
         CombatStats {
             attack_speed: 250.0,
-            swing_angle: std::f32::consts::PI / 1.0,
-            radius: 64.0,
+            swing_angle: std::f32::consts::PI,
+            radius: 32.0,
         },
         AnimationPattern {
             pattern: AnimationStyle::Sword,
@@ -100,7 +103,23 @@ fn setup(
             durability: 100.0,
         }
     ));
+    
+    commands.spawn((
+        Node {
+            position_type: PositionType::Absolute,
+            left: Val::Percent(50.0),
+            ..Default::default()
+        },
+        Text::new("0"),
+        TextFont {
+            font_size: 60.0,
+            ..Default::default()
+        },
+        TextColor(Color::WHITE),
+        UiMarker
+    ));
 }
+
 
 // fn check_inventory(
 //      mut inventory: Query<&mut Inventory, With<Player>>,

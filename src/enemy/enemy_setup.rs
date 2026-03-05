@@ -28,13 +28,13 @@ pub fn setup_enemy(
     let texture_atlas = TextureAtlasLayout::from_grid (
         UVec2::splat(32), 
         4,
-        6,
+        7,
         None,
         None
     );
     let texture_atlas_layout = texture_atlas_layouts.add(texture_atlas);
     
-    for _ in 0..5 {
+    for _ in 0..200 {
         let pos = generate_position_near(&empty_cells.cells, Vec2::from((0.0, 0.0)));
     
         
@@ -72,6 +72,9 @@ pub fn setup_enemy(
                 radius: 200.0,
                 awareness_timer: Timer::from_seconds(5.0, TimerMode::Once),
             },
+            HurtBox {
+                radius: 5.0,
+            }
             
         )).with_children(|parent| {
             // parent.spawn((

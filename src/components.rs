@@ -49,6 +49,7 @@ pub struct FacingDirection {
 pub enum ActorStateType {
     Idle,
     Walking,
+    Hurt,
 }
 
 #[derive(Component)]

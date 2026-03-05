@@ -1,6 +1,6 @@
 use bevy::render::render_resource::Face;
 
-use crate::player::*;
+use crate::{components::Health, player::*};
 
 
 pub fn player_setup(
@@ -57,6 +57,10 @@ pub fn player_setup(
         FieldOfView {
             triangles: None,
         },
+        HurtBox {
+            radius: 3.0
+        },
+        Health(100),
     )).with_children(|parent| {
         parent.spawn((
             HeldItem {

@@ -11,13 +11,13 @@ pub use player_movement::*;
 use player_inventory::*;
 use player_keyboard::*;
 use bevy::prelude::*;
-use player_combat::*;
+pub use player_combat::*;
 use bevy::prelude::Component;
 use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::items::{Item, Inventory,CombatStats, AnimationPattern};
 use crate::messages::{MouseClickEvent, ItemDropped};
-use crate::combat::AttackAnimation;
+use crate::combat::{AttackAnimation, HitBox, HurtBox};
 use super::FieldOfView;
 use crate::enemy::{ai_steering, ai_movement};
 

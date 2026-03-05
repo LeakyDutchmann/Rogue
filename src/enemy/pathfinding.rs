@@ -152,7 +152,6 @@ fn spawn_optimized_pathfinding_task(
         find_path(start, goal, &*bounds_read, radius)
     });
     commands.entity(target).insert(PathfindingTask(task));
-    println!("task spawned");
 }
 
 pub fn generate_trial(
@@ -203,7 +202,6 @@ pub fn apply_pathfinding_to_ai(
                     commands.entity(task_entity).insert( AiPath {
                         steps: optimized,
                     });
-                    println!("Path applied");
                 } 
             } else if let Err(e) = result {
                 println!("Pathfinding error: {:?}", e);

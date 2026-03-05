@@ -4,7 +4,7 @@ use super::*;
 
 pub fn follow_path(
     mut commands: Commands,
-    mut enemy_query: Query<(Entity, &mut FacingDirection, &mut ActorState, &Transform, &mut AiPath), (With<Enemy>, Without<MovementIntent>)>,
+    mut enemy_query: Query<(Entity, &mut FacingDirection, &mut ActorState, &Transform, &mut AiPath), (With<Enemy>, Without<MovementIntent>,  Without<HurtTimer>)>,
     // player: Single<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
     for (enemy_entity, mut facing_direction, mut actor_state, enemy_transform, mut ai_path) in enemy_query.iter_mut() {
@@ -39,7 +39,7 @@ pub fn follow_path(
 pub fn ai_movement(
     mut commands: Commands,
     mut enemy_qr: Query<(Entity, &EnemyAwareness, &Transform, &mut FacingDirection, &mut ActorState),
-        (With<Enemy>, Without<MovementIntent>, Without<AiPath>)>,
+        (With<Enemy>, Without<MovementIntent>, Without<AiPath>, Without<HurtTimer>)>,
     mut writer: MessageWriter<FindPath>,
     player_sg: Single<&Transform, (With<Player>, Without<Enemy>)>
 ) {
