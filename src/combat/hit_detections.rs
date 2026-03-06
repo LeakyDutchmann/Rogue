@@ -15,9 +15,11 @@ pub fn hit_detection_system(
     mut hurtbox_qr: Query<(&HurtBox, &Transform), Without<HitBox>>,
     worldgrid: Res<WorldGrid>,
     mut writer: MessageWriter<CalculateDamage>,
+    query: Query<(&mut MapTile, &Transform), With<Wall>>,
 ) {
     for (hitbx_e, mut hitbox, hitbox_tf) in hitbox_qr.iter_mut() {
         let hitbox_pos = hitbox_tf.translation.truncate();
+        let mut hit_something = false;
         let item_cell_x = (hitbox_pos.x / CELL_SIZE).round() as i32;
         let item_cell_y = (hitbox_pos.y / CELL_SIZE).round() as i32;
         let cells = get_cells_in_radius((item_cell_x, item_cell_y), hitbox.radius);
@@ -50,11 +52,35 @@ pub fn hit_detection_system(
                         position: tf.translation.truncate(),
                         damage_type: DamageType::ToEnemyDamage,
                     });
+                    hit_something = true;
                 }
-                println!(
-                    "hit check | enemy: {:?} | to_hurt_box: {:?} | angle: {:.3} | start: {:.3} | end: {:.3}",
-                    entity, to_hurt_box, angle, start, end
-                );
+            }
+        }
+        if hit_something == false {
+            let cell_x = (hitbox.aim.x / CELL_SIZE).round() as i32;
+            let cell_y = (hitbox.aim.y / CELL_SIZE).round() as i32;
+            if let Some(entities) = worldgrid.cells.get(&(cell_x, cell_y)) {
+                for entity in entities {
+                    if let Ok((tile_type, transform)) = query.get(*entity) {
+                        let pos = transform.translation.truncate();
+                        let to_hurt_box = pos - hitbox_pos;
+                        let distance = to_hurt_box.length();
+                        if distance > hitbox.radius {
+                            continue
+                        } else {
+                            writer.write( CalculateDamage {
+                                attack_item: hitbox.item_used,
+                                target: *entity,
+                                from_pos: hitbox_pos,
+                                position: pos,
+                                damage_type: DamageType::ToTileDamage,
+                            });
+                            println!("hitted tile");
+                            commands.entity(hitbx_e).insert(HitBoxUsed);
+                            break;
+                        }
+                    }
+                }
             }
         }
         commands.entity(hitbx_e).insert(HitBoxUsed);

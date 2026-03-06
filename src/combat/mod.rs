@@ -50,6 +50,7 @@ pub struct HitBox {
     pub radius: f32,
     pub start_angle: f32,
     pub end_angle: f32,
+    pub aim: Vec2,
 }
 
 

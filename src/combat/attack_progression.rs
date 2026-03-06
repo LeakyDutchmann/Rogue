@@ -31,6 +31,7 @@ pub fn attack_progression_system(
                         start_angle: start_angle,
                         end_angle: end_angle,
                         item_used: anim.item,
+                        aim: anim.cursor_pos,
                     },
                     Transform::from_translation(parent_pos.extend(0.0))
                 ));
