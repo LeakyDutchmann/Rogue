@@ -10,7 +10,7 @@ use attack_progression::*;
 use crate::map_setup::{MapTile, Wall, TileType, world_pos_to_tile_pos};
 use crate::world::{WorldGrid, CELL_SIZE, get_cells_in_radius, get_entities_in_cells};
 use crate::components::{Health, ActorState, ActorStateType, Facing, FacingDirection};
-use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType};
+use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType, KnockBackMsg};
 use crate::items::{WeaponStats, ToolStats, AnimationStyle};
 use crate::enemy::Enemy;
 use crate::player::{HeldItem, Player, initialize_attack};
@@ -24,7 +24,7 @@ impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, (attack_progression_system, hit_detection_system, calculate_damage,
             damage_execution_system, despawn_used_hitboxes).chain().after(initialize_attack));
-        app.add_systems(Update, tick_hurt_timers);
+        app.add_systems(Update, tick_hurt_timers.after(damage_execution_system));
     }
 }
 
@@ -62,6 +62,14 @@ pub struct HurtBox {
 #[derive(Component)]
 pub struct HurtTimer {
  pub timer: Timer,
+ 
+}
+
+
+#[derive(Component)]
+pub struct KnockBack {
+ pub from: Vec2,
+ pub to: Vec2,
 }
 
 

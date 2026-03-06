@@ -11,7 +11,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<MapChanged>()
             .add_message::<ApplyDamage>()
             .add_message::<CalculateDamage>()
-            .add_message::<FindPath>();
+            .add_message::<FindPath>()
+            .add_message::<KnockBackMsg>();
     }
 }
 
@@ -67,6 +68,7 @@ pub struct MapChanged {
 #[derive(Message)]
 pub struct ApplyDamage {
     pub entity: Entity,
+    pub from_pos: Vec2,
     pub position: Vec2,
     pub damage: i32,
     pub damage_type: DamageType,
@@ -83,6 +85,14 @@ pub enum DamageType {
 pub struct CalculateDamage {
     pub attack_item: Entity,
     pub target: Entity,
+    pub from_pos: Vec2,
     pub position: Vec2,
     pub damage_type: DamageType,
+}
+
+#[derive(Message)]
+pub struct KnockBackMsg {
+    pub target: Entity,
+    pub from_pos: Vec2,
+    pub position: Vec2,
 }
