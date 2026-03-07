@@ -74,7 +74,7 @@ fn setup(
             pattern: AnimationStyle::PickAxe,
         },
         ToolStats {
-            structure_damage: 50,
+            structure_damage: 33,
         },
         Durability {
             durability: 100.0,
@@ -89,15 +89,15 @@ fn setup(
         },
         OnGround,
         CombatStats {
-            attack_speed: 250.0,
+            attack_speed: 200.0,
             swing_angle: std::f32::consts::PI,
-            radius: 32.0,
+            radius: 44.0,
         },
         AnimationPattern {
             pattern: AnimationStyle::Sword,
         },
         WeaponStats {
-            enemy_damage: 50,
+            enemy_damage: 25,
         },
         Durability {
             durability: 100.0,

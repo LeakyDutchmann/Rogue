@@ -14,7 +14,7 @@ pub fn player_setup(
     let layout = TextureAtlasLayout::from_grid(
         UVec2::splat(32), 
         4,
-        6,
+        7,
         None,
         None
     );
@@ -58,7 +58,8 @@ pub fn player_setup(
             triangles: None,
         },
         HurtBox {
-            radius: 3.0
+            radius: 3.0,
+            fraction: FractionType::Player,
         },
         Health(100),
     )).with_children(|parent| {

@@ -4,7 +4,7 @@ use super::*;
 pub fn move_player(
     mut commands: Commands,
     keys: Res<ButtonInput<KeyCode>>,
-    mut player: Query<(Entity, &mut ActorState, &mut FacingDirection), With<Player>>,
+    mut player: Query<(Entity, &mut ActorState, &mut FacingDirection), (With<Player>, Without<HurtTimer>)>,
 ) {
     for (player_e, mut player_state, mut facing_dir) in &mut player {
         let mut direction = Vec2::ZERO;

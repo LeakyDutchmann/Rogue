@@ -20,6 +20,7 @@ pub fn damage_execution_system(
     for destruction in reader.read() {
         if let Ok(mut hp) = health.get_mut(destruction.entity) {
             hp.0 -= destruction.damage;
+            println!("Damage appliedd");
             if destruction.damage_type == DamageType::ToEnemyDamage {
                 if let Ok(mut actor_state) = actor_qr.get_mut(destruction.entity) {
                     actor_state.state = ActorStateType::Hurt;
@@ -31,17 +32,24 @@ pub fn damage_execution_system(
                         to: destruction.position,
                     });
                     println!("Hurt");
-                }
+                }   
             }
             if hp.0 <= 0 {
-                commands.entity(destruction.entity).despawn();
                 if destruction.damage_type == DamageType::ToTileDamage {
                     writer.write(MapChanged {
                         position: world_pos_to_tile_pos(destruction.position),
                     });
+                    commands.entity(destruction.entity).despawn();
+                    println!("tile down");
+                } else {
+                    if let Ok(mut actor_state) = actor_qr.get_mut(destruction.entity) {
+                        actor_state.state = ActorStateType::Dead;
+                        commands.entity(destruction.entity).insert( DeathTimer {
+                            timer: Timer::from_seconds(10.0, TimerMode::Once),
+                        });
+                    }
                 }
             }
-        } else {
         }
     }
 }
@@ -54,7 +62,7 @@ pub fn tick_hurt_timers(
     for (e, mut hurt_timer, kback_stats) in hurt_qr.iter_mut() {
         let knockback = calculate_knockback(kback_stats.from, kback_stats.to);
         commands.entity(e).insert(MovementIntent {
-            direction: knockback * 200.0,
+            direction: knockback,
         });
         hurt_timer.timer.tick(time.delta());
         if hurt_timer.timer.just_finished() {
@@ -63,3 +71,37 @@ pub fn tick_hurt_timers(
     }
 }
 
+pub fn dead_actor_processing(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut actors: Query<(Entity, &ActorState, &mut DeathTimer)>,
+) {
+    for (actor_e, actor_s, mut timer) in actors.iter_mut() {
+        match actor_s.state {
+            ActorStateType::Dead => {
+                if timer.timer.elapsed().is_zero() {
+                    commands.entity(actor_e).retain::<(Transform, Sprite, Player, Enemy)>();
+                }
+                timer.timer.tick(time.delta());
+                if timer.timer.just_finished() {
+                    commands.entity(actor_e).despawn();
+                }
+                
+            }
+            _ => {continue}
+        }
+    }
+}
+
+pub fn tick_cooldown(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut query: Query<(Entity, &mut CoolDown)>,
+) {
+    for (e, mut cool_down) in query.iter_mut() {
+        cool_down.timer.tick(time.delta());
+        if cool_down.timer.just_finished() {
+            commands.entity(e).remove::<CoolDown>();
+        }    
+    }
+}

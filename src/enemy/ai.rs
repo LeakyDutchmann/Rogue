@@ -125,3 +125,44 @@ pub fn ai_steering(
         }
     }
 }
+
+pub fn ai_initialize_attack(
+    mut commands: Commands,
+    player_tf: Query<(Entity, &Transform), With<Player>>,
+    enemy_qr: Query<(Entity, &Transform,), With<Enemy>>,
+    hend_qr: Query<(Entity, &HeldItem, &ChildOf, &GlobalTransform), Without<AttackAnimation>>,
+    attack_stats: Query<(&CombatStats, &AnimationPattern)>,
+) { 
+    for (hend_e, held_item, childof, transform) in hend_qr.iter() {
+        if let Ok((enemy_e, enemy_tf)) = enemy_qr.get(childof.0) {
+            if let Some(item) = held_item.last_held {
+                if let Ok((stats, anim_pattern)) = attack_stats.get(item) {
+                    if let Ok((player_e, player_tf)) = player_tf.single() {
+                        if player_e == enemy_e {
+                            continue;
+                        }
+                        let enemy_pos = enemy_tf.translation.truncate();
+                        let player_pos = player_tf.translation.truncate();
+                        if enemy_pos.distance(player_pos) > stats.radius {
+                            continue
+                        }
+                        commands.entity(hend_e).insert(
+                            AttackAnimation {
+                                anim_pattern: anim_pattern.pattern,
+                                progress: 0.0,
+                                duration: 60.0 / stats.attack_speed,
+                                max_angle: stats.swing_angle,
+                                hit_triggered: false,
+                                cursor_pos: player_pos,
+                                item: item,
+                                item_radius: stats.radius,
+                                item_pos: transform.compute_transform().translation.truncate(),
+                            }
+                        );
+                    }
+                }
+            }
+            
+        }
+    }
+}

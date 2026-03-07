@@ -26,6 +26,7 @@ impl Plugin for EnemyPlugin {
         app.add_systems(FixedUpdate, ai_movement.after(follow_path));
         app.add_systems(FixedUpdate, follow_path);
         app.add_systems(FixedUpdate, ai_steering.after(ai_movement));
+        app.add_systems(Update, ai_initialize_attack);
     }
 }
 

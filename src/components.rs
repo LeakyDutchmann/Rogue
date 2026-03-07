@@ -1,5 +1,5 @@
 use bevy::math::{Vec2};
-use bevy::prelude::Component;
+use bevy::prelude::*;
 
 
 #[derive(Component)]
@@ -50,11 +50,20 @@ pub enum ActorStateType {
     Idle,
     Walking,
     Hurt,
+    Dead,
 }
 
 #[derive(Component)]
 pub struct ActorState {
     pub state: ActorStateType,
 }
+
+
+#[derive(Component)]
+pub struct DeathTimer {
+    pub timer: Timer,
+}
+
+
 
 

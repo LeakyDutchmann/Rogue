@@ -29,6 +29,9 @@ pub fn hit_detection_system(
                 if entity == hitbox.owner {
                     continue
                 }
+                if hitbox.fraction == hurtbox.fraction {
+                    continue
+                }
                 let to_hurt_box = tf.translation.truncate() - hitbox_pos;
                 let distance = to_hurt_box.length();
                 if distance > hitbox.radius + hurtbox.radius {
@@ -124,6 +127,7 @@ pub fn calculate_damage(
                     damage_type: msg.damage_type,
                 });
             damage_calculated = true;
+            println!("Damage calculated");
         }
     } 
 }

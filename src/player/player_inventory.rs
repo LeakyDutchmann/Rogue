@@ -92,27 +92,38 @@ pub fn show_active_slot(
 pub fn draw_helditem(
     mut commands: Commands,
     mut held_item: Query<(Entity, &mut HeldItem, &mut Transform), (With<HeldItem>, Without<AttackAnimation>)>,
-    inventory: Query<(&Inventory, &ActiveSlot), With<Player>>,
     item_query: Query<&Item>,
 ) {
-    if let Ok((player_hand, mut held_item, mut hand_pos)) = held_item.single_mut() {
-        if let Ok((inventory, active_slot)) = inventory.single() {
-            if let Some(Some(item_entity)) = inventory.items.get(active_slot.index) {
-                // Only update if we're holding a different item (or None)
-                if held_item.last_held != Some(*item_entity) {
-                    let texture = item_query.get(*item_entity).unwrap();
-                    let image = texture.image.clone();
-                    commands.entity(player_hand).insert(Sprite::from_image(image));
-                    held_item.last_held = Some(*item_entity);
+    for ((player_hand, mut held_item, mut hand_pos)) in held_item.iter_mut() {
+        if let Some(held) = held_item.last_held {
+            if let Ok(item) = item_query.get(held) {
+                commands.entity(player_hand).insert(Sprite::from_image(item.image.clone()));
+            }
+            
+        } else {
+            commands.entity(player_hand).remove::<Sprite>();
+        }
+        hand_pos.translation = Vec3::new(0.0, 0.0, 1.0);
+    }
+}
+
+pub fn sync_player_held_item(
+    mut held_item: Query<(&mut HeldItem, &ChildOf),
+        (With<HeldItem>, Without<AttackAnimation>,)>,
+    inventory_qr: Query<(&Inventory, &ActiveSlot), With<Player>>,
+) {
+    for (mut held, childof) in held_item.iter_mut() {
+        if let Ok((inventory, active)) = inventory_qr.get(childof.0) {
+            if let Some(Some(item_e)) = inventory.items.get(active.index) {
+                if held.last_held != Some(*item_e) {
+                    held.last_held = Some(*item_e)
                 }
             } else {
                 // No item in active slot - remove sprite if we were holding something
-                if held_item.last_held.is_some() {
-                    commands.entity(player_hand).remove::<Sprite>();
-                    held_item.last_held = None;
+                if held.last_held.is_some() {
+                    held.last_held = None;
                 }
             }
-            hand_pos.translation = Vec3::new(0.0, 0.0, 1.0);
         }
     }
 }
