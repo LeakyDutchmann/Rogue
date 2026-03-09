@@ -13,7 +13,10 @@ use crate::raycasting::{EnemyAwareness, AwarenessType};
 use std::collections::{HashMap, HashSet, VecDeque};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
+use rand::seq::IndexedRandom;
 use std::sync::{Arc, RwLock};
+use std::collections::BinaryHeap;
+use std::cmp::Ordering;
 
 
 pub struct EnemyPlugin;

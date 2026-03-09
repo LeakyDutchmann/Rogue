@@ -11,13 +11,13 @@ pub fn normalize_angle(a: f32) -> f32 {
 
 pub fn hit_detection_system(
     mut commands: Commands,
-    mut hitbox_qr: Query<(Entity, &mut HitBox, &Transform), Without<HitBoxUsed>>,
-    mut hurtbox_qr: Query<(&HurtBox, &Transform), Without<HitBox>>,
+    hitbox_qr: Query<(Entity, &HitBox, &Transform), Without<HitBoxUsed>>,
+    hurtbox_qr: Query<(&HurtBox, &Transform), Without<HitBox>>,
     worldgrid: Res<WorldGrid>,
     mut writer: MessageWriter<CalculateDamage>,
-    query: Query<(&mut MapTile, &Transform), With<Wall>>,
+    query: Query<(&MapTile, &Transform), With<Wall>>,
 ) {
-    for (hitbx_e, mut hitbox, hitbox_tf) in hitbox_qr.iter_mut() {
+    for (hitbx_e, hitbox, hitbox_tf) in hitbox_qr.iter() {
         let hitbox_pos = hitbox_tf.translation.truncate();
         let mut hit_something = false;
         let item_cell_x = (hitbox_pos.x / CELL_SIZE).round() as i32;
@@ -64,7 +64,7 @@ pub fn hit_detection_system(
             let cell_y = (hitbox.aim.y / CELL_SIZE).round() as i32;
             if let Some(entities) = worldgrid.cells.get(&(cell_x, cell_y)) {
                 for entity in entities {
-                    if let Ok((tile_type, transform)) = query.get(*entity) {
+                    if let Ok((_tile_type, transform)) = query.get(*entity) {
                         let pos = transform.translation.truncate();
                         let to_hurt_box = pos - hitbox_pos;
                         let distance = to_hurt_box.length();
@@ -78,7 +78,6 @@ pub fn hit_detection_system(
                                 position: pos,
                                 damage_type: DamageType::ToTileDamage,
                             });
-                            println!("hitted tile");
                             commands.entity(hitbx_e).insert(HitBoxUsed);
                             break;
                         }
@@ -97,7 +96,6 @@ pub fn calculate_damage(
     mut writer: MessageWriter<ApplyDamage>,
 ) {
     for msg in reader.read() {
-        let mut damage_calculated = false;
         let mut damage = 0;
         if let Ok(enemy_dmg) = weapon_stats.get(msg.attack_item) {
             match msg.damage_type {
@@ -118,17 +116,13 @@ pub fn calculate_damage(
                 }
             }
         }
-        if !damage_calculated {
-            writer.write(ApplyDamage {
-                    entity: msg.target,
-                    position: msg.position,
-                    damage: damage,
-                    from_pos: msg.from_pos,
-                    damage_type: msg.damage_type,
-                });
-            damage_calculated = true;
-            println!("Damage calculated");
-        }
+        writer.write(ApplyDamage {
+            entity: msg.target,
+            position: msg.position,
+            damage: damage,
+            from_pos: msg.from_pos,
+            damage_type: msg.damage_type,
+        });
     } 
 }
 

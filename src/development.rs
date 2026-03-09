@@ -1,5 +1,3 @@
-use super::*;
-
 use bevy::{
     dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig},
     prelude::*,
@@ -9,7 +7,7 @@ use bevy::{
 struct OverlayColor;
 
 impl OverlayColor {
-    const RED: Color = Color::srgb(1.0, 0.0, 0.0);
+    const _RED: Color = Color::srgb(1.0, 0.0, 0.0);
     const GREEN: Color = Color::srgb(0.0, 1.0, 0.0);
 }
 

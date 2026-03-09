@@ -1,9 +1,5 @@
 use super::*;
 
-use bevy::color::palettes::basic::PURPLE;
-use std::collections::BinaryHeap;
-use std::cmp::Ordering;
-
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Copy)]
 pub struct Position {
     pub x: i32,
@@ -15,6 +11,7 @@ impl Position {
         (self.x - b.x).abs() + (self.y - b.y).abs()
     }
 }
+
 
 #[derive(Clone, Debug, Eq)]
 struct Node {
@@ -48,7 +45,6 @@ impl PartialEq for Node {
 
 #[derive(Debug)]
 pub enum PathfindingError {
-    NoPath,
     StartNotInBounds,
     GoalNotInBounds,
 }
@@ -162,7 +158,6 @@ pub fn generate_trial(
     for msg in reader.read() {
         let player_pos = msg.target_pos;
         let enemy_pos = msg.seeker_pos;
-        let enemy_e = msg.seeker;
         let start = Position {
             x: (enemy_pos.x / CELL_SIZE).round() as i32,
             y: (enemy_pos.y / CELL_SIZE).round() as i32,
@@ -187,7 +182,7 @@ pub fn apply_pathfinding_to_ai(
     mut tasks: Query<(Entity, &mut PathfindingTask)>,
     grid: Res<SharedBounds>,
 ) {
-    let mut empty_cells_grid_pos = grid.0.read().unwrap();
+    let empty_cells_grid_pos = grid.0.read().unwrap();
     for (task_entity, mut task) in &mut tasks {
         if let Some(result) = future::block_on(future::poll_once(&mut task.0)) {
             commands.entity(task_entity).remove::<PathfindingTask>();
@@ -210,13 +205,11 @@ pub fn apply_pathfinding_to_ai(
     }
 }
 
-
 fn grid_cells_in_rect(start: Vec2, end: Vec2) -> Vec<Position> {
     let min_x = (start.x.min(end.x) / CELL_SIZE).floor() as i32;
     let max_x = (start.x.max(end.x) / CELL_SIZE).floor() as i32;
     let min_y = (start.y.min(end.y) / CELL_SIZE).floor() as i32;
     let max_y = (start.y.max(end.y) / CELL_SIZE).floor() as i32;
-
     let mut cells: Vec<Position> = Vec::new();
     for y in min_y..=max_y {
         for x in min_x..=max_x {

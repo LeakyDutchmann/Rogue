@@ -76,7 +76,7 @@ pub struct ToolStats {
 
 
 #[derive(Component)]
-pub struct Usable;
+pub struct _Usable;
 
 
 #[derive(Component)]

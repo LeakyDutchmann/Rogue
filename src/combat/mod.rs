@@ -7,16 +7,15 @@ use hit_detections::*;
 pub use damage_applying::*;
 use attack_progression::*;
 
-use crate::map_setup::{MapTile, Wall, TileType, world_pos_to_tile_pos};
+use crate::map_setup::{MapTile, Wall, world_pos_to_tile_pos};
 use crate::world::{WorldGrid, CELL_SIZE, get_cells_in_radius, get_entities_in_cells};
-use crate::components::{Health, ActorState, ActorStateType, Facing, FacingDirection, DeathTimer, Speed,};
-use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType, KnockBackMsg};
+use crate::components::{Health, ActorState, ActorStateType, FacingDirection, DeathTimer, Speed,};
+use crate::messages::{ApplyDamage, MapChanged, CalculateDamage, DamageType};
 use crate::items::{WeaponStats, ToolStats, AnimationStyle};
-use crate::enemy::Enemy;
-use crate::player::{HeldItem, Player, initialize_attack};
-use bevy::prelude::ops::atan2;
+use crate::player::{initialize_attack};
 use crate::animations::*;
 use crate::colision_manager::Colider;
+use crate::{components::MovementIntent, raycasting::EnemyAwareness};
 
 
 pub struct CombatPlugin;
@@ -42,7 +41,6 @@ pub struct AttackAnimation {
     pub cursor_pos: Vec2,
     pub item: Entity,
     pub item_radius: f32,
-    pub item_pos: Vec2,
 }
 
 

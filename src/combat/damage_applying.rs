@@ -1,9 +1,4 @@
-use bevy::math::NormedVectorSpace;
-
-use crate::{components::MovementIntent, raycasting::EnemyAwareness};
-
 use super::*;
-
 
 fn calculate_knockback(from: Vec2, to: Vec2) -> Vec2 {
     let dir = to - from;
@@ -15,13 +10,12 @@ pub fn damage_execution_system(
     mut reader: MessageReader<ApplyDamage>,
     mut writer: MessageWriter<MapChanged>,
     mut health: Query<&mut Health>,
-    mut actor_qr: Query<(&mut ActorState)>,
+    mut actor_qr: Query<&mut ActorState>,
     deathtimer: Query<&DeathTimer>,
 ) {
     for destruction in reader.read() {
         if let Ok(mut hp) = health.get_mut(destruction.entity) {
             hp.0 -= destruction.damage;
-            println!("Damage appliedd");
             if destruction.damage_type == DamageType::ToEnemyDamage {
                 if let Ok(mut actor_state) = actor_qr.get_mut(destruction.entity) {
                     actor_state.state = ActorStateType::Hurt;
@@ -32,7 +26,6 @@ pub fn damage_execution_system(
                         from: destruction.from_pos,
                         to: destruction.position,
                     });
-                    println!("Hurt");
                 }   
             }
             if hp.0 <= 0 {
@@ -41,7 +34,6 @@ pub fn damage_execution_system(
                         position: world_pos_to_tile_pos(destruction.position),
                     });
                     commands.entity(destruction.entity).despawn();
-                    println!("tile down");
                 } else {
                     if let Ok(mut actor_state) = actor_qr.get_mut(destruction.entity) {
                         if actor_state.state != ActorStateType::Dead {
@@ -98,17 +90,13 @@ pub fn dead_actor_processing(
                     commands.entity(actor_e).despawn_children();
                     if let Some(atlas) = &mut sprite.texture_atlas {
                         atlas.index = 2;
-                        println!("Applied idx")
                     } else {
-                        println!("no atlas");
                     }
                 }
                 timer.timer.tick(time.delta());
                 if timer.timer.is_finished() {
                     commands.entity(actor_e).despawn();
-                    println!("despawnrf");
                 }
-                
             }
             _ => {continue}
         }

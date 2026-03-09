@@ -1,8 +1,6 @@
 use super::*;
-use rand::rng;
-use rand::seq::IndexedRandom;
 
-pub fn generate_position_near(cells: &Vec<(Vec2)>, target: Vec2) -> Vec2 {
+pub fn generate_position_near(cells: &Vec<Vec2>, target: Vec2) -> Vec2 {
     let mut final_pos = Vec2::from((33.0, 33.0));
     let mut rng = rand::rng();
     let filtered: Vec<_> = cells

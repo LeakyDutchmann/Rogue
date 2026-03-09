@@ -17,9 +17,9 @@ use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::items::{Item, Inventory,CombatStats, AnimationPattern};
 use crate::messages::{MouseClickEvent, ItemDropped};
-use crate::combat::{AttackAnimation, HitBox, HurtBox, HurtTimer, FractionType};
+use crate::combat::{AttackAnimation, HurtBox, HurtTimer, FractionType};
 use super::FieldOfView;
-use crate::enemy::{ai_steering, ai_movement};
+use crate::enemy::{ai_steering};
 
 
 pub struct PlayerSetupPlugin;
@@ -34,11 +34,6 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(Update, (sync_player_held_item, draw_helditem, update_held_item_dir).chain());
     }
 }
-
-
-
-
-
 
 
 #[derive(Component)]

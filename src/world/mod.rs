@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use crate::messages::MapChanged;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
-use crate::map_setup::{TILE_SIZE, MAP_WIDTH, MAP_HEIGHT, Wall};
+use crate::map_setup::{TILE_SIZE, Wall};
 use crate::map_setup::{map_setup, tile_pos_to_world_pos};
 use crate::enemy::Position;
 use std::collections::HashSet;

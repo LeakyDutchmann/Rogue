@@ -7,7 +7,6 @@ pub fn enemy_vision_system(
     player: Query<&Transform, With<Player>>,
     wall_qr: Query<(&Transform, &Colider), With<Wall>>,
     world: Res<WorldGrid>,
-    mut gizmos: Gizmos,
 ) {
     for (enemy_e, enemy_tf, mut awareness) in enemies.iter_mut() {
         for player_tf in player.iter() {
@@ -21,7 +20,7 @@ pub fn enemy_vision_system(
             let cell_x = (enemy_pos.x / CELL_SIZE ).floor() as i32;
             let cell_y = (enemy_pos.y / CELL_SIZE ).floor() as i32;
             let central_cell = (cell_x, cell_y);
-            let mut cells = get_cells_in_radius(central_cell, awareness.radius);
+            let cells = get_cells_in_radius(central_cell, awareness.radius);
             let entities = get_entities_in_cells(cells, &world);
             let mut coliders_to_check: Vec<(&Transform, &Colider)> = Vec::new();
             for entity in entities {
@@ -38,7 +37,7 @@ pub fn enemy_vision_system(
                     
                     let colider_pos = colider_tf.translation.truncate();
                     let hit_opt = match colider.shape {
-                        ColiderShape::Circle { radius } => None,
+                        ColiderShape::Circle { radius: _ } => None,
                         ColiderShape::Rectangle { width, height } => ray_hits_aabb(&ray, colider_pos, Vec2::new(width / 2.0, height / 2.0))
                             .map(|pt| ray.origin + ray.direction * pt)
                     };
@@ -52,11 +51,10 @@ pub fn enemy_vision_system(
                         continue
                     }
                 }
-                if let Some(hit) = closest_hit {
+                if let Some(_hit) = closest_hit {
                     if closest_distance >= d - 0.01 {
                         awareness.state = AwarenessType::Direct;
                         awareness.player_seen = true;
-                        // gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
                         commands.entity(enemy_e).remove::<AiPath>();
                         awareness.awareness_timer.reset();
                     } else {
@@ -72,7 +70,6 @@ pub fn enemy_vision_system(
                 } else if closest_hit.is_none() {
                     awareness.state = AwarenessType::Direct;
                     awareness.player_seen = true;
-                    // gizmos.line_2d(enemy_pos, player_pos, Color::WHITE);
                     commands.entity(enemy_e).remove::<AiPath>();
                     awareness.awareness_timer.reset();
                 }

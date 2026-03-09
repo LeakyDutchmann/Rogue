@@ -30,8 +30,6 @@ use messages::*;
 use development::*;
 use enemy::*;
 use raycasting::*;
-use bevy::gizmos;
-
 
 fn main() {
     App::new()
@@ -42,14 +40,11 @@ fn main() {
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
         .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin))
-        .add_plugins((VisionPlugin))
+        .add_plugins(VisionPlugin)
         .add_systems(Startup, setup)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();
 }
-
-#[derive(Component)]
-pub struct UiMarker;
 
 fn setup(
     mut commands: Commands,
@@ -102,24 +97,8 @@ fn setup(
         Durability {
             durability: 100.0,
         }
-    ));
-    
-    commands.spawn((
-        Node {
-            position_type: PositionType::Absolute,
-            left: Val::Percent(50.0),
-            ..Default::default()
-        },
-        Text::new("0"),
-        TextFont {
-            font_size: 60.0,
-            ..Default::default()
-        },
-        TextColor(Color::WHITE),
-        UiMarker
-    ));
+    ));    
 }
-
 
 // fn check_inventory(
 //      mut inventory: Query<&mut Inventory, With<Player>>,

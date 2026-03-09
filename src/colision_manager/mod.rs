@@ -35,7 +35,7 @@ pub struct Colider {
 impl Colider {
     pub fn check_colisions(&self, pos1: Vec2, other: &Colider, pos2: Vec2) -> bool {
         match (&self.shape, &other.shape) {
-            (ColiderShape::Circle {radius: r1},ColiderShape::Circle {radius: r2}) => {
+            (ColiderShape::Circle {radius: _r1},ColiderShape::Circle {radius: _r2}) => {
                 false
             },
             (ColiderShape::Circle { radius }, ColiderShape::Rectangle { width, height }) |

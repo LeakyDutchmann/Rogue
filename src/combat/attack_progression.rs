@@ -1,15 +1,10 @@
 use super::*;
-use bevy::render::render_resource::PrimitiveTopology;
-use bevy::asset::RenderAssetUsages;
-use bevy::mesh::Indices;
 
 pub fn attack_progression_system(
     time: Res<Time>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut AttackAnimation, &ChildOf)>,
     tf_qr: Query<(&Transform, &HurtBox)>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     for (entity, mut anim, childof) in query.iter_mut() {
         anim.progress += time.delta_secs() / anim.duration;
@@ -41,6 +36,8 @@ pub fn attack_progression_system(
                         timer: Timer::from_seconds(1.0, TimerMode::Once),
                     });
                 }
+                // if you ever decide to check the hitbox = fell free to use those triangles
+                // mad with Ai love
                 // let v1 = Vec2::ZERO; // origin, will be placed by Transform
                 // let v2 = Vec2::new(start_angle.cos(), start_angle.sin()) * anim.item_radius;
                 // let v3 = Vec2::new(end_angle.cos(), end_angle.sin()) * anim.item_radius;

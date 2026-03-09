@@ -12,7 +12,6 @@ pub fn floor_setup(
             let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
             let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
             let position = IVec2::new(x as i32, y as i32);
-
             commands.spawn((
                 Sprite::from_atlas_image(
                             atlas.texture.clone(),
@@ -24,12 +23,9 @@ pub fn floor_setup(
                 Transform::from_xyz(pos_x, pos_y, -1.0),
                 MapTile { position, tile_type },
             ));
-            
-            
         }
     }
 }   
-
 
 pub fn setup_atlas(
     mut commands: Commands,
@@ -45,8 +41,6 @@ pub fn setup_atlas(
         layout: layout_handle,
     });
 }
-
-
 
 pub fn map_setup(
     mut commands: Commands,
@@ -97,11 +91,9 @@ pub fn map_setup(
     }
 }
 
-
 pub fn xy_idx(x: usize, y: usize) -> usize {
     (y as usize * MAP_WIDTH) + x as usize
 }
-
 
 fn has_tile_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if y == 0 {
@@ -113,6 +105,7 @@ fn has_tile_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     below_tile_type != TileType::Empty 
 
 }
+
 fn has_tile_above(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if y + 1 >=  MAP_HEIGHT {
         return false;
@@ -123,6 +116,7 @@ fn has_tile_above(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     
     above_tile_type != TileType::Empty 
 }
+
 fn has_tile_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x == 0 {
         return false;
@@ -134,6 +128,7 @@ fn has_tile_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     left_tile_type != TileType::Empty 
 
 }
+
 fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if x + 1 >= MAP_WIDTH {
         return false;
@@ -145,9 +140,6 @@ fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     right_tile_type != TileType::Empty
 }
 
-
-
-
 pub fn update_map(
     mut map: ResMut<GameMap>,
     mut query: Query<(&mut Sprite, &mut MapTile), With<Wall>>,
@@ -155,23 +147,23 @@ pub fn update_map(
 ) {
     let mut copied = map.tiles.clone();
     for changes in reader.read() {
-        println!("msg read");
         let changed_x = changes.position.x;
         let changed_y = changes.position.y;
         let changed_idx = xy_idx(changed_x as usize, changed_y as usize);
         copied[changed_idx] = TileType::Empty;
         for x in changed_x.saturating_sub(2)..=(changed_x + 2)  {
-            if x as usize >= MAP_WIDTH { continue; }
+            if x as usize >= MAP_WIDTH {
+                continue; 
+            }
             for y in changed_y.saturating_sub(2)..=(changed_y + 2) {
-                if y as usize >= MAP_HEIGHT { continue; }
-                
+                if y as usize >= MAP_HEIGHT {
+                    continue; 
+                }
                 let idx = xy_idx(x as usize, y as usize);
                 let mut tile_type = copied[idx];
-                // println!("Now Saw tile with type: {:?} at ({}, {})", tile_type, x, y); for debug
+                //come back and fix this unreaded tile_type
                 tile_type = pick_tile_type(&copied, x as usize, y as usize);
-                // println!("changed tile type to {:?}", tile_type); for debug
                 map.tiles[idx] = tile_type;
-                
                 for (mut sprite, mut tile) in query.iter_mut() {
                     if tile.position.x == x && tile.position.y == y {
                         let tile_idx = xy_idx(tile.position.x as usize, tile.position.y as usize);

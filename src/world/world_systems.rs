@@ -1,5 +1,4 @@
 use crate::world::*;
-use bevy::{color::palettes::basic::PURPLE, prelude::*};
 
 pub fn insert_entities(
     mut entities: Query<(Entity, &Transform)>,
@@ -38,7 +37,6 @@ pub fn get_cells_3x3(central: (i32, i32)) -> Vec<(i32, i32)> {
     neighbour_cells
 }
 
-
 pub fn get_entities_in_cells(cells: Vec<(i32, i32)>, world: &WorldGrid) -> Vec<Entity> {
     let mut entities = Vec::new();
     for cell in cells {
@@ -70,20 +68,17 @@ pub fn find_empty_cells(
 }
 
 pub fn update_empty_cells(
-    mut world: ResMut<WorldGrid>,
     mut reader: MessageReader<MapChanged>,
     mut empty_cells: ResMut<EmptyCellsWorldPos>,
-    wall: Query<&Wall>,
 ) {
     for msg in reader.read() {
         let cell_pos = tile_pos_to_world_pos(msg.position);
         empty_cells.cells.push(cell_pos);
-        println!("removed cell at ({}, {})", cell_pos.x, cell_pos.y);
     } 
 }
 
 pub fn setup_bounds(
-    mut shared: ResMut<SharedBounds>,
+    shared: ResMut<SharedBounds>,
     grid: Res<EmptyCellsWorldPos>,
 ) {
     let mut bounds = shared.0.write().unwrap();
@@ -96,12 +91,12 @@ pub fn setup_bounds(
 }
 
 pub fn update_bounds(
-    mut shared: ResMut<SharedBounds>,
+    shared: ResMut<SharedBounds>,
     grid: Res<EmptyCellsWorldPos>,
 ) {
-    // Bevy's change detection - only runs when EmptyCellsWorldPos mutated
-    if !grid.is_changed() { return; }
-    
+    if !grid.is_changed() {
+        return; 
+    }
     let mut bounds = shared.0.write().unwrap();
     bounds.clear();
     for cell in grid.cells.iter() {
@@ -109,22 +104,6 @@ pub fn update_bounds(
             x: (cell.x / CELL_SIZE) as i32,
             y: (cell.y / CELL_SIZE) as i32,
         });
-    }
-}
-
-pub fn modify_empty(
-    mut commands: Commands,
-    cells: Res<EmptyCellsWorldPos>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    for &pos in cells.cells.iter(){
-        commands.spawn((
-                Mesh2d(meshes.add(Rectangle::default())),
-                MeshMaterial2d(materials.add(Color::from(PURPLE))),
-                Transform::from_xyz(pos.x, pos.y, 2.0).with_scale(Vec3::splat(32.0)),
-            ));
-        println!("spawned at {:?}", pos);
     }
 }
 

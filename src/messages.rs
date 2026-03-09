@@ -5,14 +5,12 @@ pub struct MessagesPlugin;
 impl Plugin for MessagesPlugin {
     fn build(&self, app: &mut App) {
         app.add_message::<ItemDropped>()
-            .add_message::<HitMessage>()
             .add_message::<MouseClickEvent>()
             .add_message::<ScrollMessage>()
             .add_message::<MapChanged>()
             .add_message::<ApplyDamage>()
             .add_message::<CalculateDamage>()
-            .add_message::<FindPath>()
-            .add_message::<KnockBackMsg>();
+            .add_message::<FindPath>();
     }
 }
 
@@ -27,16 +25,6 @@ pub enum ScrollDir {
 pub struct ItemDropped {
     pub item: Option<Entity>,
 }
-
-
-#[derive(Message)]
-pub struct HitMessage {
-    pub item: Option<Entity>,
-    pub target: Option<Vec2>,
-    pub item_radius: f32,
-    pub item_pos: Vec2,
-}
-
 
 #[derive(Message)]
 pub enum MouseClickEvent {
@@ -88,11 +76,4 @@ pub struct CalculateDamage {
     pub from_pos: Vec2,
     pub position: Vec2,
     pub damage_type: DamageType,
-}
-
-#[derive(Message)]
-pub struct KnockBackMsg {
-    pub target: Entity,
-    pub from_pos: Vec2,
-    pub position: Vec2,
 }

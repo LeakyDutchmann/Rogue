@@ -6,7 +6,6 @@ use animations_setup::*;
 pub use components::*;
 use crate::components::{Facing, ActorState, ActorStateType, FacingDirection};
 use std::collections::HashMap;
-use crate::player::{Player};
 use crate::items::{AnimationStyle};
 use crate::combat::{AttackAnimation, damage_execution_system};
 use crate::map_setup::MAX_Y;

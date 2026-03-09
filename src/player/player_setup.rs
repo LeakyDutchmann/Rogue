@@ -1,7 +1,4 @@
-use bevy::render::render_resource::Face;
-
 use crate::{components::Health, player::*};
-
 
 pub fn player_setup(
     mut commands: Commands,
@@ -9,7 +6,6 @@ pub fn player_setup(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 
 ) {
-    //PLAYER SETUP
     let texture = asset_server.load("player_spritesheet.png");
     let layout = TextureAtlasLayout::from_grid(
         UVec2::splat(32), 
@@ -19,7 +15,7 @@ pub fn player_setup(
         None
     );
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-
+    
     commands.spawn((
         Sprite::from_atlas_image(
             texture,
@@ -71,8 +67,5 @@ pub fn player_setup(
             Transform::default(),
         ));
 
-    });
-    
-    //Spawning entity to test colisions, don't forget to remove!
-    
+    });  
 }

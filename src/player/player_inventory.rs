@@ -1,12 +1,9 @@
 use super::*;
 
-
-
 pub fn setup_inventory(
     mut commands: Commands,
 ) {
     let mut slots = Vec::new();
-    
     for i in 0..9 {
         slots.push(commands.spawn((
             Slot {
@@ -27,7 +24,6 @@ pub fn setup_inventory(
             ));
         }).id());
     }
-    
     let root = commands.spawn((
             Node {
                 border: UiRect::all(Val::Px(2.0)),
@@ -46,7 +42,6 @@ pub fn setup_inventory(
             BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
             BorderColor::all(Color::srgb(1.0, 1.0, 1.0)),
         )).id();
-    
     for slot in slots {
         commands.entity(root).add_child(slot);
     }
@@ -58,15 +53,12 @@ pub fn sync_player_inventory(
     mut slots: Query<(Entity, &mut SlotIcon)>, item_query: Query<&Item>,
 ) {
     if let Ok(inventory) = inventory.single() {
-        // println!("foundi nventory");
         for (slot_e, slot_icon) in slots.iter_mut() {
             let slot_idx = slot_icon.index;
-            // println!("found idx");
             if let Some(Some(item_entity)) = inventory.items.get(slot_idx) {
                 let texture = item_query.get(*item_entity).unwrap();
                 let image = texture.image.clone();
                 commands.entity(slot_e).insert(ImageNode::new(image));
-                // println!("inserted img");
             } else {
                 commands.entity(slot_e).remove::<ImageNode>();
             } 
@@ -93,9 +85,8 @@ pub fn draw_helditem(
     mut commands: Commands,
     mut held_item: Query<(Entity, &mut HeldItem), (With<HeldItem>, Without<AttackAnimation>)>,
     item_query: Query<&Item>,
-    sprite_query: Query<&Sprite>,
 ) {
-    for ((actor_hand, mut held_item)) in held_item.iter_mut() {
+    for (actor_hand, mut held_item) in held_item.iter_mut() {
         if let Some(held) = held_item.held {
             if let Some(last_held) = held_item.last_held {
                 if held != last_held {
@@ -131,7 +122,6 @@ pub fn sync_player_held_item(
                     held.held = Some(*item_e);
                 }
             } else {
-                // No item in active slot - remove sprite if we were holding something
                 if held.held.is_some() {
                     held.held = None;
                 }
@@ -145,7 +135,7 @@ pub fn update_held_item_dir(
     mut held_item: Query<(&mut Transform, &ChildOf, &mut Sprite), (With<HeldItem>, Without<AttackAnimation>)>,
     facing_qr: Query<&FacingDirection>,
 ) {
-    for ((mut hand_pos, childof, mut sprite)) in held_item.iter_mut() {
+    for (mut hand_pos, childof, mut sprite) in held_item.iter_mut() {
         if let Ok(facing) = facing_qr.get(childof.0) {
             match facing.facing {
                 Facing::Up => {

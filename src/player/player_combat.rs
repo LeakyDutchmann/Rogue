@@ -3,14 +3,14 @@ use super::*;
 pub fn initialize_attack(
     mut commands: Commands,
     player_qr: Query<Entity, With<Player>>,
-    mut hand: Query<(Entity, &HeldItem, &GlobalTransform, &ChildOf), (With<HeldItem>, Without<AttackAnimation>)>,
+    hand: Query<(Entity, &HeldItem, &ChildOf), (With<HeldItem>, Without<AttackAnimation>)>,
     attack_stats: Query<(&CombatStats, &AnimationPattern)>,
     mut reader: MessageReader<MouseClickEvent>,
 ) { 
     for click in reader.read() {
         if let Ok(player_e) = player_qr.single() {
             if let MouseClickEvent::LeftClick(click_pos) = click {
-                for ((hend_e, helditem, transform, childof)) in hand.iter() {
+                for (hend_e, helditem, childof) in hand.iter() {
                     if player_e != childof.0 {
                         continue
                     }
@@ -26,7 +26,6 @@ pub fn initialize_attack(
                                     cursor_pos: *click_pos,
                                     item: item,
                                     item_radius: stats.radius,
-                                    item_pos: transform.compute_transform().translation.truncate(),
                                 }
                             );
                         }
