@@ -65,6 +65,7 @@ pub fn player_setup(
     )).with_children(|parent| {
         parent.spawn((
             HeldItem {
+                held: None,
                 last_held: None,
             },
             Transform::default(),

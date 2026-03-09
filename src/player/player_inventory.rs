@@ -91,19 +91,31 @@ pub fn show_active_slot(
 
 pub fn draw_helditem(
     mut commands: Commands,
-    mut held_item: Query<(Entity, &mut HeldItem, &mut Transform), (With<HeldItem>, Without<AttackAnimation>)>,
+    mut held_item: Query<(Entity, &mut HeldItem), (With<HeldItem>, Without<AttackAnimation>)>,
     item_query: Query<&Item>,
+    sprite_query: Query<&Sprite>,
 ) {
-    for ((player_hand, mut held_item, mut hand_pos)) in held_item.iter_mut() {
-        if let Some(held) = held_item.last_held {
-            if let Ok(item) = item_query.get(held) {
-                commands.entity(player_hand).insert(Sprite::from_image(item.image.clone()));
+    for ((actor_hand, mut held_item)) in held_item.iter_mut() {
+        if let Some(held) = held_item.held {
+            if let Some(last_held) = held_item.last_held {
+                if held != last_held {
+                    if let Ok(item) = item_query.get(held) {
+                        commands.entity(actor_hand).insert(Sprite::from_image(item.image.clone()));
+                        held_item.last_held = Some(held);
+                    }
+                }
+            } else {
+                if let Ok(item) = item_query.get(held) {
+                    commands.entity(actor_hand).insert(Sprite::from_image(item.image.clone()));
+                    held_item.last_held = Some(held);
+                }
+                
             }
-            
+             
         } else {
-            commands.entity(player_hand).remove::<Sprite>();
+            commands.entity(actor_hand).remove::<Sprite>();
         }
-        hand_pos.translation = Vec3::new(0.0, 0.0, 1.0);
+        
     }
 }
 
@@ -115,13 +127,13 @@ pub fn sync_player_held_item(
     for (mut held, childof) in held_item.iter_mut() {
         if let Ok((inventory, active)) = inventory_qr.get(childof.0) {
             if let Some(Some(item_e)) = inventory.items.get(active.index) {
-                if held.last_held != Some(*item_e) {
-                    held.last_held = Some(*item_e)
+                if held.held != Some(*item_e) {
+                    held.held = Some(*item_e);
                 }
             } else {
                 // No item in active slot - remove sprite if we were holding something
-                if held.last_held.is_some() {
-                    held.last_held = None;
+                if held.held.is_some() {
+                    held.held = None;
                 }
             }
         }
@@ -130,17 +142,31 @@ pub fn sync_player_held_item(
 
 
 pub fn update_held_item_dir(
-    mut held_item: Query<(&mut Transform, &mut Sprite), (With<HeldItem>, Without<AttackAnimation>)>,
-    player: Query<(&Player, &FacingDirection)>,
+    mut held_item: Query<(&mut Transform, &ChildOf, &mut Sprite), (With<HeldItem>, Without<AttackAnimation>)>,
+    facing_qr: Query<&FacingDirection>,
 ) {
-    let Ok((player, facing_dir)) = player.single() else { return };
-    let Ok((mut transform, mut sprite)) = held_item.single_mut() else { return };
-    sprite.flip_x = matches!(facing_dir.facing, Facing::Left);
-    if facing_dir.facing == Facing::Right {
-        transform.rotation = Quat::from_rotation_z((30.0_f32).to_radians());
-    } else if facing_dir.facing == Facing::Left {
-        transform.rotation = Quat::from_rotation_z(-(30.0_f32).to_radians());
-        sprite.flip_x = true;
+    for ((mut hand_pos, childof, mut sprite)) in held_item.iter_mut() {
+        if let Ok(facing) = facing_qr.get(childof.0) {
+            match facing.facing {
+                Facing::Up => {
+                    hand_pos.translation = Vec3::new(0.0, 0.0, -1.0);
+                    hand_pos.rotation = Quat::from_rotation_z((30.0_f32).to_radians());
+                },
+                Facing::Down => {
+                    hand_pos.translation = Vec3::new(0.0, 0.0, 1.0);
+                    hand_pos.rotation = Quat::from_rotation_z((30.0_f32).to_radians());
+                },
+                Facing::Left => {
+                    hand_pos.translation = Vec3::new(0.0, 0.0, 1.0);
+                    hand_pos.rotation = Quat::from_rotation_z(-(30.0_f32).to_radians());
+                    sprite.flip_x = true;
+                },
+                Facing::Right => {
+                    hand_pos.translation = Vec3::new(0.0, 0.0, 1.0);
+                    hand_pos.rotation = Quat::from_rotation_z((30.0_f32).to_radians());
+                },
+            }
+        }
     }
 }
 
