@@ -9,13 +9,14 @@ use attack_progression::*;
 
 use crate::map_setup::{MapTile, Wall, TileType, world_pos_to_tile_pos};
 use crate::world::{WorldGrid, CELL_SIZE, get_cells_in_radius, get_entities_in_cells};
-use crate::components::{Health, ActorState, ActorStateType, Facing, FacingDirection, DeathTimer};
+use crate::components::{Health, ActorState, ActorStateType, Facing, FacingDirection, DeathTimer, Speed,};
 use crate::messages::{HitMessage, ApplyDamage, MapChanged, CalculateDamage, DamageType, KnockBackMsg};
 use crate::items::{WeaponStats, ToolStats, AnimationStyle};
 use crate::enemy::Enemy;
 use crate::player::{HeldItem, Player, initialize_attack};
 use bevy::prelude::ops::atan2;
 use crate::animations::*;
+use crate::colision_manager::Colider;
 
 
 pub struct CombatPlugin;
@@ -24,9 +25,9 @@ impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, (attack_progression_system, hit_detection_system, calculate_damage,
             damage_execution_system, despawn_used_hitboxes).chain().after(initialize_attack));
-        app.add_systems(Update, tick_hurt_timers.after(damage_execution_system));
-        app.add_systems(Update, dead_actor_processing.after(tick_hurt_timers));
-        app.add_systems(Update, tick_cooldown.after(damage_execution_system));
+        app.add_systems(Update, tick_hurt_timers);
+        app.add_systems(Update, dead_actor_processing);
+        app.add_systems(Update, tick_cooldown);
     }
 }
 

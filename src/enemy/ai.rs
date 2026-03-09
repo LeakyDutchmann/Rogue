@@ -130,7 +130,7 @@ pub fn ai_initialize_attack(
     mut commands: Commands,
     player_tf: Query<(Entity, &Transform), With<Player>>,
     enemy_qr: Query<(Entity, &Transform,), With<Enemy>>,
-    hend_qr: Query<(Entity, &HeldItem, &ChildOf, &GlobalTransform), Without<AttackAnimation>>,
+    hend_qr: Query<(Entity, &HeldItem, &ChildOf, &GlobalTransform), (Without<AttackAnimation>, Without<CoolDown>)>,
     attack_stats: Query<(&CombatStats, &AnimationPattern)>,
 ) { 
     for (hend_e, held_item, childof, transform) in hend_qr.iter() {

@@ -35,7 +35,7 @@ pub fn setup_enemy(
     );
     let texture_atlas_layout = texture_atlas_layouts.add(texture_atlas);
     
-    for _ in 0..200 {
+    for _ in 0..2 {
         let pos = generate_position_near(&empty_cells.cells, Vec2::from((0.0, 0.0)));
         
         let pickaxe_e = commands.spawn((

@@ -1,6 +1,6 @@
 use bevy::math::NormedVectorSpace;
 
-use crate::components::MovementIntent;
+use crate::{components::MovementIntent, raycasting::EnemyAwareness};
 
 use super::*;
 
@@ -15,7 +15,8 @@ pub fn damage_execution_system(
     mut reader: MessageReader<ApplyDamage>,
     mut writer: MessageWriter<MapChanged>,
     mut health: Query<&mut Health>,
-    mut actor_qr: Query<(&mut ActorState)>
+    mut actor_qr: Query<(&mut ActorState)>,
+    deathtimer: Query<&DeathTimer>,
 ) {
     for destruction in reader.read() {
         if let Ok(mut hp) = health.get_mut(destruction.entity) {
@@ -43,10 +44,14 @@ pub fn damage_execution_system(
                     println!("tile down");
                 } else {
                     if let Ok(mut actor_state) = actor_qr.get_mut(destruction.entity) {
-                        actor_state.state = ActorStateType::Dead;
-                        commands.entity(destruction.entity).insert( DeathTimer {
-                            timer: Timer::from_seconds(10.0, TimerMode::Once),
-                        });
+                        if actor_state.state != ActorStateType::Dead {
+                            actor_state.state = ActorStateType::Dead;
+                            if deathtimer.get(destruction.entity).is_err() {
+                                commands.entity(destruction.entity).insert( DeathTimer {
+                                    timer: Timer::from_seconds(50.0, TimerMode::Once),
+                                });
+                            }
+                        }  
                     }
                 }
             }
@@ -74,17 +79,34 @@ pub fn tick_hurt_timers(
 pub fn dead_actor_processing(
     mut commands: Commands,
     time: Res<Time>,
-    mut actors: Query<(Entity, &ActorState, &mut DeathTimer)>,
+    mut actors: Query<(Entity, &ActorState, &mut DeathTimer, &mut Sprite)>,
 ) {
-    for (actor_e, actor_s, mut timer) in actors.iter_mut() {
+    for (actor_e, actor_s, mut timer, mut sprite) in actors.iter_mut() {
         match actor_s.state {
             ActorStateType::Dead => {
                 if timer.timer.elapsed().is_zero() {
-                    commands.entity(actor_e).retain::<(Transform, Sprite, Player, Enemy)>();
+                    commands.entity(actor_e).remove::<(
+                        Health,
+                        Colider,
+                        HurtBox,
+                        AnimationTimer,
+                        ActiveAnimation,
+                        FacingDirection,
+                        Speed,
+                        EnemyAwareness,
+                    )>();
+                    commands.entity(actor_e).despawn_children();
+                    if let Some(atlas) = &mut sprite.texture_atlas {
+                        atlas.index = 2;
+                        println!("Applied idx")
+                    } else {
+                        println!("no atlas");
+                    }
                 }
                 timer.timer.tick(time.delta());
-                if timer.timer.just_finished() {
+                if timer.timer.is_finished() {
                     commands.entity(actor_e).despawn();
+                    println!("despawnrf");
                 }
                 
             }
