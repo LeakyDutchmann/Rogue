@@ -6,7 +6,7 @@ use animations_setup::*;
 pub use components::*;
 use crate::components::{Facing, ActorState, ActorStateType, FacingDirection};
 use std::collections::HashMap;
-use crate::items::{AnimationStyle};
+use crate::items::{AnimationStyle, HeldItem, Item};
 use crate::combat::{AttackAnimation, damage_execution_system};
 use crate::map_setup::MAX_Y;
 
@@ -32,6 +32,7 @@ impl Plugin for AnimationSetupPlugin {
         });
         app.add_systems(Update, (update_animation, reset_animation_index,
             animate_sprite, attack_animation, auto_zorder).chain().after(damage_execution_system));
+        app.add_systems(Update, (draw_helditem, update_held_item_dir).chain());
     }
 }
 

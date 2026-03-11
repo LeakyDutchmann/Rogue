@@ -84,3 +84,8 @@ pub struct Durability {
     pub durability: f32,
 }
 
+#[derive(Component)]
+pub struct HeldItem {
+    pub held: Option<Entity>,
+    pub last_held: Option<Entity>,
+}

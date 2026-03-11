@@ -15,7 +15,7 @@ pub use player_combat::*;
 use bevy::prelude::Component;
 use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::items::{Item, Inventory,CombatStats, AnimationPattern};
+use crate::items::{Item, Inventory,CombatStats, AnimationPattern, HeldItem};
 use crate::messages::{MouseClickEvent, ItemDropped};
 use crate::combat::{AttackAnimation, HurtBox, HurtTimer, FractionType};
 use super::FieldOfView;
@@ -31,7 +31,7 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
             pick_active_slot, show_active_slot, drop_item, ));
         app.add_systems(Update, initialize_attack);
-        app.add_systems(Update, (sync_player_held_item, draw_helditem, update_held_item_dir).chain());
+        app.add_systems(Update, sync_player_held_item);
     }
 }
 
@@ -58,11 +58,7 @@ pub struct ActiveSlot {
 }
 
 
-#[derive(Component)]
-pub struct HeldItem {
-    pub held: Option<Entity>,
-    pub last_held: Option<Entity>,
-}
+
 
 
 
