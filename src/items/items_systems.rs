@@ -40,6 +40,7 @@ pub fn setup_items(
                 combat_stats: item.combat_stats,
                 weapon_stats: item.weapon_stats,
                 tool_stats: item.tool_stats,
+                max_stack: item.max_stack,
             });
             item_count += 1;
         }
@@ -52,6 +53,61 @@ fn generate_random_coords(pos: Vec2) -> Vec2 {
     let dx = rng.random_range(-30.0..30.0);
     let dy = rng.random_range(-30.0..30.0);
     Vec2::new(pos.x + dx, pos.y + dy)
+}
+
+pub fn pick_up_near_item(
+    mut items: Query<(Entity, &mut ItemId, &mut Transform), Without<Player>>,
+    mut player: Query<(&Transform, &mut Inventory), With<Player>>,
+    registry: Res<ItemRegistry>,
+    mut commands: Commands,
+) {
+    for (item_e, item_id, item_tf) in items.iter_mut() {
+        let item_pos = item_tf.translation.truncate();
+        if let Ok((player_tf, mut inventory)) = player.single_mut() {
+            let player_pos = player_tf.translation.truncate();
+            if player_pos.distance(item_pos) > 100.0 {
+                continue;
+            }
+            if player_pos.distance(item_pos) < 10.0 {
+                let mut pushed = false;
+                for slot in inventory.items.iter_mut() {
+                    if let Some(stored_id) = slot.item_stored.clone() {
+                        if stored_id == *item_id {
+                            let def = registry.items.get(&stored_id).unwrap();
+                            if slot.quantity < def.max_stack {
+                                slot.quantity += 1;
+                                pushed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if !pushed {
+                    for slot in inventory.items.iter_mut() {
+                        if slot.item_stored.is_none() {
+                            slot.item_stored = Some(*item_id);
+                            slot.quantity = 1;
+                            commands.entity(item_e).despawn();
+                            break;                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn draw_held_item(
+    mut commands: Commands,
+    held_item: Query<(Entity, &HeldItem)>,
+    item_registry: Res<ItemRegistry>,
+) {
+    for (entity, held_item) in held_item.iter() {
+        if let Some(item_id) = held_item.held {
+            if let Some(def) = item_registry.items.get(&item_id) {
+                commands.entity(entity).insert(Sprite::from_image(def.sprite.clone()));
+            }
+        }
+    }
 }
 
 // pub fn update_dropped_items(

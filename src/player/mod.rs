@@ -29,7 +29,7 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(Startup, (player_setup, setup_inventory));
         app.add_systems(FixedUpdate, move_player.after(ai_steering));
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
-            pick_active_slot, show_active_slot, drop_item, ));
+            pick_active_slot, show_active_slot, drop_item, sync_player_held_item ));
         app.add_systems(Update, initialize_attack);
     }
 }

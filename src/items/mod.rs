@@ -1,7 +1,9 @@
 mod items_systems;
+mod item_functions;
 
 use bevy::prelude::*;
 use items_systems::*;
+pub use item_functions::*;
 use rand::Rng;
 
 use crate::player::{Player};
@@ -17,11 +19,12 @@ impl Plugin for ItemsPlugin {
             items: HashMap::new(),
         });
         app.add_systems(Startup, setup_items);
+        app.add_systems(Update, (pick_up_near_item));
     }
 }
 
 
-#[derive(Deserialize, Debug, Hash)]
+#[derive(Deserialize, Debug, Hash, Clone, Copy)]
 pub struct CombatStatsRaw {
     pub attack_speed: i32,
     pub swing_angle: i32,
@@ -29,19 +32,19 @@ pub struct CombatStatsRaw {
 }
 
 
-#[derive(Deserialize, Debug, Hash)]
+#[derive(Deserialize, Debug, Hash, Clone, Copy)]
 pub struct WeaponStatsRaw {
     pub enemy_damage: i32,
 }
 
 
-#[derive(Deserialize, Debug, Hash)]
+#[derive(Deserialize, Debug, Hash, Clone, Copy)]
 pub struct ToolStatsRaw {
     pub structure_damage: i32,
 }
 
 
-#[derive(Deserialize, Hash, Debug, Clone, PartialEq, Eq, Component)]
+#[derive(Deserialize, Hash, Debug, Clone, PartialEq, Eq, Component, Copy)]
 pub enum ItemId {
     Sword,
     PickAxe,
@@ -59,6 +62,7 @@ pub struct ItemDefinitionRaw {
     pub combat_stats: Option<CombatStatsRaw>,
     pub weapon_stats: Option<WeaponStatsRaw>,
     pub tool_stats: Option<ToolStatsRaw>,
+    pub max_stack: usize,
 }
 
 
@@ -72,6 +76,7 @@ pub struct ItemDefinition {
     pub combat_stats: Option<CombatStatsRaw>,
     pub weapon_stats: Option<WeaponStatsRaw>,
     pub tool_stats: Option<ToolStatsRaw>,
+    pub max_stack: usize,
 }
 
 
@@ -104,7 +109,7 @@ pub struct InInventory;
 #[derive(Clone)]
 pub struct ItemStack {
     pub item_stored: Option<ItemId>,
-    pub quantity: u32,
+    pub quantity: usize,
 }
 
 
@@ -150,6 +155,6 @@ pub struct Durability {
 
 #[derive(Component)]
 pub struct HeldItem {
-    pub held: Option<Entity>,
-    pub last_held: Option<Entity>,
+    pub held: Option<ItemId>,
+    pub last_held: Option<ItemId>,
 }

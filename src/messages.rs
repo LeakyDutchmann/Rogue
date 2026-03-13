@@ -71,7 +71,7 @@ pub enum DamageType {
 
 #[derive(Message)]
 pub struct CalculateDamage {
-    pub attack_item: Entity,
+    pub attack_item: ItemId,
     pub target: Entity,
     pub from_pos: Vec2,
     pub position: Vec2,

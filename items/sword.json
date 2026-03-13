@@ -5,6 +5,7 @@
   "durability": 100,
   "usable": false,
   "animation_style": "Sword",
+  "max_stack": 1,
   "combat_stats": {
     "attack_speed": 250,
     "swing_angle": 180,

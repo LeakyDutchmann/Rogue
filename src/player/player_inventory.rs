@@ -1,3 +1,5 @@
+use crate::items::assemble_item;
+
 use super::*;
 
 pub fn setup_inventory(
@@ -86,7 +88,31 @@ pub fn show_active_slot(
     }
 }
 
-
+pub fn sync_player_held_item(
+    player: Query<(Entity, &mut Inventory, &ActiveSlot), With<Player>>,
+    mut hand: Query<(&ChildOf, &mut HeldItem)>,
+) {
+    if let Ok((player_e, inventory, active_slot)) = player.single() {
+        for (child_of, mut held_item) in hand.iter_mut() {
+            if child_of.0 != player_e {
+                continue;
+            }
+            let item_stack = inventory.items.get(active_slot.index).unwrap();
+            if let Some(item_id) = &item_stack.item_stored {
+                if held_item.held != Some(*item_id) {
+                    held_item.held = Some(*item_id);
+                    println!("Held item changed to {:?}", item_id);
+                }
+            } else {
+                if held_item.held.is_some() {
+                    held_item.last_held = held_item.held;
+                    held_item.held = None;
+                    println!("Held item cleared");
+                }
+            }
+        }
+    }
+}
 
 
 
