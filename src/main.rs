@@ -46,73 +46,52 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
-    let pickaxe_texture = asset_server.load("pickaxe.png");
-    let sword_texture = asset_server.load("sword.png");
-    commands.spawn((
-        Sprite::from_image(pickaxe_texture.clone()),
-        Transform::from_xyz(-44.0, 0.0, 1.0),
-        Item {
-            image: pickaxe_texture.clone(),
-            name: "Pickaxe".to_string(),
-        },
-        OnGround,
-        CombatStats {
-            attack_speed: 300.0,
-            swing_angle: std::f32::consts::PI / 3.0,
-            radius: 32.0,
-        },
-        AnimationPattern{
-            pattern: AnimationStyle::PickAxe,
-        },
-        ToolStats {
-            structure_damage: 33,
-        },
-        Durability {
-            durability: 100.0,
-        }
-    ));
-    commands.spawn((
-        Sprite::from_image(sword_texture.clone()),
-        Transform::from_xyz(-44.0, 0.0, 1.0),
-        Item {
-            image: sword_texture.clone(),
-            name: "Sword".to_string(),
-        },
-        OnGround,
-        CombatStats {
-            attack_speed: 200.0,
-            swing_angle: std::f32::consts::PI,
-            radius: 44.0,
-        },
-        AnimationPattern {
-            pattern: AnimationStyle::Sword,
-        },
-        WeaponStats {
-            enemy_damage: 25,
-        },
-        Durability {
-            durability: 100.0,
-        }
-    ));    
+pub fn assemble_item(definition: &ItemDefinition, commands: &mut Commands) -> Entity {
+    let mut entity = commands.spawn(());
+    if let Some(combat_stats) = &definition.combat_stats {
+        entity.insert(CombatStats{
+            attack_speed: combat_stats.attack_speed as f32,
+            swing_angle: combat_stats.swing_angle as f32,
+            radius: combat_stats.radius as f32,
+        });
+    }
+    if let Some(weapon_stats) = &definition.weapon_stats {
+        entity.insert(WeaponStats{
+            enemy_damage: weapon_stats.enemy_damage,
+        });
+    }
+    if let Some(tool_stats) = &definition.tool_stats {
+        entity.insert(ToolStats {
+            structure_damage: tool_stats.structure_damage,
+        });
+    }
+    if let Some(durability) = definition.durability {
+        entity.insert(Durability {
+            durability: durability,
+        });
+    }
+    if definition.usable {
+        entity.insert(Usable);
+    }
+    entity.insert(Sprite::from_image(definition.sprite.clone()));
+    entity.insert(ItemId::Sword);
+    entity.insert(AnimationPattern {
+        pattern: definition.animation_style,
+    });
+    entity.id()
 }
 
-// fn check_inventory(
-//      mut inventory: Query<&mut Inventory, With<Player>>,
-// ) {
-//     let inventory = inventory.single_mut().unwrap();
-//     println!("Checking inventory");
-//     for item in inventory.items.iter() {
-//         if let Some(item) = item {
-//             println!("Item found");
-//         } else {
-//             println!("No item found");
-//         }
-//     }
-// }
+pub fn setup(
+    mut commands: Commands,
+    item_reg: Res<ItemRegistry>,
+) {
+    if let Some(def) = item_reg.items.get(&ItemId::Sword) {
+        let item_entity = assemble_item(def, &mut commands);
+        commands.entity(item_entity).insert(Transform::from_xyz(0.0, 0.0, 0.0));
+        commands.entity(item_entity).insert(OnGround);
+    }
+}
+
 
 
 

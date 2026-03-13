@@ -15,7 +15,7 @@ pub use player_combat::*;
 use bevy::prelude::Component;
 use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::items::{Item, Inventory,CombatStats, AnimationPattern, HeldItem};
+use crate::items::{Inventory,CombatStats, AnimationPattern, HeldItem, ItemStack, ItemRegistry, ItemId};
 use crate::messages::{MouseClickEvent, ItemDropped};
 use crate::combat::{AttackAnimation, HurtBox, HurtTimer, FractionType};
 use super::FieldOfView;
@@ -31,7 +31,6 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
             pick_active_slot, show_active_slot, drop_item, ));
         app.add_systems(Update, initialize_attack);
-        app.add_systems(Update, sync_player_held_item);
     }
 }
 

@@ -1,0 +1,16 @@
+{
+  "name": "PickAxe",
+  "icon": "pickaxe.png",
+  "sprite": "pickaxe.png",
+  "durability": 100,
+  "usable": false,
+  "animation_style": "PickAxe",
+  "combat_stats": {
+    "attack_speed": 300,
+    "swing_angle": 45,
+    "radius": 32
+  },
+  "tool_stats": {
+    "structure_damage": 25
+  }
+}

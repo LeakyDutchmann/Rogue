@@ -50,15 +50,20 @@ pub fn setup_inventory(
 pub fn sync_player_inventory(
     mut commands: Commands,
     inventory: Query<&Inventory, (With<Player>, Changed<Inventory>)>,
-    mut slots: Query<(Entity, &mut SlotIcon)>, item_query: Query<&Item>,
+    mut slots: Query<(Entity, &mut SlotIcon)>,
+    item_registry: Res<ItemRegistry>,
 ) {
     if let Ok(inventory) = inventory.single() {
         for (slot_e, slot_icon) in slots.iter_mut() {
             let slot_idx = slot_icon.index;
-            if let Some(Some(item_entity)) = inventory.items.get(slot_idx) {
-                let texture = item_query.get(*item_entity).unwrap();
-                let image = texture.image.clone();
-                commands.entity(slot_e).insert(ImageNode::new(image));
+            if let Some(item_stack) = inventory.items.get(slot_idx) {
+                if let Some(itemid) = &item_stack.item_stored {
+                    if let Some(def) = item_registry.items.get(&itemid) {
+                        let icon = def.icon.clone();
+                        commands.entity(slot_e).insert(ImageNode::new(icon));
+                    }
+                }
+               
             } else {
                 commands.entity(slot_e).remove::<ImageNode>();
             } 
@@ -81,27 +86,6 @@ pub fn show_active_slot(
     }
 }
 
-
-
-pub fn sync_player_held_item(
-    mut held_item: Query<(&mut HeldItem, &ChildOf),
-        (With<HeldItem>, Without<AttackAnimation>,)>,
-    inventory_qr: Query<(&Inventory, &ActiveSlot), With<Player>>,
-) {
-    for (mut held, childof) in held_item.iter_mut() {
-        if let Ok((inventory, active)) = inventory_qr.get(childof.0) {
-            if let Some(Some(item_e)) = inventory.items.get(active.index) {
-                if held.held != Some(*item_e) {
-                    held.held = Some(*item_e);
-                }
-            } else {
-                if held.held.is_some() {
-                    held.held = None;
-                }
-            }
-        }
-    }
-}
 
 
 

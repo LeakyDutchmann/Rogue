@@ -2,7 +2,7 @@ mod mouse_input;
 
 pub use mouse_input::*;
 use bevy::prelude::*;
-use crate::items::{Item, IntentPickingUp, OnGround};
+use crate::items::{IntentPickingUp, OnGround};
 use crate::player::Player;
 use crate::messages::{MouseClickEvent, ScrollMessage, ScrollDir};
 
@@ -19,7 +19,7 @@ pub struct MouseInputPlugin;
 
 impl Plugin for MouseInputPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (get_cursor_position, mouse_click_handler, scroll_events, item_click_system));
+        app.add_systems(Update, (get_cursor_position, mouse_click_handler, scroll_events));
         app.insert_resource(CursorWorldPos(None));
     }
 }

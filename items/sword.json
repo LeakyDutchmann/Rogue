@@ -1,0 +1,16 @@
+{
+  "name": "Sword",
+  "icon": "sword.png",
+  "sprite": "sword.png",
+  "durability": 100,
+  "usable": false,
+  "animation_style": "Sword",
+  "combat_stats": {
+    "attack_speed": 250,
+    "swing_angle": 180,
+    "radius": 44
+  },
+  "weapon_stats": {
+    "enemy_damage": 22
+  }
+}

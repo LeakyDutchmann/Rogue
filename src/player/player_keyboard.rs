@@ -41,10 +41,12 @@ pub fn drop_item(
         if keys.just_pressed(KeyCode::KeyG) {
             if let Ok(mut inventory) = inventory.single_mut() {
                 if let Some(item) = inventory.items.get_mut(active_slot.index) {
-                    let dropped_item = *item;
-                    *item = None; 
+                    item.quantity -= 1; 
+                    if item.quantity == 0 {
+                        item.item_stored = None;
+                    }
                     println!("Item dropped"); 
-                    writer.write(ItemDropped {item: dropped_item });
+                    // writer.write(ItemDropped {item: dropped_item });
                     println!("event sent"); 
                 } 
             } 

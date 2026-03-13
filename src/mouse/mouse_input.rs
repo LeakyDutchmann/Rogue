@@ -26,34 +26,6 @@ pub fn mouse_click_handler(
     }
 }
 
-
-
-pub fn item_click_system(
-    mut commands: Commands,
-    mut query: Query<(Entity, &Transform), (With<Item>, With<OnGround>)>,
-    mut player: Query<Entity, With<Player>>,
-    mut reader: MessageReader<MouseClickEvent>,
-) {
-    let player = player.single_mut().unwrap();
-    for click in reader.read() {
-        if let MouseClickEvent::LeftClick(click_pos) = click {
-            for (entity, transform) in query.iter_mut() {
-                let item_pos = transform.translation.truncate();
-                let dist = click_pos.distance(item_pos);
-                if dist <= 32.0  {
-                    commands.entity(player).insert(IntentPickingUp { target: entity});
-                    println!("trying to pick up item!")
-                }
-                
-            }
-        }
-    }
-}
-
-
-
-
-
 pub fn scroll_events(
     mut scroll: MessageReader<MouseWheel>,
     mut writer: MessageWriter<ScrollMessage>,
