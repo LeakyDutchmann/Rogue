@@ -114,7 +114,7 @@ pub fn ai_initialize_attack(
 ) { 
     for (hend_e, held_item, childof) in hend_qr.iter() {
         if let Ok((enemy_e, enemy_tf)) = enemy_qr.get(childof.0) {
-            if let Some(item) = held_item.last_held {
+            if let Some(item) = held_item.held {
                 if let Ok((player_e, player_tf)) = player_tf.single() {
                     if let Some(def) = registry.items.get(&item) {
                         if let Some(c_stats) = def.combat_stats {
