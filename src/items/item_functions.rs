@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn assemble_item(definition: &ItemDefinition, commands: &mut Commands) -> Entity {
+pub fn assemble_item(definition: &ItemDefinition, commands: &mut Commands, item_id: &ItemId) -> Entity {
     let mut entity = commands.spawn(());
     if let Some(combat_stats) = &definition.combat_stats {
         entity.insert(CombatStats{
@@ -28,9 +28,10 @@ pub fn assemble_item(definition: &ItemDefinition, commands: &mut Commands) -> En
         entity.insert(Usable);
     }
     entity.insert(Sprite::from_image(definition.sprite.clone()));
-    entity.insert(ItemId::Sword);
+    entity.insert(item_id.clone());
     entity.insert(AnimationPattern {
         pattern: definition.animation_style,
     });
+    println!("asssembled: {:?}", entity.id());
     entity.id()
 }
