@@ -32,26 +32,16 @@ pub fn pick_active_slot(
     }
 }
 
-pub fn drop_item(
+pub fn keyboard_input_system(
     keys: Res<ButtonInput<KeyCode>>,
-    active_slot: Query<&ActiveSlot>, mut inventory: Query<&mut Inventory, With<Player>>,
-    mut writer: MessageWriter<ItemDropped>, )
+    mut writer: MessageWriter<KeyPressed>, )
 {
-    if let Ok(active_slot) = active_slot.single() {
-        if keys.just_pressed(KeyCode::KeyG) {
-            if let Ok(mut inventory) = inventory.single_mut() {
-                if let Some(item) = inventory.items.get_mut(active_slot.index) {
-                    item.quantity -= 1; 
-                    if item.quantity == 0 {
-                        item.item_stored = None;
-                    }
-                    println!("Item dropped"); 
-                    // writer.write(ItemDropped {item: dropped_item });
-                    println!("event sent"); 
-                } 
-            } 
-        } 
-    } 
+    if keys.just_pressed(KeyCode::KeyG) {
+        writer.write(KeyPressed {
+            key: KeyCode::KeyG 
+        });
+    }      
+    
 }
 
 

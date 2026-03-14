@@ -6,8 +6,8 @@ use items_systems::*;
 pub use item_functions::*;
 use rand::Rng;
 
-use crate::player::{Player};
-use crate::messages::{ItemDropped};
+use crate::player::{Player, ActiveSlot};
+use crate::messages::{ItemDropped, KeyPressed, SpawnItemRequest};
 use serde::{Deserialize};
 use std::collections::HashMap;
 
@@ -19,7 +19,7 @@ impl Plugin for ItemsPlugin {
             items: HashMap::new(),
         });
         app.add_systems(Startup, setup_items);
-        app.add_systems(Update, (pick_up_near_item));
+        app.add_systems(Update, (pick_up_near_item, item_spawn_system));
     }
 }
 

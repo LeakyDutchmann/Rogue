@@ -48,11 +48,11 @@ pub fn setup_items(
     }
 }
 
-fn generate_random_coords(pos: Vec2) -> Vec2 {
+fn generate_random_coords(pos: Vec2) -> Vec3 {
     let mut rng = rand::rng();
     let dx = rng.random_range(-30.0..30.0);
     let dy = rng.random_range(-30.0..30.0);
-    Vec2::new(pos.x + dx, pos.y + dy)
+    Vec3::new(pos.x + dx, pos.y + dy, 0.0)
 }
 
 pub fn pick_up_near_item(
@@ -96,16 +96,16 @@ pub fn pick_up_near_item(
     }
 }
 
-pub fn draw_held_item(
+pub fn item_spawn_system(
     mut commands: Commands,
-    held_item: Query<(Entity, &HeldItem)>,
     item_registry: Res<ItemRegistry>,
+    mut reader: MessageReader<SpawnItemRequest>,
 ) {
-    for (entity, held_item) in held_item.iter() {
-        if let Some(item_id) = held_item.held {
-            if let Some(def) = item_registry.items.get(&item_id) {
-                commands.entity(entity).insert(Sprite::from_image(def.sprite.clone()));
-            }
+    for msg in reader.read() {
+        if let Some(def) = item_registry.items.get(&msg.item_id) {
+            let item_e = assemble_item(def, &mut commands, &msg.item_id);
+            commands.entity(item_e).insert(Sprite::from_image(def.sprite.clone()));
+            commands.entity(item_e).insert(Transform::from_translation(generate_random_coords(msg.position)));
         }
     }
 }

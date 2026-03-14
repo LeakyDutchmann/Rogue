@@ -10,9 +10,25 @@ impl Plugin for MessagesPlugin {
             .add_message::<MapChanged>()
             .add_message::<ApplyDamage>()
             .add_message::<CalculateDamage>()
-            .add_message::<FindPath>();
+            .add_message::<FindPath>()
+            .add_message::<KeyPressed>()
+            .add_message::<SpawnItemRequest>();
     }
 }
+
+
+#[derive(Message)]
+pub struct KeyPressed {
+    pub key: KeyCode,
+}
+
+
+#[derive(Message)]
+pub struct SpawnItemRequest {
+    pub position: Vec2,
+    pub item_id: ItemId,
+}
+
 
 #[derive(PartialEq, Clone)]
 pub enum ScrollDir {

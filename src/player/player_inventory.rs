@@ -114,6 +114,33 @@ pub fn sync_player_held_item(
     }
 }
 
+pub fn drop_item(
+    mut player: Query<(&Transform, &mut Inventory, &ActiveSlot), With<Player>>,
+    mut reader: MessageReader<KeyPressed>,
+    mut writer: MessageWriter<SpawnItemRequest>
+) {
+    for msg in reader.read() {
+        if msg.key == KeyCode::KeyG {
+            if let Ok((tf, mut inventory, active_slot)) = player.single_mut() {
+                if let Some(item) = inventory.items.get_mut(active_slot.index) {
+                    if let Some(item_id) = item.item_stored {
+                        item.quantity -= 1;
+                        writer.write(SpawnItemRequest {
+                            position: tf.translation.truncate(),
+                            item_id,
+                        });
+                        if item.quantity == 0 {
+                            item.item_stored = None;
+                        }
+                    }
+                    
+                    println!("Item dropped");
+                }
+            }
+        }
+    }
+}
+
 
 
 
