@@ -26,13 +26,18 @@ pub struct PlayerSetupPlugin;
 
 impl Plugin for PlayerSetupPlugin {
     fn build(&self, app: &mut App) {
+        app.insert_resource(InventoryOpen(false));
         app.add_systems(Startup, (player_setup, setup_inventory));
         app.add_systems(FixedUpdate, move_player.after(ai_steering));
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
-            pick_active_slot, show_active_slot, keyboard_input_system, sync_player_held_item, drop_item));
+            pick_active_slot, show_active_slot, keyboard_input_system, sync_player_held_item, drop_item, show_inventory, toggle_inventory));
         app.add_systems(Update, initialize_attack);
     }
 }
+
+
+#[derive(Resource)]
+pub struct InventoryOpen(pub bool);
 
 
 #[derive(Component)]

@@ -2,11 +2,20 @@ use crate::items::assemble_item;
 
 use super::*;
 
+
+#[derive(Component)]
+pub struct HotBar;
+
+
+#[derive(Component)]
+pub struct InventoryGrid;
+
+
 pub fn setup_inventory(
     mut commands: Commands,
 ) {
     let mut slots = Vec::new();
-    for i in 0..9 {
+    for i in 0..36 {
         slots.push(commands.spawn((
             Slot {
                 index: i,
@@ -26,26 +35,53 @@ pub fn setup_inventory(
             ));
         }).id());
     }
-    let root = commands.spawn((
+    let hotbar = commands.spawn((
             Node {
                 border: UiRect::all(Val::Px(2.0)),
-                width: Val::Px(500.0),
+                width: Val::Px(432.0),
                 height: Val::Px(50.0),
                 position_type: PositionType::Absolute,
                 bottom: Val::Px(10.0),
                 left: Val::Percent(50.0),
-                margin: UiRect::left(Val::Px(-250.0)), // центрування
+                margin: UiRect::left(Val::Px(-216.0)), // центрування
                 flex_direction: FlexDirection::Row,
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
                 padding: UiRect::all(Val::Px(4.0)),
                 ..default()
             },
             BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
             BorderColor::all(Color::srgb(1.0, 1.0, 1.0)),
+            HotBar,
         )).id();
-    for slot in slots {
-        commands.entity(root).add_child(slot);
+    let slice_for_h_bar = &slots[0..9];
+    for slot in slice_for_h_bar {
+        commands.entity(hotbar).add_child(*slot);
+    }
+    let inventory_grid = commands.spawn((
+        Node {
+            border: UiRect::all(Val::Px(2.0)),
+            width: Val::Px(472.0),
+            height: Val::Px(164.0),
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(60.0),
+            left: Val::Percent(50.0),
+            margin: UiRect::left(Val::Px(-234.0)), // центрування
+            justify_content: JustifyContent::Center,
+            display: Display::Grid,
+            grid_template_columns: vec![RepeatedGridTrack::px(9, 48.0)], // 9 колонок
+            grid_template_rows: vec![RepeatedGridTrack::px(3, 48.0)],    // 3 ряди
+            column_gap: Val::Px(4.0),
+            row_gap: Val::Px(4.0),
+            padding: UiRect::all(Val::Px(4.0)),
+            ..default()
+        },
+        BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
+        BorderColor::all(Color::srgb(1.0, 1.0, 1.0)),
+        InventoryGrid,
+    )).id();
+    let slice_for_inv_grid = &slots[9..];
+    for slot in slice_for_inv_grid {
+        commands.entity(inventory_grid).add_child(*slot);
     }
 }
 
@@ -141,7 +177,33 @@ pub fn drop_item(
     }
 }
 
+pub fn show_inventory(
+    state: Res<InventoryOpen>,
+    mut query: Query<&mut Visibility, With<InventoryGrid>>,
+) {
+    if !state.is_changed() {
+        return;
+    }
 
+    for mut vis in query.iter_mut() {
+        *vis = if state.0 {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+    }
+}
+
+pub fn toggle_inventory(
+    mut reader: MessageReader<KeyPressed>,
+    mut state: ResMut<InventoryOpen>,
+) { 
+    for msg in reader.read() {
+        if msg.key == KeyCode::Tab {
+            state.0 = !state.0;
+        }
+    }
+}
 
 
 

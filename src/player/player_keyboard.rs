@@ -40,7 +40,12 @@ pub fn keyboard_input_system(
         writer.write(KeyPressed {
             key: KeyCode::KeyG 
         });
-    }      
+    }
+    if keys.just_pressed(KeyCode::Tab) {
+        writer.write(KeyPressed {
+            key: KeyCode::Tab 
+        });
+    }  
     
 }
 
