@@ -29,9 +29,11 @@ pub fn assemble_item(definition: &ItemDefinition, commands: &mut Commands, item_
     }
     entity.insert(Sprite::from_image(definition.sprite.clone()));
     entity.insert(item_id.clone());
-    entity.insert(AnimationPattern {
-        pattern: definition.animation_style,
-    });
+    if let Some(animation_style) = definition.animation_style {
+        entity.insert(AnimationPattern {
+            pattern: animation_style,
+        });
+    }
     println!("asssembled: {:?}", entity.id());
     entity.id()
 }

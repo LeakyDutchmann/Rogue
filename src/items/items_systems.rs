@@ -77,6 +77,7 @@ pub fn pick_up_near_item(
                             if slot.quantity < def.max_stack {
                                 slot.quantity += 1;
                                 pushed = true;
+                                commands.entity(item_e).despawn();
                                 break;
                             }
                         }

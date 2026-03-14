@@ -64,8 +64,9 @@ pub fn sync_player_inventory(
                         let icon = def.icon.clone();
                         commands.entity(slot_e).insert(ImageNode::new(icon));
                     }
+                } else {
+                    commands.entity(slot_e).remove::<ImageNode>();
                 }
-               
             } else {
                 commands.entity(slot_e).remove::<ImageNode>();
             } 
@@ -100,14 +101,13 @@ pub fn sync_player_held_item(
             let item_stack = inventory.items.get(active_slot.index).unwrap();
             if let Some(item_id) = &item_stack.item_stored {
                 if held_item.held != Some(*item_id) {
+                    held_item.last_held = held_item.held;
                     held_item.held = Some(*item_id);
-                    println!("Held item changed to {:?}", item_id);
                 }
             } else {
                 if held_item.held.is_some() {
                     held_item.last_held = held_item.held;
                     held_item.held = None;
-                    println!("Held item cleared");
                 }
             }
         }

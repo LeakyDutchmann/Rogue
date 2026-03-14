@@ -48,6 +48,7 @@ pub struct ToolStatsRaw {
 pub enum ItemId {
     Sword,
     PickAxe,
+    Inferium,
 }
 
 
@@ -58,7 +59,7 @@ pub struct ItemDefinitionRaw {
     pub sprite: String,
     pub durability: Option<i32>,
     pub usable: bool,
-    pub animation_style: AnimationStyle,
+    pub animation_style: Option<AnimationStyle>,
     pub combat_stats: Option<CombatStatsRaw>,
     pub weapon_stats: Option<WeaponStatsRaw>,
     pub tool_stats: Option<ToolStatsRaw>,
@@ -72,7 +73,7 @@ pub struct ItemDefinition {
     pub sprite: Handle<Image>,
     pub durability: Option<i32>,
     pub usable: bool,
-    pub animation_style: AnimationStyle,
+    pub animation_style: Option<AnimationStyle>,
     pub combat_stats: Option<CombatStatsRaw>,
     pub weapon_stats: Option<WeaponStatsRaw>,
     pub tool_stats: Option<ToolStatsRaw>,

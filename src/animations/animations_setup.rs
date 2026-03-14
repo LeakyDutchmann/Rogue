@@ -173,13 +173,11 @@ pub fn draw_helditem(
                 if held != last_held {
                     if let Some(def) = registry.items.get(&held) {
                         commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
-                        held_item.last_held = Some(held);
                     }
                 }
             } else {
                 if let Some(def) = registry.items.get(&held) {
                     commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
-                    held_item.last_held = Some(held);
                 }
                 
             }

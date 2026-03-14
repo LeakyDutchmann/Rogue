@@ -126,18 +126,20 @@ pub fn ai_initialize_attack(
                             if enemy_pos.distance(player_pos) > c_stats.radius as f32 {
                                 continue
                             }
-                            commands.entity(hend_e).insert(
-                                AttackAnimation {
-                                    anim_pattern: def.animation_style,
-                                    progress: 0.0,
-                                    duration: 60.0 / c_stats.attack_speed as f32,
-                                    max_angle: (c_stats.swing_angle as f32).to_radians(),
-                                    hit_triggered: false,
-                                    cursor_pos: player_pos,
-                                    item: item,
-                                    item_radius: c_stats.radius as f32,
-                                }
-                            );
+                            if let Some(animation_style) = def.animation_style {
+                                commands.entity(hend_e).insert(
+                                    AttackAnimation {
+                                        anim_pattern: animation_style,
+                                        progress: 0.0,
+                                        duration: 60.0 / c_stats.attack_speed as f32,
+                                        max_angle: (c_stats.swing_angle as f32).to_radians(),
+                                        hit_triggered: false,
+                                        cursor_pos: player_pos,
+                                        item: item,
+                                        item_radius: c_stats.radius as f32,
+                                    }
+                                );
+                            }
                         }
                         
                     } 

@@ -17,18 +17,21 @@ pub fn initialize_attack(
                     if let Some(item) = helditem.held  {
                         if let Some(def) = registry.items.get(&item) {
                             if let Some(stats) = &def.combat_stats {
-                                commands.entity(hend_e).insert(
-                                    AttackAnimation {
-                                        anim_pattern: def.animation_style,
-                                        progress: 0.0,
-                                        duration: 60.0 / stats.attack_speed as f32,
-                                        max_angle: (stats.swing_angle as f32).to_radians(),
-                                        hit_triggered: false,
-                                        cursor_pos: *click_pos,
-                                        item_radius: stats.radius as f32,
-                                        item: item,
-                                    }
-                                );
+                                if let Some(animation_style) = def.animation_style {
+                                    commands.entity(hend_e).insert(
+                                        AttackAnimation {
+                                            anim_pattern: animation_style,
+                                            progress: 0.0,
+                                            duration: 60.0 / stats.attack_speed as f32,
+                                            max_angle: (stats.swing_angle as f32).to_radians(),
+                                            hit_triggered: false,
+                                            cursor_pos: *click_pos,
+                                            item_radius: stats.radius as f32,
+                                            item: item,
+                                        }
+                                    );
+                                }
+                                
                             }
                         }
                     }   

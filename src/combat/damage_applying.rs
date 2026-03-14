@@ -9,6 +9,7 @@ pub fn damage_execution_system(
     mut commands: Commands,
     mut reader: MessageReader<ApplyDamage>,
     mut writer: MessageWriter<MapChanged>,
+    mut writer_2: MessageWriter<SpawnItemRequest>,
     mut health: Query<&mut Health>,
     mut actor_qr: Query<&mut ActorState>,
     deathtimer: Query<&DeathTimer>,
@@ -32,6 +33,10 @@ pub fn damage_execution_system(
                 if destruction.damage_type == DamageType::ToTileDamage {
                     writer.write(MapChanged {
                         position: world_pos_to_tile_pos(destruction.position),
+                    });
+                    writer_2.write(SpawnItemRequest {
+                        position: destruction.position,
+                        item_id: ItemId::Inferium,
                     });
                     commands.entity(destruction.entity).despawn();
                 } else {
