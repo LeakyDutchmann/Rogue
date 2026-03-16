@@ -116,7 +116,7 @@ pub fn show_active_slot(
 ) {
     if let Ok(active_slot) = active_slot.single()  {
         for (mut bd_color, slot) in ui_slots.iter_mut() {
-            if slot.index == active_slot.index {
+            if slot.index == active_slot.index as usize {
                 bd_color.set_all(Color::srgb(1.0, 1.0, 1.0));
             } else {
                 bd_color.set_all(Color::srgb(0.5, 0.5, 0.5));
@@ -134,7 +134,7 @@ pub fn sync_player_held_item(
             if child_of.0 != player_e {
                 continue;
             }
-            let item_stack = inventory.items.get(active_slot.index).unwrap();
+            let item_stack = inventory.items.get(active_slot.index as usize).unwrap();
             if let Some(item_id) = &item_stack.item_stored {
                 if held_item.held != Some(*item_id) {
                     held_item.last_held = held_item.held;
@@ -158,7 +158,7 @@ pub fn drop_item(
     for msg in reader.read() {
         if msg.key == KeyCode::KeyG {
             if let Ok((tf, mut inventory, active_slot)) = player.single_mut() {
-                if let Some(item) = inventory.items.get_mut(active_slot.index) {
+                if let Some(item) = inventory.items.get_mut(active_slot.index as usize) {
                     if let Some(item_id) = item.item_stored {
                         item.quantity -= 1;
                         writer.write(SpawnItemRequest {
@@ -205,7 +205,57 @@ pub fn toggle_inventory(
     }
 }
 
+pub fn pick_active_slot(
+    mut reader: MessageReader<KeyPressed>,
+    mut active_slot: Query<&mut ActiveSlot, With<Player>>,
+) {
+    if let Ok(mut slot) = active_slot.single_mut() {
+        for msg in reader.read() {
+            let mut active = None;
+            match msg.key {
+                KeyCode::Digit1 => active = Some(0),
+                KeyCode::Digit2 => active = Some(1),
+                KeyCode::Digit3 => active = Some(2),
+                KeyCode::Digit4 => active = Some(3),
+                KeyCode::Digit5 => active = Some(4),
+                KeyCode::Digit6 => active = Some(5),
+                KeyCode::Digit7 => active = Some(6),
+                KeyCode::Digit8 => active = Some(7),
+                KeyCode::Digit9 => active = Some(8),
+                _ => {}
+            }
+            if let Some(active) = active {
+                slot.index = active;
+                println!("Active slot changed to {}", active);
+            }
+        }   
+    }
+}
 
+pub fn pick_active_slot_scroll(
+    mut reader: MessageReader<ScrollMessage>,
+    mut active_slot: Query<&mut ActiveSlot, With<Player>>,   
+) {
+    if let Ok(mut slot) = active_slot.single_mut() {
+        for msg in reader.read() {
+            match msg.event {
+                ScrollDir::ScrollUp => {
+                    if slot.index != 8 {
+                        slot.index += 1;
+                    } else {
+                        slot.index = 0;
+                    }
+                }
+                ScrollDir::ScrollDown => {
+                    if slot.index != 0 {
+                        slot.index -= 1;
+                    } else {
+                        slot.index = 8;
+                    }
+                }
+                _ => {}
+            }
 
-
-
+        }   
+    }
+}
