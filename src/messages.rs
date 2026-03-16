@@ -12,8 +12,17 @@ impl Plugin for MessagesPlugin {
             .add_message::<CalculateDamage>()
             .add_message::<FindPath>()
             .add_message::<KeyPressed>()
-            .add_message::<SpawnItemRequest>();
+            .add_message::<SpawnItemRequest>()
+            .add_message::<SlotClicked>();
+            
     }
+}
+
+
+#[derive(Message)]
+pub struct SlotClicked {
+    pub entity: Entity,
+    pub slot_index: usize,
 }
 
 

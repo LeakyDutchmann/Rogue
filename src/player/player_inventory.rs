@@ -27,6 +27,7 @@ pub fn setup_inventory(
                 ..default()
             },
             BorderColor::all(Color::srgb(0.5, 0.5, 0.5)),
+            Interaction::None
         )).with_children(|parent| {
             parent.spawn((
                 SlotIcon {
@@ -257,5 +258,32 @@ pub fn pick_active_slot_scroll(
             }
 
         }   
+    }
+}
+
+pub fn inventory_interactions(
+    mut _reader: MessageReader<KeyPressed>,
+    mut reader_click: MessageReader<MouseClickEvent>,
+    mut slots: Query<(Entity, &mut BorderColor, &Children, &Interaction)>,
+    mut slot: Query<&SlotIcon>,
+    mut writer: MessageWriter<SlotClicked>,
+) {
+    for (entity, mut border, children, interaction) in slots.iter_mut() {
+        if *interaction == Interaction::Hovered {
+            *border = BorderColor::all(Color::WHITE);
+            for msg in reader_click.read() {
+                if let MouseClickEvent::LeftClick(_click_pos) = msg {
+                    for child in children.iter() {
+                        if let Ok(slot) = slot.get_mut(child) {
+                            writer.write(SlotClicked {
+                                entity: entity,
+                                slot_index: slot.index,
+                            });
+                            println!("clicked slot: {}", slot.index);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
