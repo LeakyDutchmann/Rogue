@@ -31,7 +31,7 @@ pub struct InsertToInventory {
 #[derive(Message)]
 pub struct GetFromInventory {
     pub quantity: i32,
-    pub slot: Option<usize>
+    pub slot: usize
 }
 
 
@@ -67,7 +67,7 @@ pub struct ItemDropped {
     pub item: Option<Entity>,
 }
 
-#[derive(Message)]
+#[derive(Message, Clone)]
 pub enum MouseClickEvent {
     LeftClick(Vec2),
     _RightClick(Vec2),

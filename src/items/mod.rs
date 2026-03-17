@@ -110,7 +110,7 @@ pub struct InInventory;
 #[derive(Clone)]
 pub struct ItemStack {
     pub item_stored: Option<ItemId>,
-    pub quantity: usize,
+    pub quantity: i32,
 }
 
 

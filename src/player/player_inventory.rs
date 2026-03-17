@@ -1,3 +1,5 @@
+use bevy::mesh::CircularSegmentMeshBuilder;
+
 use crate::items::assemble_item;
 
 use super::*;
@@ -312,8 +314,133 @@ pub fn item_click_handler(
             } else if cursor.item.is_none() {
                 writer_get.write(GetFromInventory {
                     quantity: 1,
-                    slot: Some(msg.slot_index),
+                    slot: msg.slot_index,
                 });
+            }
+        }
+    }
+}
+
+pub fn item_take_handler(
+    mut commands: Commands,
+    mut reader: MessageReader<GetFromInventory>,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    registry: Res<ItemRegistry>,
+) {
+    for msg in reader.read() {
+        if let Ok(mut inventory) = inventory.single_mut() {
+            if let Ok((entity, mut cursor)) = cursor.single_mut() {
+                if let Some(mut item_stack) = inventory.items.get_mut(msg.slot) {
+                    if let Some(item_id) = item_stack.item_stored {
+                        cursor.item = Some(item_id);
+                        if item_stack.quantity == msg.quantity {
+                            item_stack.item_stored = None;
+                            item_stack.quantity = 0;
+                            cursor.quantity = msg.quantity;
+                        } else if item_stack.quantity > msg.quantity {
+                            item_stack.quantity -= msg.quantity;
+                            cursor.quantity = msg.quantity;
+                        } else if item_stack.quantity < msg.quantity {
+                            item_stack.item_stored = None;
+                            cursor.quantity = item_stack.quantity;
+                            item_stack.quantity = 0;
+                        }
+                        if let Some(def) = registry.items.get(&item_id) {
+                            commands.entity(entity).insert(ImageNode::new(def.icon.clone()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn item_put_handler(
+    mut commands: Commands,
+    mut reader: MessageReader<InsertToInventory>,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    registry: Res<ItemRegistry>,
+) {
+    for msg in reader.read() {
+        let mut quantity_to_put = msg.quantity;
+        if let Ok(mut inventory) = inventory.single_mut() {
+            if let Ok((entity, mut cursor)) = cursor.single_mut() {
+                if let Some(item_id) = cursor.item {
+                    if let Some(def) = registry.items.get(&item_id) {
+                        if let Some(slot) = msg.slot {
+                            println!("ok5");
+                            if let Some(mut item_stack) = inventory.items.get_mut(slot) {
+                                println!("ok6");
+                                if item_stack.item_stored == Some(item_id) {
+                                    if item_stack.quantity < def.max_stack as i32 {
+                                        let free = def.max_stack as i32 - item_stack.quantity;
+                                        if quantity_to_put <= free {
+                                            item_stack.quantity += quantity_to_put;
+                                            cursor.item = None;
+                                            cursor.quantity = 0;
+                                            break;
+                                        } else {
+                                            item_stack.quantity = def.max_stack as i32;
+                                            quantity_to_put -= free;
+                                            cursor.quantity = quantity_to_put;
+                                        }
+                                    }
+                                } else if item_stack.item_stored.is_none() {
+                                    println!("ok3");
+                                    item_stack.item_stored = Some(item_id);
+                                    item_stack.quantity = quantity_to_put;
+                                    cursor.item = None;
+                                    cursor.quantity = 0;
+                                    break;
+                                }
+                            }
+                        } else {
+                            let mut pushed = false;
+                            for slot in inventory.items.iter_mut() {
+                                if let Some(stored_id) = slot.item_stored.clone() {
+                                    if stored_id == item_id {
+                                        if slot.quantity < def.max_stack as i32 {
+                                            let free = def.max_stack as i32 - slot.quantity;
+                                            if free >= quantity_to_put {
+                                                slot.quantity += quantity_to_put;
+                                                quantity_to_put = 0;
+                                                pushed = true;
+                                                cursor.item = None;
+                                                cursor.quantity = 0;
+                                                break;
+                                            } else if free < quantity_to_put {
+                                                let remaining = quantity_to_put - free;
+                                                slot.quantity = def.max_stack as i32;
+                                                quantity_to_put = remaining;
+                                                cursor.quantity = quantity_to_put;
+                                            }     
+                                        }
+                                    }
+                                }
+                            }
+                            if !pushed {
+                                for slot in inventory.items.iter_mut() {
+                                    if slot.item_stored.is_none() {
+                                        if quantity_to_put <= def.max_stack as i32 {
+                                            slot.item_stored = Some(item_id);
+                                            slot.quantity += quantity_to_put;
+                                            cursor.item = None;
+                                            cursor.quantity = 0;
+                                            break;
+                                        } else if quantity_to_put > def.max_stack as i32 {
+                                            slot.item_stored = Some(item_id);
+                                            slot.quantity = def.max_stack as i32;
+                                            quantity_to_put -= def.max_stack as i32;
+                                            cursor.quantity = quantity_to_put;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -32,8 +32,9 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(FixedUpdate, move_player.after(ai_steering));
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
             pick_active_slot, show_active_slot, keyboard_input_system, sync_player_held_item,
-            drop_item, show_inventory, toggle_inventory, pick_active_slot_scroll, inventory_interactions));
-        app.add_systems(Update, (initialize_attack, item_click_handler));
+            drop_item, show_inventory, toggle_inventory, pick_active_slot_scroll, ));
+        app.add_systems(Update, initialize_attack);
+        app.add_systems(Update, (inventory_interactions, item_click_handler, item_take_handler, item_put_handler).chain());
     }
 }
 

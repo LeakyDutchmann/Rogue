@@ -74,7 +74,7 @@ pub fn pick_up_near_item(
                     if let Some(stored_id) = slot.item_stored.clone() {
                         if stored_id == *item_id {
                             let def = registry.items.get(&stored_id).unwrap();
-                            if slot.quantity < def.max_stack {
+                            if slot.quantity < def.max_stack as i32 {
                                 slot.quantity += 1;
                                 pushed = true;
                                 commands.entity(item_e).despawn();
