@@ -13,9 +13,25 @@ impl Plugin for MessagesPlugin {
             .add_message::<FindPath>()
             .add_message::<KeyPressed>()
             .add_message::<SpawnItemRequest>()
-            .add_message::<SlotClicked>();
-            
+            .add_message::<SlotClicked>()
+            .add_message::<InsertToInventory>()
+            .add_message::<GetFromInventory>();
     }
+}
+
+
+#[derive(Message)]
+pub struct InsertToInventory {
+    pub item: ItemId,
+    pub quantity: i32,
+    pub slot: Option<usize>
+}
+
+
+#[derive(Message)]
+pub struct GetFromInventory {
+    pub quantity: i32,
+    pub slot: Option<usize>
 }
 
 

@@ -16,7 +16,8 @@ use bevy::prelude::Component;
 use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::items::{Inventory,CombatStats, AnimationPattern, HeldItem, ItemStack, ItemRegistry, ItemId};
-use crate::messages::{MouseClickEvent, ItemDropped, KeyPressed, SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked};
+use crate::messages::{MouseClickEvent, GetFromInventory, KeyPressed,
+    SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory};
 use crate::combat::{AttackAnimation, HurtBox, HurtTimer, FractionType};
 use super::FieldOfView;
 use crate::enemy::{ai_steering};
@@ -32,7 +33,7 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
             pick_active_slot, show_active_slot, keyboard_input_system, sync_player_held_item,
             drop_item, show_inventory, toggle_inventory, pick_active_slot_scroll, inventory_interactions));
-        app.add_systems(Update, initialize_attack);
+        app.add_systems(Update, (initialize_attack, item_click_handler));
     }
 }
 
@@ -48,6 +49,13 @@ pub struct Player;
 #[derive(Component)]
 pub struct Slot {
     pub index: usize,
+}
+
+
+#[derive(Component)]
+pub struct CursorCarrier {
+    pub item: Option<ItemId>,
+    pub quantity: i32,
 }
 
 

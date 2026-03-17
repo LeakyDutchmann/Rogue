@@ -84,6 +84,12 @@ pub fn setup_inventory(
     for slot in slice_for_inv_grid {
         commands.entity(inventory_grid).add_child(*slot);
     }
+    commands.spawn((
+        CursorCarrier {
+            item: None,
+            quantity: 0,
+        }
+    ));
 }
 
 pub fn sync_player_inventory(
@@ -283,6 +289,31 @@ pub fn inventory_interactions(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+pub fn item_click_handler(
+    mut reader: MessageReader<SlotClicked>,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    mut writer: MessageWriter<InsertToInventory>,
+    mut writer_get: MessageWriter<GetFromInventory>,
+) {
+    for msg in reader.read() {
+        if let Ok((entity, mut cursor)) = cursor.single_mut() {
+            if let Some(item) = cursor.item {
+                writer.write(InsertToInventory {
+                    item: item,
+                    quantity: cursor.quantity,
+                    slot: Some(msg.slot_index),
+                });
+            } else if cursor.item.is_none() {
+                writer_get.write(GetFromInventory {
+                    quantity: 1,
+                    slot: Some(msg.slot_index),
+                });
             }
         }
     }
