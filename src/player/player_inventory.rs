@@ -1,4 +1,4 @@
-use bevy::mesh::CircularSegmentMeshBuilder;
+use bevy::{mesh::CircularSegmentMeshBuilder, transform::commands};
 
 use crate::items::assemble_item;
 
@@ -88,26 +88,17 @@ pub fn setup_inventory(
     }
     commands.spawn((
         Node {
-            border: UiRect::all(Val::Px(2.0)),
-            width: Val::Px(472.0),
-            height: Val::Px(164.0),
+            width: Val::Px(32.0),
+            height: Val::Px(32.0),
             position_type: PositionType::Absolute,
-            bottom: Val::Px(60.0),
-            left: Val::Percent(50.0),
-            margin: UiRect::left(Val::Px(-234.0)), // центрування
-            justify_content: JustifyContent::Center,
-            display: Display::Grid,
-            grid_template_columns: vec![RepeatedGridTrack::px(9, 48.0)], // 9 колонок
-            grid_template_rows: vec![RepeatedGridTrack::px(3, 48.0)],    // 3 ряди
-            column_gap: Val::Px(4.0),
-            row_gap: Val::Px(4.0),
-            padding: UiRect::all(Val::Px(4.0)),
             ..default()
         },
         CursorCarrier {
             item: None,
             quantity: 0,
-        }
+        },
+        // BackgroundColor(Color::WHITE),
+        ZIndex(10000),
     ));
 }
 
@@ -376,10 +367,7 @@ pub fn item_take_handler(
                             item_stack.item_stored = None;
                             cursor.quantity = item_stack.quantity;
                             item_stack.quantity = 0;
-                        }
-                        if let Some(def) = registry.items.get(&item_id) {
-                            commands.entity(entity).insert(ImageNode::new(def.icon.clone()));
-                        }
+                        }         
                     }
                 }
             }
@@ -472,6 +460,30 @@ pub fn item_put_handler(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+pub fn ui_cursor_update(
+    mut commands: Commands,
+    window: Single<&Window, With<PrimaryWindow>>,
+    mut query: Query<(Entity, &mut Node, &mut CursorCarrier)>,
+    image_node: Query<&mut ImageNode>,
+    registry: Res<ItemRegistry>
+) {
+    if let Some(position) = window.cursor_position() {
+        for ((entity, mut node, cursor)) in query.iter_mut() {
+            node.left = Val::Px(position.x);
+            node.top = Val::Px(position.y);
+            if let Some(item_id) = cursor.item {
+                if cursor.is_changed() {
+                    if let Some(def) = registry.items.get(&item_id) {
+                        commands.entity(entity).insert(ImageNode::new(def.icon.clone()));
+                    }
+                }
+            } else if cursor.item.is_none() {
+                commands.entity(entity).remove::<ImageNode>();
             }
         }
     }
