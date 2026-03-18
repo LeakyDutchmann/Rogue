@@ -21,6 +21,11 @@ impl Plugin for MouseInputPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, (get_cursor_position, mouse_click_handler, scroll_events));
         app.insert_resource(CursorWorldPos(None));
+        app.insert_resource(DoubleClickState {
+            last_click: 0.0,
+            pending: false,
+            pending_pos: Vec2::ZERO,
+        });
     }
 }
 
@@ -29,3 +34,9 @@ impl Plugin for MouseInputPlugin {
 pub struct CursorWorldPos(pub Option<Vec2>);
 
 
+#[derive(Resource)]
+struct DoubleClickState {
+    last_click: f64,
+    pending: bool,
+    pending_pos: Vec2,
+}

@@ -15,9 +15,15 @@ impl Plugin for MessagesPlugin {
             .add_message::<SpawnItemRequest>()
             .add_message::<SlotClicked>()
             .add_message::<InsertToInventory>()
-            .add_message::<GetFromInventory>();
+            .add_message::<GetFromInventory>()
+            .add_message::<DropFromCursor>()
+            .add_message::<SlotDoubleClicked>();
     }
 }
+
+
+#[derive(Message)]
+pub struct DropFromCursor;
 
 
 #[derive(Message)]
@@ -37,6 +43,13 @@ pub struct GetFromInventory {
 
 #[derive(Message)]
 pub struct SlotClicked {
+    pub entity: Entity,
+    pub slot_index: usize,
+}
+
+
+#[derive(Message)]
+pub struct SlotDoubleClicked {
     pub entity: Entity,
     pub slot_index: usize,
 }
@@ -70,6 +83,7 @@ pub struct ItemDropped {
 #[derive(Message, Clone)]
 pub enum MouseClickEvent {
     LeftClick(Vec2),
+    DoubleLeftClick(Vec2),
     _RightClick(Vec2),
 }
 

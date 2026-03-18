@@ -87,6 +87,23 @@ pub fn setup_inventory(
         commands.entity(inventory_grid).add_child(*slot);
     }
     commands.spawn((
+        Node {
+            border: UiRect::all(Val::Px(2.0)),
+            width: Val::Px(472.0),
+            height: Val::Px(164.0),
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(60.0),
+            left: Val::Percent(50.0),
+            margin: UiRect::left(Val::Px(-234.0)), // центрування
+            justify_content: JustifyContent::Center,
+            display: Display::Grid,
+            grid_template_columns: vec![RepeatedGridTrack::px(9, 48.0)], // 9 колонок
+            grid_template_rows: vec![RepeatedGridTrack::px(3, 48.0)],    // 3 ряди
+            column_gap: Val::Px(4.0),
+            row_gap: Val::Px(4.0),
+            padding: UiRect::all(Val::Px(4.0)),
+            ..default()
+        },
         CursorCarrier {
             item: None,
             quantity: 0,
@@ -272,28 +289,41 @@ pub fn pick_active_slot_scroll(
 pub fn inventory_interactions(
     mut _reader: MessageReader<KeyPressed>,
     mut reader_click: MessageReader<MouseClickEvent>,
-    mut slots: Query<(Entity, &mut BorderColor, &Children, &Interaction)>,
+    mut slots: Query<(Entity, &mut BorderColor, &Children, &Interaction), Changed<Interaction>>,
     mut slot: Query<&SlotIcon>,
     mut writer: MessageWriter<SlotClicked>,
+    mut writer_outside: MessageWriter<DropFromCursor>,
+    mut writer_double: MessageWriter<SlotDoubleClicked>,
+    mut ui_click_track: ResMut<UiClickTrack>,
+    time: Res<Time>,
 ) {
     for (entity, mut border, children, interaction) in slots.iter_mut() {
-        if *interaction == Interaction::Hovered {
-            *border = BorderColor::all(Color::WHITE);
-            for msg in reader_click.read() {
-                if let MouseClickEvent::LeftClick(_click_pos) = msg {
-                    for child in children.iter() {
-                        if let Ok(slot) = slot.get_mut(child) {
-                            writer.write(SlotClicked {
-                                entity: entity,
-                                slot_index: slot.index,
-                            });
-                            println!("clicked slot: {}", slot.index);
-                        }
+        if *interaction == Interaction::Pressed {
+            let now = time.elapsed_secs_f64();
+            println!("pressed");
+            for child in children.iter() {
+                if let Ok(slot) = slot.get_mut(child) {
+                    if now - ui_click_track.last >= 0.2 {
+                        writer.write(SlotClicked {
+                            entity: entity,
+                            slot_index: slot.index,
+                        });
+                        println!("clicked slot: {}", slot.index);
+                        ui_click_track.last = now;
+                        break;
+                    } else  {
+                        writer_double.write(SlotDoubleClicked {
+                            entity: entity,
+                            slot_index: slot.index,
+                        });
+                        println!("double clicked slot: {}", slot.index);
+                        ui_click_track.last = now;
+                        break;
                     }
                 }
             }
-        }
-    }
+        } 
+    } 
 }
 
 pub fn item_click_handler(
@@ -302,6 +332,7 @@ pub fn item_click_handler(
     mut cursor: Query<(Entity, &mut CursorCarrier)>,
     mut writer: MessageWriter<InsertToInventory>,
     mut writer_get: MessageWriter<GetFromInventory>,
+    mut reader_drop: MessageReader<DropFromCursor>,
 ) {
     for msg in reader.read() {
         if let Ok((entity, mut cursor)) = cursor.single_mut() {
