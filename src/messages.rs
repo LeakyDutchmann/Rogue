@@ -16,8 +16,7 @@ impl Plugin for MessagesPlugin {
             .add_message::<SlotClicked>()
             .add_message::<InsertToInventory>()
             .add_message::<GetFromInventory>()
-            .add_message::<DropFromCursor>()
-            .add_message::<SlotDoubleClicked>();
+            .add_message::<DropFromCursor>();
     }
 }
 
@@ -41,15 +40,15 @@ pub struct GetFromInventory {
 }
 
 
-#[derive(Message)]
-pub struct SlotClicked {
-    pub entity: Entity,
-    pub slot_index: usize,
+pub enum ClickType {
+    LeftSingle,
+    LeftDouble,
 }
 
 
 #[derive(Message)]
-pub struct SlotDoubleClicked {
+pub struct SlotClicked {
+    pub click_type: ClickType,
     pub entity: Entity,
     pub slot_index: usize,
 }

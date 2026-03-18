@@ -284,7 +284,6 @@ pub fn inventory_interactions(
     mut slot: Query<&SlotIcon>,
     mut writer: MessageWriter<SlotClicked>,
     mut writer_outside: MessageWriter<DropFromCursor>,
-    mut writer_double: MessageWriter<SlotDoubleClicked>,
     mut ui_click_track: ResMut<UiClickTrack>,
     time: Res<Time>,
 ) {
@@ -296,6 +295,7 @@ pub fn inventory_interactions(
                 if let Ok(slot) = slot.get_mut(child) {
                     if now - ui_click_track.last >= 0.2 {
                         writer.write(SlotClicked {
+                            click_type: ClickType::LeftSingle,
                             entity: entity,
                             slot_index: slot.index,
                         });
@@ -303,7 +303,8 @@ pub fn inventory_interactions(
                         ui_click_track.last = now;
                         break;
                     } else  {
-                        writer_double.write(SlotDoubleClicked {
+                        writer.write(SlotClicked {
+                            click_type: ClickType::LeftDouble,
                             entity: entity,
                             slot_index: slot.index,
                         });
@@ -412,6 +413,12 @@ pub fn item_put_handler(
                                     item_stack.quantity = quantity_to_put;
                                     cursor.item = None;
                                     cursor.quantity = 0;
+                                    break;
+                                } else if item_stack.item_stored != Some(item_id) && item_stack.item_stored.is_some() {
+                                    cursor.item = item_stack.item_stored;
+                                    cursor.quantity = item_stack.quantity;
+                                    item_stack.item_stored = Some(item_id);
+                                    item_stack.quantity = quantity_to_put;
                                     break;
                                 }
                             }

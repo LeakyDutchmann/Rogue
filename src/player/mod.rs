@@ -17,7 +17,7 @@ use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::items::{Inventory, HeldItem, ItemStack, ItemRegistry, ItemId};
 use crate::messages::{MouseClickEvent, GetFromInventory, KeyPressed,
-    SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory, DropFromCursor, SlotDoubleClicked};
+    SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory, DropFromCursor, ClickType};
 use crate::combat::{AttackAnimation, HurtBox, HurtTimer, FractionType};
 use bevy::window::PrimaryWindow;
 use super::FieldOfView;
