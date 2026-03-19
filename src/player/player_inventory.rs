@@ -199,7 +199,7 @@ pub fn sync_player_held_item(
 pub fn drop_item(
     mut player: Query<(&Transform, &mut Inventory, &ActiveSlot), With<Player>>,
     mut reader: MessageReader<KeyPressed>,
-    mut writer: MessageWriter<SpawnItemRequest>
+    mut writer: MessageWriter<SpawnItemRequest>,
 ) {
     for msg in reader.read() {
         if msg.key == KeyCode::KeyG {
@@ -219,6 +219,29 @@ pub fn drop_item(
                     println!("Item dropped");
                 }
             }
+        }
+    }
+}
+
+pub fn drop_cursor_item(
+    mut cursor: Query<&mut CursorCarrier>,
+    mut reader: MessageReader<DropFromCursor>,
+    mut writer: MessageWriter<SpawnItemRequest>,
+    player_tf: Res<PlayerTransform>,
+) {
+    for msg in reader.read() {
+        if let Ok(mut carrier) = cursor.single_mut() {
+            if let Some(item_id) = carrier.item {
+                for _ in 0..carrier.quantity {
+                    writer.write(SpawnItemRequest {
+                        position: player_tf.0.translation.truncate(),
+                        item_id,
+                    });
+                }
+                carrier.clear();
+                println!("Item dropped");
+            }
+
         }
     }
 }
@@ -440,8 +463,7 @@ pub fn item_put_handler(
                                         let free = def.max_stack as i32 - item_stack.quantity;
                                         if quantity_to_put <= free {
                                             item_stack.quantity += quantity_to_put;
-                                            cursor.item = None;
-                                            cursor.quantity = 0;
+                                            cursor.clear();
                                             break;
                                         } else {
                                             item_stack.quantity = def.max_stack as i32;
@@ -453,8 +475,7 @@ pub fn item_put_handler(
                                     println!("ok3");
                                     item_stack.item_stored = Some(item_id);
                                     item_stack.quantity = quantity_to_put;
-                                    cursor.item = None;
-                                    cursor.quantity = 0;
+                                    cursor.clear();
                                     break;
                                 } else if item_stack.item_stored != Some(item_id) && item_stack.item_stored.is_some() {
                                     cursor.item = item_stack.item_stored;
@@ -475,8 +496,7 @@ pub fn item_put_handler(
                                                 slot.quantity += quantity_to_put;
                                                 quantity_to_put = 0;
                                                 pushed = true;
-                                                cursor.item = None;
-                                                cursor.quantity = 0;
+                                                cursor.clear();
                                                 break;
                                             } else if free < quantity_to_put {
                                                 let remaining = quantity_to_put - free;
@@ -494,8 +514,7 @@ pub fn item_put_handler(
                                         if quantity_to_put <= def.max_stack as i32 {
                                             slot.item_stored = Some(item_id);
                                             slot.quantity += quantity_to_put;
-                                            cursor.item = None;
-                                            cursor.quantity = 0;
+                                            cursor.clear();
                                             break;
                                         } else if quantity_to_put > def.max_stack as i32 {
                                             slot.item_stored = Some(item_id);

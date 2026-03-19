@@ -36,9 +36,9 @@ impl Plugin for PlayerSetupPlugin {
         app.add_systems(FixedUpdate, move_player.after(ai_steering));
         app.add_systems(Update, (player_idle_direction, sync_player_inventory,
             pick_active_slot, show_active_slot, keyboard_input_system, sync_player_held_item,
-            drop_item, show_inventory, toggle_inventory, pick_active_slot_scroll, ui_cursor_update));
+            drop_item, show_inventory, toggle_inventory, pick_active_slot_scroll, ui_cursor_update, update_player_transform));
         app.add_systems(Update, initialize_attack);
-        app.add_systems(Update, (inventory_interactions, background_interactions, item_click_handler, item_take_handler, item_put_handler, update_item_count).chain());
+        app.add_systems(Update, (inventory_interactions, background_interactions, drop_cursor_item, item_click_handler, item_take_handler, item_put_handler, update_item_count).chain());
     }
 }
 
@@ -46,6 +46,10 @@ impl Plugin for PlayerSetupPlugin {
 pub struct UiClickTrack {
     pub last: f64
 }
+
+
+#[derive(Resource)]
+pub struct PlayerTransform(pub Transform);
 
 
 #[derive(Resource)]
@@ -75,6 +79,14 @@ pub struct CursorCarrier {
     pub item: Option<ItemId>,
     pub quantity: i32,
 }
+
+impl CursorCarrier {
+    pub fn clear(&mut self) {
+        self.item = None;
+        self.quantity = 0;
+    }
+}
+
 
 
 #[derive(Component)]

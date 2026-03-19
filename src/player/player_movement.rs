@@ -59,3 +59,12 @@ pub fn player_idle_direction(
         }
     }
 }
+
+pub fn update_player_transform(
+    mut player_transform: ResMut<PlayerTransform>,
+    query: Query<&Transform, With<Player>>
+) {
+    if let Ok(transform) = query.single() {
+        player_transform.0 = *transform;
+    }
+}

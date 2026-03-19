@@ -16,6 +16,11 @@ pub fn player_setup(
     );
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
     
+    let initial_transform = Transform {
+        translation: Vec3::new(0.0, 0.0, 1.0),
+        ..Default::default()
+    };
+    commands.insert_resource(PlayerTransform(initial_transform));
     commands.spawn((
         Sprite::from_atlas_image(
             texture,
@@ -36,7 +41,7 @@ pub fn player_setup(
             previous: AnimationId::IdleRight,
         },
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-        Transform::from_xyz(0.0, 0.0, 1.0),
+        initial_transform,
         Speed(125.0),
         Colider {
             shape: ColiderShape::Circle { radius: 3.0},
