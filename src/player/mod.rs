@@ -38,7 +38,7 @@ impl Plugin for PlayerSetupPlugin {
             pick_active_slot, show_active_slot, keyboard_input_system, sync_player_held_item,
             drop_item, show_inventory, toggle_inventory, pick_active_slot_scroll, ui_cursor_update));
         app.add_systems(Update, initialize_attack);
-        app.add_systems(Update, (inventory_interactions, item_click_handler, item_take_handler, item_put_handler, update_item_count).chain());
+        app.add_systems(Update, (inventory_interactions, background_interactions, item_click_handler, item_take_handler, item_put_handler, update_item_count).chain());
     }
 }
 
@@ -50,6 +50,10 @@ pub struct UiClickTrack {
 
 #[derive(Resource)]
 pub struct InventoryOpen(pub bool);
+
+
+#[derive(Component)]
+pub struct UiBackground;
 
 
 #[derive(Component)]

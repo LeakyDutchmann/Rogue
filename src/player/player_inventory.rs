@@ -1,4 +1,4 @@
-use bevy::{mesh::CircularSegmentMeshBuilder, transform::commands};
+use bevy::{mesh::CircularSegmentMeshBuilder, transform::commands, ui::FocusPolicy};
 
 use crate::items::assemble_item;
 
@@ -29,7 +29,9 @@ pub fn setup_inventory(
                 ..default()
             },
             BorderColor::all(Color::srgb(0.5, 0.5, 0.5)),
-            Interaction::None
+            Interaction::None,
+            ZIndex(3),
+            FocusPolicy::Block,
         )).with_children(|parent| {
             parent.spawn((
                 SlotIcon {
@@ -64,6 +66,7 @@ pub fn setup_inventory(
             BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
             BorderColor::all(Color::srgb(1.0, 1.0, 1.0)),
             HotBar,
+            ZIndex(2),
         )).id();
     let slice_for_h_bar = &slots[0..9];
     for slot in slice_for_h_bar {
@@ -90,6 +93,7 @@ pub fn setup_inventory(
         BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
         BorderColor::all(Color::srgb(1.0, 1.0, 1.0)),
         InventoryGrid,
+        ZIndex(2),
     )).id();
     let slice_for_inv_grid = &slots[9..];
     for slot in slice_for_inv_grid {
@@ -108,6 +112,22 @@ pub fn setup_inventory(
         },
         // BackgroundColor(Color::WHITE),
         ZIndex(10000),
+    ));
+    
+    commands.spawn((
+        Node {
+            position_type: PositionType::Absolute,
+            left: Val::Px(0.0),
+            right: Val::Px(0.0),
+            top: Val::Px(0.0),
+            bottom: Val::Px(0.0),
+            ..default()
+        },
+        UiBackground,
+        ZIndex(0),
+        // BackgroundColor(Color::WHITE),
+        Interaction::None,
+        FocusPolicy::Block,
     ));
 }
 
@@ -296,6 +316,7 @@ pub fn inventory_interactions(
     mut ui_click_track: ResMut<UiClickTrack>,
     time: Res<Time>,
 ) {
+    
     for (entity, mut border, children, interaction) in slots.iter_mut() {
         if *interaction == Interaction::Pressed {
             let now = time.elapsed_secs_f64();
@@ -323,8 +344,20 @@ pub fn inventory_interactions(
                     }
                 }
             }
-        } 
+        }
     } 
+}
+
+pub fn background_interactions(
+    mut query: Query<&Interaction, (Changed<Interaction>, With<UiBackground>)>,
+    mut writer: MessageWriter<DropFromCursor>,
+) {
+    for interaction in query.iter_mut() {
+        if *interaction == Interaction::Pressed {
+            writer.write(DropFromCursor);
+            println!("clicked outside");
+        }
+    }
 }
 
 pub fn item_click_handler(
