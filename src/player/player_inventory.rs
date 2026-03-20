@@ -330,7 +330,7 @@ pub fn pick_active_slot_scroll(
 }
 
 pub fn inventory_interactions(
-    mut reader: MessageReader<KeyPressed>,
+    keys: Res<ButtonInput<KeyCode>>,
     mut reader_click: MessageReader<MouseClickEvent>,
     mut slots: Query<(Entity, &mut BorderColor, &Children, &Interaction), Changed<Interaction>>,
     mut slot: Query<&SlotIcon>,
@@ -339,26 +339,14 @@ pub fn inventory_interactions(
     mut ui_click_track: ResMut<UiClickTrack>,
     time: Res<Time>,
 ) {
-    let mut ctrl_pressed = false;
-    let mut shift_pressed = false;
-    let keys: Vec<KeyCode> = reader.read().into_iter().map(|k| k.key).collect();
-    for key in keys {
-        if key == KeyCode::ControlLeft {
-            ctrl_pressed = true;
-        }
-        if key == KeyCode::ShiftLeft {
-            shift_pressed = true;
-        }
-    }
     for (entity, mut border, children, interaction) in slots.iter_mut() {
         if *interaction == Interaction::Pressed {
-            
             let now = time.elapsed_secs_f64();
             println!("pressed");
             for child in children.iter() {
                 if let Ok(slot) = slot.get_mut(child) {
                     if now - ui_click_track.last >= 0.2 {
-                        if shift_pressed {
+                        if keys.pressed(KeyCode::ShiftLeft) {
                             writer.write(SlotClicked {
                                 click_type: ClickType::ShiftLeftSingle,
                                 entity: entity,
@@ -367,7 +355,7 @@ pub fn inventory_interactions(
                             println!("shift clicked slot: {}", slot.index);
                             ui_click_track.last = now;
                             break;
-                        } else if ctrl_pressed {
+                        } else if keys.pressed(KeyCode::ControlLeft) {
                             writer.write(SlotClicked {
                                 click_type: ClickType::CtrlLeftSingle,
                                 entity: entity,
@@ -396,12 +384,13 @@ pub fn inventory_interactions(
                         println!("double clicked slot: {}", slot.index);
                         ui_click_track.last = now;
                         break;
-                    }
+                    }    
                 }
             }
         }
-    } 
-}
+    }
+} 
+
 
 pub fn background_interactions(
     mut query: Query<&Interaction, (Changed<Interaction>, With<UiBackground>)>,
