@@ -330,7 +330,7 @@ pub fn pick_active_slot_scroll(
 }
 
 pub fn inventory_interactions(
-    mut _reader: MessageReader<KeyPressed>,
+    mut reader: MessageReader<KeyPressed>,
     mut reader_click: MessageReader<MouseClickEvent>,
     mut slots: Query<(Entity, &mut BorderColor, &Children, &Interaction), Changed<Interaction>>,
     mut slot: Query<&SlotIcon>,
@@ -339,22 +339,54 @@ pub fn inventory_interactions(
     mut ui_click_track: ResMut<UiClickTrack>,
     time: Res<Time>,
 ) {
-    
+    let mut ctrl_pressed = false;
+    let mut shift_pressed = false;
+    let keys: Vec<KeyCode> = reader.read().into_iter().map(|k| k.key).collect();
+    for key in keys {
+        if key == KeyCode::ControlLeft {
+            ctrl_pressed = true;
+        }
+        if key == KeyCode::ShiftLeft {
+            shift_pressed = true;
+        }
+    }
     for (entity, mut border, children, interaction) in slots.iter_mut() {
         if *interaction == Interaction::Pressed {
+            
             let now = time.elapsed_secs_f64();
             println!("pressed");
             for child in children.iter() {
                 if let Ok(slot) = slot.get_mut(child) {
                     if now - ui_click_track.last >= 0.2 {
-                        writer.write(SlotClicked {
-                            click_type: ClickType::LeftSingle,
-                            entity: entity,
-                            slot_index: slot.index,
-                        });
-                        println!("clicked slot: {}", slot.index);
-                        ui_click_track.last = now;
-                        break;
+                        if shift_pressed {
+                            writer.write(SlotClicked {
+                                click_type: ClickType::ShiftLeftSingle,
+                                entity: entity,
+                                slot_index: slot.index,
+                            });
+                            println!("shift clicked slot: {}", slot.index);
+                            ui_click_track.last = now;
+                            break;
+                        } else if ctrl_pressed {
+                            writer.write(SlotClicked {
+                                click_type: ClickType::CtrlLeftSingle,
+                                entity: entity,
+                                slot_index: slot.index,
+                            });
+                            println!("ctrl clicked slot: {}", slot.index);
+                            ui_click_track.last = now;
+                            break;
+                        } else {
+                            writer.write(SlotClicked {
+                                click_type: ClickType::LeftSingle,
+                                entity: entity,
+                                slot_index: slot.index,
+                            });
+                            println!("clicked slot: {}", slot.index);
+                            ui_click_track.last = now;
+                            break;
+                        }
+                        
                     } else  {
                         writer.write(SlotClicked {
                             click_type: ClickType::LeftDouble,
@@ -392,6 +424,7 @@ pub fn item_click_handler(
     mut reader_drop: MessageReader<DropFromCursor>,
 ) {
     for msg in reader.read() {
+        
         if let Ok((entity, mut cursor)) = cursor.single_mut() {
             if let Some(item) = cursor.item {
                 writer.write(InsertToInventory {
@@ -400,8 +433,23 @@ pub fn item_click_handler(
                     slot: Some(msg.slot_index),
                 });
             } else if cursor.item.is_none() {
+                let mut quantity = ItemQuantity::Empty;
+                match msg.click_type {
+                    ClickType::CtrlLeftSingle => {
+                        quantity = ItemQuantity::One;
+                    }
+                    ClickType::LeftDouble => {
+                        quantity = ItemQuantity::Max;
+                    }
+                    ClickType::LeftSingle => {
+                        quantity = ItemQuantity::MaxFromOne;
+                    }
+                    ClickType::ShiftLeftSingle => {
+                        quantity = ItemQuantity::HalfStack;
+                    }
+                }
                 writer_get.write(GetFromInventory {
-                    quantity: 1,
+                    quantity: quantity,
                     slot: msg.slot_index,
                 });
             }
@@ -422,18 +470,14 @@ pub fn item_take_handler(
                 if let Some(mut item_stack) = inventory.items.get_mut(msg.slot) {
                     if let Some(item_id) = item_stack.item_stored {
                         cursor.item = Some(item_id);
-                        if item_stack.quantity == msg.quantity {
-                            item_stack.item_stored = None;
-                            item_stack.quantity = 0;
-                            cursor.quantity = msg.quantity;
-                        } else if item_stack.quantity > msg.quantity {
-                            item_stack.quantity -= msg.quantity;
-                            cursor.quantity = msg.quantity;
-                        } else if item_stack.quantity < msg.quantity {
-                            item_stack.item_stored = None;
-                            cursor.quantity = item_stack.quantity;
-                            item_stack.quantity = 0;
-                        }         
+                        if let Some(def) = registry.items.get(&item_id) {
+                            let quantity = msg.quantity.match_quantity(def.max_stack as i32, item_stack.quantity);
+                            cursor.quantity += quantity;
+                            item_stack.quantity -= quantity;
+                            if item_stack.quantity == 0 {
+                                item_stack.item_stored = None;
+                            }
+                        }       
                     }
                 }
             }
@@ -584,6 +628,38 @@ pub fn update_item_count(
                     }
                 }
             }
+        }
+    }
+}
+
+//testing 
+
+pub fn insert_item_in_inventory(
+    mut commands: Commands,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    item_registry: Res<ItemRegistry>,
+) {
+    for mut inventory in inventory.iter_mut() {
+        for (i, item_stack) in &mut inventory.items.iter_mut().enumerate() {
+            if i == 0 {
+                item_stack.item_stored = Some(ItemId::Sword);
+                if let Some(def) = item_registry.items.get(&ItemId::Sword) {
+                     item_stack.quantity = def.max_stack as i32;
+                }
+                continue;
+            }
+            if i == 1 {
+                item_stack.item_stored = Some(ItemId::PickAxe);
+                if let Some(def) = item_registry.items.get(&ItemId::PickAxe) {
+                     item_stack.quantity = def.max_stack as i32;
+                }
+                continue;
+            }
+            item_stack.item_stored = Some(ItemId::Inferium);
+            if let Some(def) = item_registry.items.get(&ItemId::Inferium) {
+                 item_stack.quantity = def.max_stack as i32;
+            }
+           
         }
     }
 }

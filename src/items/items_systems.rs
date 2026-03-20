@@ -111,6 +111,8 @@ pub fn item_spawn_system(
     }
 }
 
+
+
 // pub fn update_dropped_items(
 //     mut commands: Commands,
 //     player_pos: Query<&Transform, With<Player>>,

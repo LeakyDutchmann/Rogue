@@ -25,6 +25,28 @@ impl Plugin for MessagesPlugin {
 pub struct DropFromCursor;
 
 
+pub enum ItemQuantity {
+    One,
+    MaxFromOne,
+    Max,
+    HalfStack,
+    Сustom(i32),
+    Empty
+}
+
+impl ItemQuantity {
+    pub fn match_quantity(&self, stack_size: i32, item_quantity: i32) -> i32 {
+        match self {
+            ItemQuantity::One => 1,
+            ItemQuantity::MaxFromOne => item_quantity,
+            ItemQuantity::Max => if item_quantity == stack_size { stack_size } else { item_quantity },
+            ItemQuantity::HalfStack => if item_quantity > stack_size / 2 { stack_size / 2 } else { item_quantity },
+            _ => 0,
+        }
+    }
+}
+
+
 #[derive(Message)]
 pub struct InsertToInventory {
     pub item: ItemId,
@@ -35,7 +57,7 @@ pub struct InsertToInventory {
 
 #[derive(Message)]
 pub struct GetFromInventory {
-    pub quantity: i32,
+    pub quantity: ItemQuantity,
     pub slot: usize
 }
 
@@ -43,6 +65,8 @@ pub struct GetFromInventory {
 pub enum ClickType {
     LeftSingle,
     LeftDouble,
+    CtrlLeftSingle,
+    ShiftLeftSingle,
 }
 
 
