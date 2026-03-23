@@ -295,7 +295,6 @@ pub fn pick_active_slot(
             }
             if let Some(active) = active {
                 slot.index = active;
-                println!("Active slot changed to {}", active);
             }
         }   
     }
@@ -335,14 +334,13 @@ pub fn inventory_interactions(
     mut slots: Query<(Entity, &mut BorderColor, &Children, &Interaction), Changed<Interaction>>,
     mut slot: Query<&SlotIcon>,
     mut writer: MessageWriter<SlotClicked>,
-    mut writer_outside: MessageWriter<DropFromCursor>,
+    mut writer_double: MessageWriter<DoubleClicked>,
     mut ui_click_track: ResMut<UiClickTrack>,
     time: Res<Time>,
 ) {
     for (entity, mut border, children, interaction) in slots.iter_mut() {
         if *interaction == Interaction::Pressed {
             let now = time.elapsed_secs_f64();
-            println!("pressed");
             for child in children.iter() {
                 if let Ok(slot) = slot.get_mut(child) {
                     if now - ui_click_track.last >= 0.2 {
@@ -352,7 +350,6 @@ pub fn inventory_interactions(
                                 entity: entity,
                                 slot_index: slot.index,
                             });
-                            println!("shift clicked slot: {}", slot.index);
                             ui_click_track.last = now;
                             break;
                         } else if keys.pressed(KeyCode::ControlLeft) {
@@ -361,7 +358,6 @@ pub fn inventory_interactions(
                                 entity: entity,
                                 slot_index: slot.index,
                             });
-                            println!("ctrl clicked slot: {}", slot.index);
                             ui_click_track.last = now;
                             break;
                         } else {
@@ -376,12 +372,9 @@ pub fn inventory_interactions(
                         }
                         
                     } else  {
-                        writer.write(SlotClicked {
-                            click_type: ClickType::LeftDouble,
-                            entity: entity,
+                        writer_double.write(DoubleClicked {
                             slot_index: slot.index,
                         });
-                        println!("double clicked slot: {}", slot.index);
                         ui_click_track.last = now;
                         break;
                     }    
@@ -406,11 +399,9 @@ pub fn background_interactions(
 
 pub fn item_click_handler(
     mut reader: MessageReader<SlotClicked>,
-    mut inventory: Query<&mut Inventory, With<Player>>,
     mut cursor: Query<(Entity, &mut CursorCarrier)>,
     mut writer: MessageWriter<InsertToInventory>,
     mut writer_get: MessageWriter<GetFromInventory>,
-    mut reader_drop: MessageReader<DropFromCursor>,
 ) {
     for msg in reader.read() {
         
@@ -427,9 +418,6 @@ pub fn item_click_handler(
                     ClickType::CtrlLeftSingle => {
                         quantity = ItemQuantity::One;
                     }
-                    ClickType::LeftDouble => {
-                        quantity = ItemQuantity::Max;
-                    }
                     ClickType::LeftSingle => {
                         quantity = ItemQuantity::MaxFromOne;
                     }
@@ -442,6 +430,67 @@ pub fn item_click_handler(
                     slot: msg.slot_index,
                 });
             }
+        }
+    }
+}
+
+pub fn double_click_handler(
+    mut commands: Commands,
+    mut reader: MessageReader<DoubleClicked>,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    registry: Res<ItemRegistry>,
+    
+) {
+    for msg in reader.read() {
+        if let Ok((entity, mut cursor)) = cursor.single_mut() {
+            if let Ok(mut inventory) = inventory.single_mut() {
+                if let Some(item_stack) = inventory.items.get_mut(msg.slot_index) {
+                    let item_id = match inventory.items.get(msg.slot_index).and_then(|s| s.item_stored) {
+                        Some(id) => id,
+                        None => if cursor.item.is_none() { return } else { cursor.item.unwrap() },
+                    };
+                    if let Some(def) = registry.items.get(&item_id) {
+                        if cursor.item.is_none() {
+                            cursor.item = Some(item_id);
+                        }
+                        if cursor.item != Some(item_id) {
+                            return;
+                        }
+                        let mut remaining = def.max_stack as i32 - cursor.quantity;
+                        if let Some(stack) = inventory.items.get_mut(msg.slot_index) {
+                            if stack.item_stored == Some(item_id) {
+                                let take = remaining.min(stack.quantity);
+                                cursor.quantity += take;
+                                stack.quantity -= take;
+                                remaining -= take;
+                                if stack.quantity == 0 {
+                                    stack.item_stored = None;
+                                }
+                            }
+                        }
+                        for (i, stack) in inventory.items.iter_mut().enumerate() {
+                            if i == msg.slot_index {
+                                continue; // пропускаємо вже оброблений слот
+                            }
+                    
+                            if remaining <= 0 {
+                                break;
+                            }
+                            if stack.item_stored == Some(item_id) {
+                                let take = remaining.min(stack.quantity);
+                                cursor.quantity += take;
+                                stack.quantity -= take;
+                                remaining -= take;
+                                if stack.quantity == 0 {
+                                    stack.item_stored = None;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        
         }
     }
 }
@@ -460,12 +509,13 @@ pub fn item_take_handler(
                     if let Some(item_id) = item_stack.item_stored {
                         cursor.item = Some(item_id);
                         if let Some(def) = registry.items.get(&item_id) {
-                            let quantity = msg.quantity.match_quantity(def.max_stack as i32, item_stack.quantity);
-                            cursor.quantity += quantity;
-                            item_stack.quantity -= quantity;
-                            if item_stack.quantity == 0 {
-                                item_stack.item_stored = None;
-                            }
+                            if let Ok(quantity) = msg.quantity.match_quantity(def.max_stack as i32, item_stack.quantity) {
+                                cursor.quantity += quantity;
+                                item_stack.quantity -= quantity;
+                                if item_stack.quantity == 0 {
+                                    item_stack.item_stored = None;
+                                }
+                            } 
                         }       
                     }
                 }
@@ -488,9 +538,7 @@ pub fn item_put_handler(
                 if let Some(item_id) = cursor.item {
                     if let Some(def) = registry.items.get(&item_id) {
                         if let Some(slot) = msg.slot {
-                            println!("ok5");
                             if let Some(mut item_stack) = inventory.items.get_mut(slot) {
-                                println!("ok6");
                                 if item_stack.item_stored == Some(item_id) {
                                     if item_stack.quantity < def.max_stack as i32 {
                                         let free = def.max_stack as i32 - item_stack.quantity;
@@ -505,7 +553,6 @@ pub fn item_put_handler(
                                         }
                                     }
                                 } else if item_stack.item_stored.is_none() {
-                                    println!("ok3");
                                     item_stack.item_stored = Some(item_id);
                                     item_stack.quantity = quantity_to_put;
                                     cursor.clear();
@@ -643,6 +690,9 @@ pub fn insert_item_in_inventory(
                      item_stack.quantity = def.max_stack as i32;
                 }
                 continue;
+            }
+            if i == 14 {
+                break
             }
             item_stack.item_stored = Some(ItemId::Inferium);
             if let Some(def) = item_registry.items.get(&ItemId::Inferium) {

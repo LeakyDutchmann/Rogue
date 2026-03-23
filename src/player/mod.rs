@@ -17,7 +17,8 @@ use crate::animations::{ActiveAnimation, AnimationId, AnimationTimer};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::items::{Inventory, HeldItem, ItemStack, ItemRegistry, ItemId};
 use crate::messages::{MouseClickEvent, GetFromInventory, KeyPressed,
-    SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory, DropFromCursor, ClickType, ItemQuantity};
+    SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory,
+    DropFromCursor, ClickType, ItemQuantity, DoubleClicked};
 use crate::combat::{AttackAnimation, HurtBox, HurtTimer, FractionType};
 use bevy::window::PrimaryWindow;
 use super::FieldOfView;
@@ -38,9 +39,12 @@ impl Plugin for PlayerSetupPlugin {
             pick_active_slot, show_active_slot, keyboard_input_system, sync_player_held_item,
             drop_item, show_inventory, toggle_inventory, pick_active_slot_scroll, ui_cursor_update, update_player_transform));
         app.add_systems(Update, initialize_attack);
-        app.add_systems(Update, (inventory_interactions, background_interactions, drop_cursor_item, item_click_handler, item_take_handler, item_put_handler, update_item_count).chain());
+        app.add_systems(Update, inventory_interactions);
+        app.add_systems(Update, (background_interactions, drop_cursor_item, item_click_handler, item_take_handler,
+            item_put_handler, double_click_handler, update_item_count).chain().after(inventory_interactions));
     }
 }
+
 
 #[derive(Resource)]
 pub struct UiClickTrack {

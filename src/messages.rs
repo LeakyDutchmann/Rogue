@@ -16,7 +16,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<SlotClicked>()
             .add_message::<InsertToInventory>()
             .add_message::<GetFromInventory>()
-            .add_message::<DropFromCursor>();
+            .add_message::<DropFromCursor>()
+            .add_message::<DoubleClicked>();
     }
 }
 
@@ -34,16 +35,24 @@ pub enum ItemQuantity {
     Empty
 }
 
+pub struct ItemErr;
+
 impl ItemQuantity {
-    pub fn match_quantity(&self, stack_size: i32, item_quantity: i32) -> i32 {
+    pub fn match_quantity(&self, stack_size: i32, item_quantity: i32) -> Result<i32, ItemErr> {
         match self {
-            ItemQuantity::One => 1,
-            ItemQuantity::MaxFromOne => item_quantity,
-            ItemQuantity::Max => if item_quantity == stack_size { stack_size } else { item_quantity },
-            ItemQuantity::HalfStack => if item_quantity > stack_size / 2 { stack_size / 2 } else { item_quantity },
-            _ => 0,
+            ItemQuantity::One => Ok(1),
+            ItemQuantity::MaxFromOne => Ok(item_quantity),
+            ItemQuantity::Max => if item_quantity == stack_size { Ok(stack_size) } else { Err(ItemErr) },
+            ItemQuantity::HalfStack => if item_quantity > stack_size / 2 { Ok(stack_size / 2) } else { Ok(item_quantity) },
+            _ => Ok(0),
         }
     }
+}
+
+
+#[derive(Message)]
+pub struct DoubleClicked {
+    pub slot_index: usize,
 }
 
 
@@ -64,7 +73,6 @@ pub struct GetFromInventory {
 
 pub enum ClickType {
     LeftSingle,
-    LeftDouble,
     CtrlLeftSingle,
     ShiftLeftSingle,
 }
