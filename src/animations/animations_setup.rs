@@ -164,27 +164,33 @@ pub fn update_held_item_dir(
 
 pub fn draw_helditem(
     mut commands: Commands,
-    mut held_item: Query<(Entity, &mut HeldItem), (With<HeldItem>, Without<AttackAnimation>)>,
+    mut held_item: Query<(Entity, &mut HeldItem, &ChildOf), (With<HeldItem>, Without<AttackAnimation>)>,
+    parent: Query<&ActorState>,
     registry: Res<ItemRegistry>,
 ) {
-    for (actor_hand, mut held_item) in held_item.iter_mut() {
-        if let Some(held) = held_item.held {
-            if let Some(last_held) = held_item.last_held {
-                if held != last_held {
-                    if let Some(def) = registry.items.get(&held) {
-                        commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
+    for (actor_hand, mut held_item, childof) in held_item.iter_mut() {
+        if let Ok(actor_state) = parent.get(childof.0) {
+            if actor_state.state != ActorStateType::Dead {
+                if let Some(held) = held_item.held {
+                    if let Some(last_held) = held_item.last_held {
+                        if held != last_held {
+                            if let Some(def) = registry.items.get(&held) {
+                                commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
+                            }
+                        }
+                    } else {
+                        if let Some(def) = registry.items.get(&held) {
+                            commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
+                        }
+                        
                     }
+                     
+                } else {
+                    commands.entity(actor_hand).remove::<Sprite>();
                 }
-            } else {
-                if let Some(def) = registry.items.get(&held) {
-                    commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
-                }
-                
-            }
-             
+            } 
         } else {
-            commands.entity(actor_hand).remove::<Sprite>();
+            println!("didn't get actorstate");
         }
-        
     }
 }

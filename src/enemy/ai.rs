@@ -107,13 +107,13 @@ pub fn ai_steering(
 pub fn ai_initialize_attack(
     mut commands: Commands,
     player_tf: Query<(Entity, &Transform), With<Player>>,
-    enemy_qr: Query<(Entity, &Transform,), With<Enemy>>,
+    enemy_qr: Query<(Entity, &Transform, &ActorState), With<Enemy>>,
     hend_qr: Query<(Entity, &HeldItem, &ChildOf), (Without<AttackAnimation>, Without<CoolDown>)>,
     attack_stats: Query<(&CombatStats, &AnimationPattern)>,
     registry: Res<ItemRegistry>,
 ) { 
     for (hend_e, held_item, childof) in hend_qr.iter() {
-        if let Ok((enemy_e, enemy_tf)) = enemy_qr.get(childof.0) {
+        if let Ok((enemy_e, enemy_tf, actor)) = enemy_qr.get(childof.0) {
             if let Some(item) = held_item.held {
                 if let Ok((player_e, player_tf)) = player_tf.single() {
                     if let Some(def) = registry.items.get(&item) {
@@ -127,18 +127,21 @@ pub fn ai_initialize_attack(
                                 continue
                             }
                             if let Some(animation_style) = def.animation_style {
-                                commands.entity(hend_e).insert(
-                                    AttackAnimation {
-                                        anim_pattern: animation_style,
-                                        progress: 0.0,
-                                        duration: 60.0 / c_stats.attack_speed as f32,
-                                        max_angle: (c_stats.swing_angle as f32).to_radians(),
-                                        hit_triggered: false,
-                                        cursor_pos: player_pos,
-                                        item: item,
-                                        item_radius: c_stats.radius as f32,
-                                    }
-                                );
+                                if actor.state != ActorStateType::Dead {
+                                    commands.entity(hend_e).insert(
+                                        AttackAnimation {
+                                            anim_pattern: animation_style,
+                                            progress: 0.0,
+                                            duration: 60.0 / c_stats.attack_speed as f32,
+                                            max_angle: (c_stats.swing_angle as f32).to_radians(),
+                                            hit_triggered: false,
+                                            cursor_pos: player_pos,
+                                            item: item,
+                                            item_radius: c_stats.radius as f32,
+                                        }
+                                    );
+                                }
+                                
                             }
                         }
                         

@@ -110,6 +110,7 @@ pub fn setup_inventory(
             item: None,
             quantity: 0,
         },
+        Text::new(""),
         // BackgroundColor(Color::WHITE),
         ZIndex(10000),
     ));
@@ -616,12 +617,17 @@ pub fn item_put_handler(
 pub fn ui_cursor_update(
     mut commands: Commands,
     window: Single<&Window, With<PrimaryWindow>>,
-    mut query: Query<(Entity, &mut Node, &mut CursorCarrier)>,
+    mut query: Query<(Entity, &mut Node, &mut CursorCarrier, &mut Text)>,
     image_node: Query<&mut ImageNode>,
     registry: Res<ItemRegistry>
 ) {
     if let Some(position) = window.cursor_position() {
-        for ((entity, mut node, cursor)) in query.iter_mut() {
+        for ((entity, mut node, cursor, mut text)) in query.iter_mut() {
+            if cursor.quantity == 0 || cursor.quantity == 1 {
+                text.0 = "".to_string();
+            } else {
+                text.0 = cursor.quantity.to_string();
+            }
             node.left = Val::Px(position.x);
             node.top = Val::Px(position.y);
             if let Some(item_id) = cursor.item {
