@@ -2,7 +2,7 @@ use crate::map_setup::*;
 
 pub fn floor_setup(
     mut commands: Commands,
-    atlas: Res<MapAtlas>,
+    atlases: Res<MapAtlases>,
 ) {
     for x in 0..MAP_WIDTH {
         for y in 0..MAP_HEIGHT {
@@ -12,39 +12,61 @@ pub fn floor_setup(
             let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
             let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
             let position = IVec2::new(x as i32, y as i32);
-            commands.spawn((
-                Sprite::from_atlas_image(
-                            atlas.texture.clone(),
-                            TextureAtlas {
-                                layout: atlas.layout.clone(),
-                                index: sprite_index,
-                            },
-                        ),
-                Transform::from_xyz(pos_x, pos_y, -1.0),
-                MapTile { position, tile_type },
-            ));
+            if let Some(atlas) = atlases.atlases.get(&TileMaterial::Structurix) {
+                commands.spawn((
+                    Sprite::from_atlas_image(
+                                atlas.texture.clone(),
+                                TextureAtlas {
+                                    layout: atlas.layout.clone(),
+                                    index: sprite_index,
+                                },
+                            ),
+                    Transform::from_xyz(pos_x, pos_y, -1.0),
+                    MapTile { position, tile_type, material: TileMaterial::None},
+                ));
+            }
         }
     }
 }   
+
+
 
 pub fn setup_atlas(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut map_atlases: ResMut<MapAtlases>,
 ) {
-    let texture = asset_server.load("Sprites.png");
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 8, 8, None, None);
     let layout_handle = texture_atlas_layouts.add(layout);
-
-    commands.insert_resource(MapAtlas {
-        texture,
-        layout: layout_handle,
+    map_atlases.atlases.insert(TileMaterial::Structurix, MapAtlas {
+        texture: asset_server.load("Structurix.png"),
+        layout: layout_handle.clone(),
     });
+    map_atlases.atlases.insert(TileMaterial::Mechanae, MapAtlas {
+        texture: asset_server.load("Mechanae.png"),
+        layout: layout_handle.clone(),
+    });
+    map_atlases.atlases.insert(TileMaterial::Secturix, MapAtlas {
+        texture: asset_server.load("Secturix.png"),
+        layout: layout_handle.clone(),
+    });
+}
+
+fn pick_tile_material() -> TileMaterial {
+    let mut r = rand::rng();
+    let number = r.random_range(0..100);
+    match number {
+        0..60 => TileMaterial::Structurix,
+        60..80 => TileMaterial::Secturix,
+        80..100 => TileMaterial::Mechanae,
+        _ => TileMaterial::None,
+    }
 }
 
 pub fn map_setup(
     mut commands: Commands,
-    atlas: Res<MapAtlas>,
+    atlases: Res<MapAtlases>,
 ) {
     let map = generate_cave();
     commands.insert_resource(GameMap {
@@ -65,27 +87,35 @@ pub fn map_setup(
             let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
             let position = IVec2::new(x as i32, y as i32);
             if tile_type != TileType::Empty {
-                commands.spawn((
-                Sprite::from_atlas_image(
-                            atlas.texture.clone(),
-                            TextureAtlas {
-                                layout: atlas.layout.clone(),
-                                index: sprite_index,
-                            },
-                        ),
-                Transform::from_xyz(pos_x, pos_y, (MAX_Y - pos_y + 1.0) * 0.001),
-                MapTile { position, tile_type },
-                Wall,
-                Colider {
-                    shape: ColiderShape::Rectangle {
-                        width: TILE_SIZE,
-                        height: TILE_SIZE,
+                let material = pick_tile_material();
+                if let Some(atlas) = atlases.atlases.get(&material) {
+                    let texture = atlas.texture.clone();
+                    commands.spawn((
+                    Sprite::from_atlas_image(
+                                texture,
+                                TextureAtlas {
+                                    layout: atlas.layout.clone(),
+                                    index: sprite_index,
+                                },
+                            ),
+                    Transform::from_xyz(pos_x, pos_y, (MAX_Y - pos_y + 1.0) * 0.001),
+                    MapTile { 
+                        position,
+                        tile_type,
+                        material: TileMaterial::Structurix,
                     },
-                    _offsety: 0.0,
-                    _sensor: true,
-                },
-                Health(100),
-            ));
+                    Wall,
+                    Colider {
+                        shape: ColiderShape::Rectangle {
+                            width: TILE_SIZE,
+                            height: TILE_SIZE,
+                        },
+                        _offsety: 0.0,
+                        _sensor: true,
+                    },
+                    Health(100),
+                ));
+                }    
             }
         }
     }

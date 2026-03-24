@@ -48,11 +48,20 @@ impl TileType {
     }
 }
 
+#[derive(Hash, PartialEq, Eq)]
+pub enum TileMaterial {
+    Structurix,
+    Mechanae,
+    Secturix,
+    None,
+}
+
 
 #[derive(Component)]
 pub struct MapTile {
     pub position: IVec2,
     pub tile_type: TileType,
+    pub material: TileMaterial,
 }
 
 
