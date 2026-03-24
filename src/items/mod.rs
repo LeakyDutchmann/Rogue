@@ -6,10 +6,11 @@ use items_systems::*;
 pub use item_functions::*;
 use rand::Rng;
 
-use crate::player::{Player, ActiveSlot};
+use crate::player::{Player};
 use crate::messages::{ItemDropped, KeyPressed, SpawnItemRequest};
 use serde::{Deserialize};
 use std::collections::HashMap;
+use crate::inventory::{Inventory, ActiveSlot};
 
 pub struct ItemsPlugin;
 
@@ -107,24 +108,12 @@ pub struct OnGround;
 #[derive(Component)]
 pub struct InInventory;
 
-#[derive(Clone)]
-pub struct ItemStack {
-    pub item_stored: Option<ItemId>,
-    pub quantity: i32,
-}
-
-
-#[derive(Component)]
-pub struct Inventory {
-    pub capacity: usize,
-    pub items: Vec<ItemStack>,
-}
-
 
 #[derive(Component)]
 pub struct IntentPickingUp {
     pub target: Entity,
 }
+
 
 #[derive(Component)]
 pub struct CombatStats {
@@ -132,6 +121,7 @@ pub struct CombatStats {
     pub swing_angle: f32,
     pub radius: f32,
 }
+
 
 #[derive(Component)]
 pub struct WeaponStats {
@@ -153,6 +143,7 @@ pub struct Usable;
 pub struct Durability {
     pub durability: i32,
 }
+
 
 #[derive(Component)]
 pub struct HeldItem {

@@ -13,6 +13,7 @@ mod messages;
 mod development;
 mod enemy;
 mod raycasting;
+mod inventory;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -30,6 +31,7 @@ use messages::*;
 use development::*;
 use enemy::*;
 use raycasting::*;
+use inventory::*;
 
 fn main() {
     App::new()
@@ -37,7 +39,7 @@ fn main() {
         .add_plugins(DevPlugin) // FPS COUNTER e.t.c
         .add_plugins(EnemyPlugin)
         .add_plugins(MessagesPlugin)
-        .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin))
+        .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin, InventoryPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
         .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin))
         .add_plugins(VisionPlugin)
