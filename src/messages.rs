@@ -4,8 +4,7 @@ pub struct MessagesPlugin;
 
 impl Plugin for MessagesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_message::<ItemDropped>()
-            .add_message::<MouseClickEvent>()
+        app.add_message::<MouseClickEvent>()
             .add_message::<ScrollMessage>()
             .add_message::<MapChanged>()
             .add_message::<ApplyDamage>()
@@ -29,10 +28,7 @@ pub struct DropFromCursor;
 pub enum ItemQuantity {
     One,
     MaxFromOne,
-    Max,
     HalfStack,
-    Сustom(i32),
-    Empty
 }
 
 pub struct ItemErr;
@@ -42,9 +38,7 @@ impl ItemQuantity {
         match self {
             ItemQuantity::One => Ok(1),
             ItemQuantity::MaxFromOne => Ok(item_quantity),
-            ItemQuantity::Max => if item_quantity == stack_size { Ok(stack_size) } else { Err(ItemErr) },
             ItemQuantity::HalfStack => if item_quantity > stack_size / 2 { Ok(stack_size / 2) } else { Ok(item_quantity) },
-            _ => Ok(0),
         }
     }
 }
@@ -58,7 +52,6 @@ pub struct DoubleClicked {
 
 #[derive(Message)]
 pub struct InsertToInventory {
-    pub item: ItemId,
     pub quantity: i32,
     pub slot: Option<usize>
 }
@@ -81,7 +74,6 @@ pub enum ClickType {
 #[derive(Message)]
 pub struct SlotClicked {
     pub click_type: ClickType,
-    pub entity: Entity,
     pub slot_index: usize,
 }
 
@@ -106,15 +98,9 @@ pub enum ScrollDir {
 }
 
 
-#[derive(Message)]
-pub struct ItemDropped {
-    pub item: Option<Entity>,
-}
-
 #[derive(Message, Clone)]
 pub enum MouseClickEvent {
     LeftClick(Vec2),
-    DoubleLeftClick(Vec2),
     _RightClick(Vec2),
 }
 

@@ -96,7 +96,6 @@ pub fn item_click_handler(
         if let Ok(cursor) = cursor.single() {
             if let Some(item) = cursor.item {
                 writer.write(InsertToInventory {
-                    item: item,
                     quantity: cursor.quantity,
                     slot: Some(msg.slot_index),
                 });

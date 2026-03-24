@@ -28,14 +28,14 @@ pub fn pick_active_slot(
 
 pub fn inventory_interactions(
     keys: Res<ButtonInput<KeyCode>>,
-    mut slots: Query<(Entity, &Children, &Interaction), Changed<Interaction>>,
+    mut slots: Query<(&Children, &Interaction), Changed<Interaction>>,
     mut slot: Query<&SlotIcon>,
     mut writer: MessageWriter<SlotClicked>,
     mut writer_double: MessageWriter<DoubleClicked>,
     mut ui_click_track: ResMut<UiClickTrack>,
     time: Res<Time>,
 ) {
-    for (entity, children, interaction) in slots.iter_mut() {
+    for (children, interaction) in slots.iter_mut() {
         if *interaction == Interaction::Pressed {
             let now = time.elapsed_secs_f64();
             for child in children.iter() {
@@ -44,7 +44,6 @@ pub fn inventory_interactions(
                         if keys.pressed(KeyCode::ShiftLeft) {
                             writer.write(SlotClicked {
                                 click_type: ClickType::ShiftLeftSingle,
-                                entity: entity,
                                 slot_index: slot.index,
                             });
                             ui_click_track.last = now;
@@ -52,7 +51,6 @@ pub fn inventory_interactions(
                         } else if keys.pressed(KeyCode::ControlLeft) {
                             writer.write(SlotClicked {
                                 click_type: ClickType::CtrlLeftSingle,
-                                entity: entity,
                                 slot_index: slot.index,
                             });
                             ui_click_track.last = now;
@@ -60,7 +58,6 @@ pub fn inventory_interactions(
                         } else {
                             writer.write(SlotClicked {
                                 click_type: ClickType::LeftSingle,
-                                entity: entity,
                                 slot_index: slot.index,
                             });
                             ui_click_track.last = now;
