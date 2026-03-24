@@ -3,7 +3,7 @@ mod camera;
 use camera::*;
 use bevy::prelude::*;
 use crate::player::Player;
-use crate::messages::{ScrollMessage, ScrollDir, KeyPressed};
+use crate::messages::KeyPressed;
 
 pub struct CameraSetupPlugin;
 

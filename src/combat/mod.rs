@@ -11,7 +11,7 @@ use crate::map_setup::{MapTile, Wall, world_pos_to_tile_pos};
 use crate::world::{WorldGrid, CELL_SIZE, get_cells_in_radius, get_entities_in_cells};
 use crate::components::{Health, ActorState, ActorStateType, FacingDirection, DeathTimer, Speed,};
 use crate::messages::{ApplyDamage, MapChanged, CalculateDamage, DamageType, SpawnItemRequest};
-use crate::items::{ItemId, WeaponStats, ToolStats, AnimationStyle, ItemRegistry};
+use crate::items::{ItemId, AnimationStyle, ItemRegistry};
 use crate::player::{initialize_attack};
 use crate::animations::*;
 use crate::colision_manager::Colider;

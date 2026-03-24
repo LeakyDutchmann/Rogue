@@ -109,7 +109,6 @@ pub fn ai_initialize_attack(
     player_tf: Query<(Entity, &Transform), With<Player>>,
     enemy_qr: Query<(Entity, &Transform, &ActorState), With<Enemy>>,
     hend_qr: Query<(Entity, &HeldItem, &ChildOf), (Without<AttackAnimation>, Without<CoolDown>)>,
-    attack_stats: Query<(&CombatStats, &AnimationPattern)>,
     registry: Res<ItemRegistry>,
 ) { 
     for (hend_e, held_item, childof) in hend_qr.iter() {

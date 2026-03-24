@@ -168,7 +168,7 @@ pub fn draw_helditem(
     parent: Query<&ActorState>,
     registry: Res<ItemRegistry>,
 ) {
-    for (actor_hand, mut held_item, childof) in held_item.iter_mut() {
+    for (actor_hand, held_item, childof) in held_item.iter_mut() {
         if let Ok(actor_state) = parent.get(childof.0) {
             if actor_state.state != ActorStateType::Dead {
                 if let Some(held) = held_item.held {

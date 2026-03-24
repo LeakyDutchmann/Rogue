@@ -1,15 +1,13 @@
 mod math;
-mod fov_mesh;
 mod enemy_vision;
+
+#[cfg(feature = "prototypes")]
+mod prototype;
 
 use super::*;
 use math::*;
-use fov_mesh::*;
 use enemy_vision::*;
-use bevy::render::render_resource::PrimitiveTopology;
-use bevy::asset::RenderAssetUsages;
-use bevy::mesh::Indices;
-use bevy::sprite_render::AlphaMode2d;
+
 
 
 pub struct VisionPlugin;
@@ -19,15 +17,6 @@ impl Plugin for VisionPlugin {
         app.add_systems(Update, enemy_vision_system);
     }
 }
-
-#[derive(Component)]
-pub struct FieldOfView {
-    pub triangles: Option<Vec<(Vec3, Vec3, Vec3)>>,
-}
-
-#[derive(Component)]
-pub struct CustomShape;
-
 
 pub enum AwarenessType {
     Unaware,

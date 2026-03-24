@@ -55,9 +55,6 @@ pub fn player_setup(
         ActiveSlot {
             index: 1,
         },
-        FieldOfView {
-            triangles: None,
-        },
         HurtBox {
             radius: 3.0,
             fraction: FractionType::Player,

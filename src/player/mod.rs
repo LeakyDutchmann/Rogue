@@ -16,7 +16,6 @@ use crate::colision_manager::{Colider, ColiderShape};
 use crate::items::{HeldItem, ItemRegistry};
 use crate::messages::{MouseClickEvent, KeyPressed};
 use crate::combat::{AttackAnimation, HurtBox, HurtTimer, FractionType};
-use super::FieldOfView;
 use crate::enemy::{ai_steering};
 use crate::inventory::{Inventory, ItemStack, ActiveSlot};
 

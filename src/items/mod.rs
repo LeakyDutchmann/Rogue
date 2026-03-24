@@ -7,10 +7,11 @@ pub use item_functions::*;
 use rand::Rng;
 
 use crate::player::{Player};
-use crate::messages::{ItemDropped, KeyPressed, SpawnItemRequest};
+use crate::messages::SpawnItemRequest;
 use serde::{Deserialize};
 use std::collections::HashMap;
-use crate::inventory::{Inventory, ActiveSlot};
+use std::fs;
+use crate::inventory::Inventory;
 
 pub struct ItemsPlugin;
 
@@ -96,53 +97,13 @@ pub enum AnimationStyle {
 
 
 #[derive(Component)]
-pub struct AnimationPattern {
-    pub pattern: AnimationStyle,
-}
-
-
-#[derive(Component)]
 pub struct OnGround;
-
-
-#[derive(Component)]
-pub struct InInventory;
-
-
-#[derive(Component)]
-pub struct IntentPickingUp {
-    pub target: Entity,
-}
-
-
-#[derive(Component)]
-pub struct CombatStats {
-    pub attack_speed: f32,
-    pub swing_angle: f32,
-    pub radius: f32,
-}
-
-
-#[derive(Component)]
-pub struct WeaponStats {
-    pub enemy_damage: i32,
-}
-
-
-#[derive(Component)]
-pub struct ToolStats {
-    pub structure_damage: i32,
-}
 
 
 #[derive(Component)]
 pub struct Usable;
 
 
-#[derive(Component)]
-pub struct Durability {
-    pub durability: i32,
-}
 
 
 #[derive(Component)]
