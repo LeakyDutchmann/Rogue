@@ -29,7 +29,7 @@ pub fn setup_inventory(
                 Text::new(""),
                 Node {
                     position_type: PositionType::Absolute,
-                    top: Val::Percent((50.0)),
+                    top: Val::Percent(50.0),
                     ..Default::default()
                 },
                 SlotCounter,
@@ -44,7 +44,7 @@ pub fn setup_inventory(
                 position_type: PositionType::Absolute,
                 bottom: Val::Px(10.0),
                 left: Val::Percent(50.0),
-                margin: UiRect::left(Val::Px(-216.0)), // центрування
+                margin: UiRect::left(Val::Px(-216.0)),
                 flex_direction: FlexDirection::Row,
                 justify_content: JustifyContent::Center,
                 padding: UiRect::all(Val::Px(4.0)),
@@ -67,11 +67,11 @@ pub fn setup_inventory(
             position_type: PositionType::Absolute,
             bottom: Val::Px(60.0),
             left: Val::Percent(50.0),
-            margin: UiRect::left(Val::Px(-234.0)), // центрування
+            margin: UiRect::left(Val::Px(-234.0)),
             justify_content: JustifyContent::Center,
             display: Display::Grid,
-            grid_template_columns: vec![RepeatedGridTrack::px(9, 48.0)], // 9 колонок
-            grid_template_rows: vec![RepeatedGridTrack::px(3, 48.0)],    // 3 ряди
+            grid_template_columns: vec![RepeatedGridTrack::px(9, 48.0)],
+            grid_template_rows: vec![RepeatedGridTrack::px(3, 48.0)], 
             column_gap: Val::Px(4.0),
             row_gap: Val::Px(4.0),
             padding: UiRect::all(Val::Px(4.0)),
@@ -120,7 +120,6 @@ pub fn setup_inventory(
 }
 
 pub fn insert_item_in_inventory(
-    mut commands: Commands,
     mut inventory: Query<&mut Inventory, With<Player>>,
     item_registry: Res<ItemRegistry>,
 ) {

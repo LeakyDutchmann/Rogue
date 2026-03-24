@@ -36,11 +36,10 @@ pub fn ui_cursor_update(
     mut commands: Commands,
     window: Single<&Window, With<PrimaryWindow>>,
     mut query: Query<(Entity, &mut Node, &mut CursorCarrier, &mut Text)>,
-    image_node: Query<&mut ImageNode>,
     registry: Res<ItemRegistry>
 ) {
     if let Some(position) = window.cursor_position() {
-        for ((entity, mut node, cursor, mut text)) in query.iter_mut() {
+        for (entity, mut node, cursor, mut text) in query.iter_mut() {
             if cursor.quantity == 0 || cursor.quantity == 1 {
                 text.0 = "".to_string();
             } else {

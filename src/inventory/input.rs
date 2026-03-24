@@ -28,15 +28,14 @@ pub fn pick_active_slot(
 
 pub fn inventory_interactions(
     keys: Res<ButtonInput<KeyCode>>,
-    mut reader_click: MessageReader<MouseClickEvent>,
-    mut slots: Query<(Entity, &mut BorderColor, &Children, &Interaction), Changed<Interaction>>,
+    mut slots: Query<(Entity, &Children, &Interaction), Changed<Interaction>>,
     mut slot: Query<&SlotIcon>,
     mut writer: MessageWriter<SlotClicked>,
     mut writer_double: MessageWriter<DoubleClicked>,
     mut ui_click_track: ResMut<UiClickTrack>,
     time: Res<Time>,
 ) {
-    for (entity, mut border, children, interaction) in slots.iter_mut() {
+    for (entity, children, interaction) in slots.iter_mut() {
         if *interaction == Interaction::Pressed {
             let now = time.elapsed_secs_f64();
             for child in children.iter() {

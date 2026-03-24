@@ -49,7 +49,7 @@ pub struct ItemStack {
 
 #[derive(Component)]
 pub struct Inventory {
-    pub capacity: usize,
+    pub _capacity: usize,
     pub items: Vec<ItemStack>,
 }
 

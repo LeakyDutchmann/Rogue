@@ -49,7 +49,7 @@ pub fn player_setup(
             _sensor: true,
         },
         Inventory {
-            capacity: 36,
+            _capacity: 36,
             items: vec![ItemStack { item_stored: None, quantity: 0 }; 36],
         },
         ActiveSlot {

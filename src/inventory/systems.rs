@@ -31,7 +31,7 @@ pub fn drop_cursor_item(
     mut writer: MessageWriter<SpawnItemRequest>,
     player_tf: Res<PlayerTransform>,
 ) {
-    for msg in reader.read() {
+    for _msg in reader.read() {
         if let Ok(mut carrier) = cursor.single_mut() {
             if let Some(item_id) = carrier.item {
                 for _ in 0..carrier.quantity {
@@ -80,7 +80,6 @@ pub fn pick_active_slot_scroll(
                         slot.index = 8;
                     }
                 }
-                _ => {}
             }
 
         }   
@@ -89,13 +88,12 @@ pub fn pick_active_slot_scroll(
 
 pub fn item_click_handler(
     mut reader: MessageReader<SlotClicked>,
-    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    cursor: Query<&mut CursorCarrier>,
     mut writer: MessageWriter<InsertToInventory>,
     mut writer_get: MessageWriter<GetFromInventory>,
 ) {
     for msg in reader.read() {
-        
-        if let Ok((entity, mut cursor)) = cursor.single_mut() {
+        if let Ok(cursor) = cursor.single() {
             if let Some(item) = cursor.item {
                 writer.write(InsertToInventory {
                     item: item,
@@ -103,18 +101,11 @@ pub fn item_click_handler(
                     slot: Some(msg.slot_index),
                 });
             } else if cursor.item.is_none() {
-                let mut quantity = ItemQuantity::Empty;
-                match msg.click_type {
-                    ClickType::CtrlLeftSingle => {
-                        quantity = ItemQuantity::One;
-                    }
-                    ClickType::LeftSingle => {
-                        quantity = ItemQuantity::MaxFromOne;
-                    }
-                    ClickType::ShiftLeftSingle => {
-                        quantity = ItemQuantity::HalfStack;
-                    }
-                }
+                let quantity = match msg.click_type {
+                    ClickType::CtrlLeftSingle => ItemQuantity::One,
+                    ClickType::LeftSingle => ItemQuantity::MaxFromOne,
+                    ClickType::ShiftLeftSingle => ItemQuantity::HalfStack,
+                };
                 writer_get.write(GetFromInventory {
                     quantity: quantity,
                     slot: msg.slot_index,
@@ -125,56 +116,52 @@ pub fn item_click_handler(
 }
 
 pub fn double_click_handler(
-    mut commands: Commands,
     mut reader: MessageReader<DoubleClicked>,
     mut inventory: Query<&mut Inventory, With<Player>>,
-    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    mut cursor: Query<&mut CursorCarrier>,
     registry: Res<ItemRegistry>,
     
 ) {
     for msg in reader.read() {
-        if let Ok((entity, mut cursor)) = cursor.single_mut() {
+        if let Ok(mut cursor) = cursor.single_mut() {
             if let Ok(mut inventory) = inventory.single_mut() {
-                if let Some(item_stack) = inventory.items.get_mut(msg.slot_index) {
-                    let item_id = match inventory.items.get(msg.slot_index).and_then(|s| s.item_stored) {
-                        Some(id) => id,
-                        None => if cursor.item.is_none() { return } else { cursor.item.unwrap() },
-                    };
-                    if let Some(def) = registry.items.get(&item_id) {
-                        if cursor.item.is_none() {
-                            cursor.item = Some(item_id);
-                        }
-                        if cursor.item != Some(item_id) {
-                            return;
-                        }
-                        let mut remaining = def.max_stack as i32 - cursor.quantity;
-                        if let Some(stack) = inventory.items.get_mut(msg.slot_index) {
-                            if stack.item_stored == Some(item_id) {
-                                let take = remaining.min(stack.quantity);
-                                cursor.quantity += take;
-                                stack.quantity -= take;
-                                remaining -= take;
-                                if stack.quantity == 0 {
-                                    stack.item_stored = None;
-                                }
+                let item_id = match inventory.items.get(msg.slot_index).and_then(|s| s.item_stored) {
+                    Some(id) => id,
+                    None => if cursor.item.is_none() { return } else { cursor.item.unwrap() },
+                };
+                if let Some(def) = registry.items.get(&item_id) {
+                    if cursor.item.is_none() {
+                        cursor.item = Some(item_id);
+                    }
+                    if cursor.item != Some(item_id) {
+                        return;
+                    }
+                    let mut remaining = def.max_stack as i32 - cursor.quantity;
+                    if let Some(stack) = inventory.items.get_mut(msg.slot_index) {
+                        if stack.item_stored == Some(item_id) {
+                            let take = remaining.min(stack.quantity);
+                            cursor.quantity += take;
+                            stack.quantity -= take;
+                            remaining -= take;
+                            if stack.quantity == 0 {
+                                stack.item_stored = None;
                             }
                         }
-                        for (i, stack) in inventory.items.iter_mut().enumerate() {
-                            if i == msg.slot_index {
-                                continue; // пропускаємо вже оброблений слот
-                            }
-                    
-                            if remaining <= 0 {
-                                break;
-                            }
-                            if stack.item_stored == Some(item_id) {
-                                let take = remaining.min(stack.quantity);
-                                cursor.quantity += take;
-                                stack.quantity -= take;
-                                remaining -= take;
-                                if stack.quantity == 0 {
-                                    stack.item_stored = None;
-                                }
+                    }
+                    for (i, stack) in inventory.items.iter_mut().enumerate() {
+                        if i == msg.slot_index {
+                            continue; 
+                        }
+                        if remaining <= 0 {
+                            break;
+                        }
+                        if stack.item_stored == Some(item_id) {
+                            let take = remaining.min(stack.quantity);
+                            cursor.quantity += take;
+                            stack.quantity -= take;
+                            remaining -= take;
+                            if stack.quantity == 0 {
+                                stack.item_stored = None;
                             }
                         }
                     }
@@ -186,16 +173,15 @@ pub fn double_click_handler(
 }
 
 pub fn item_take_handler(
-    mut commands: Commands,
     mut reader: MessageReader<GetFromInventory>,
     mut inventory: Query<&mut Inventory, With<Player>>,
-    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    mut cursor: Query<&mut CursorCarrier>,
     registry: Res<ItemRegistry>,
 ) {
     for msg in reader.read() {
         if let Ok(mut inventory) = inventory.single_mut() {
-            if let Ok((entity, mut cursor)) = cursor.single_mut() {
-                if let Some(mut item_stack) = inventory.items.get_mut(msg.slot) {
+            if let Ok(mut cursor) = cursor.single_mut() {
+                if let Some(item_stack) = inventory.items.get_mut(msg.slot) {
                     if let Some(item_id) = item_stack.item_stored {
                         cursor.item = Some(item_id);
                         if let Some(def) = registry.items.get(&item_id) {
@@ -215,20 +201,19 @@ pub fn item_take_handler(
 }
 
 pub fn item_put_handler(
-    mut commands: Commands,
     mut reader: MessageReader<InsertToInventory>,
     mut inventory: Query<&mut Inventory, With<Player>>,
-    mut cursor: Query<(Entity, &mut CursorCarrier)>,
+    mut cursor: Query<&mut CursorCarrier>,
     registry: Res<ItemRegistry>,
 ) {
     for msg in reader.read() {
         let mut quantity_to_put = msg.quantity;
         if let Ok(mut inventory) = inventory.single_mut() {
-            if let Ok((entity, mut cursor)) = cursor.single_mut() {
+            if let Ok(mut cursor) = cursor.single_mut() {
                 if let Some(item_id) = cursor.item {
                     if let Some(def) = registry.items.get(&item_id) {
                         if let Some(slot) = msg.slot {
-                            if let Some(mut item_stack) = inventory.items.get_mut(slot) {
+                            if let Some(item_stack) = inventory.items.get_mut(slot) {
                                 if item_stack.item_stored == Some(item_id) {
                                     if item_stack.quantity < def.max_stack as i32 {
                                         let free = def.max_stack as i32 - item_stack.quantity;
