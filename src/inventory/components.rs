@@ -16,7 +16,7 @@ pub struct Slot {
 
 #[derive(Component)]
 pub struct CursorCarrier {
-    pub item: Option<ItemId>,
+    pub item: Option<String>,
     pub quantity: i32,
 }
 
@@ -42,7 +42,7 @@ pub struct ActiveSlot {
 
 #[derive(Clone)]
 pub struct ItemStack {
-    pub item_stored: Option<ItemId>,
+    pub item_stored: Option<String>,
     pub quantity: i32,
 }
 

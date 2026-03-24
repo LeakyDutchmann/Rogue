@@ -43,27 +43,8 @@ fn main() {
         .add_plugins((ColisionPlugin, MovementPlugin))
         .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin))
         .add_plugins(VisionPlugin)
-        .add_systems(Startup, setup)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();
-}
-
-
-
-pub fn setup(
-    mut commands: Commands,
-    item_reg: Res<ItemRegistry>,
-) {
-    if let Some(def) = item_reg.items.get(&ItemId::Sword) {
-        let item_entity = assemble_item(def, &mut commands, &ItemId::Sword);
-        commands.entity(item_entity).insert(Transform::from_xyz(0.0, 0.0, 0.0));
-        commands.entity(item_entity).insert(OnGround);
-    }
-    if let Some(def_2) = item_reg.items.get(&ItemId::PickAxe) {
-        let item_entity = assemble_item(def_2, &mut commands, &ItemId::PickAxe);
-        commands.entity(item_entity).insert(Transform::from_xyz(0.0, 0.0, 0.0));
-        commands.entity(item_entity).insert(OnGround);
-    }
 }
 
 

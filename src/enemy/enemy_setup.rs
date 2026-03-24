@@ -76,7 +76,7 @@ pub fn setup_enemy(
         )).with_children(|parent| {
             parent.spawn((
                 HeldItem {
-                    held: Some(ItemId::PickAxe),
+                    held: Some("PickAxe".to_string()),
                     last_held: None,
                 },
                 Transform::default(),

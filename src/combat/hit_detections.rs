@@ -49,7 +49,7 @@ pub fn hit_detection_system(
                 };
                 if in_sector {
                     writer.write( CalculateDamage {
-                        attack_item: hitbox.item_used,
+                        attack_item: hitbox.item_used.clone(),
                         target: entity,
                         from_pos: hitbox_pos,
                         position: tf.translation.truncate(),
@@ -72,7 +72,7 @@ pub fn hit_detection_system(
                             continue
                         } else {
                             writer.write( CalculateDamage {
-                                attack_item: hitbox.item_used,
+                                attack_item: hitbox.item_used.clone(),
                                 target: *entity,
                                 from_pos: hitbox_pos,
                                 position: pos,

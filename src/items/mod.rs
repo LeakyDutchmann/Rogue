@@ -26,6 +26,12 @@ impl Plugin for ItemsPlugin {
 }
 
 
+#[derive(Resource)]
+pub struct ItemRegistry {
+    pub items: HashMap<String, ItemDefinition>,
+}
+
+
 #[derive(Deserialize, Debug, Hash, Clone, Copy)]
 pub struct CombatStatsRaw {
     pub attack_speed: i32,
@@ -46,17 +52,15 @@ pub struct ToolStatsRaw {
 }
 
 
-#[derive(Deserialize, Hash, Debug, Clone, PartialEq, Eq, Component, Copy)]
-pub enum ItemId {
-    Sword,
-    PickAxe,
-    Inferium,
+#[derive(Deserialize, Hash, Debug, Clone, PartialEq, Eq, Component)]
+pub struct ItemId {
+    pub id: String,
 }
 
 
 #[derive(Deserialize, Debug)]
 pub struct ItemDefinitionRaw {
-    pub name: ItemId,
+    pub name: String,
     pub icon: String,
     pub sprite: String,
     pub durability: Option<i32>,
@@ -83,12 +87,6 @@ pub struct ItemDefinition {
 }
 
 
-#[derive(Resource)]
-pub struct ItemRegistry {
-    pub items: HashMap<ItemId, ItemDefinition>,
-}
-
-
 #[derive(PartialEq, Clone, Copy, Deserialize, Debug, Hash)]
 pub enum AnimationStyle {
     PickAxe,
@@ -97,17 +95,11 @@ pub enum AnimationStyle {
 
 
 #[derive(Component)]
-pub struct OnGround;
-
-
-#[derive(Component)]
 pub struct Usable;
-
-
 
 
 #[derive(Component)]
 pub struct HeldItem {
-    pub held: Option<ItemId>,
-    pub last_held: Option<ItemId>,
+    pub held: Option<String>,
+    pub last_held: Option<String>,
 }

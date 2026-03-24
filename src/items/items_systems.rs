@@ -68,7 +68,7 @@ pub fn pick_up_near_item(
                 let mut pushed = false;
                 for slot in inventory.items.iter_mut() {
                     if let Some(stored_id) = slot.item_stored.clone() {
-                        if stored_id == *item_id {
+                        if stored_id == item_id.id {
                             let def = registry.items.get(&stored_id).unwrap();
                             if slot.quantity < def.max_stack as i32 {
                                 slot.quantity += 1;
@@ -82,7 +82,7 @@ pub fn pick_up_near_item(
                 if !pushed {
                     for slot in inventory.items.iter_mut() {
                         if slot.item_stored.is_none() {
-                            slot.item_stored = Some(*item_id);
+                            slot.item_stored = Some(item_id.id.clone());
                             slot.quantity = 1;
                             commands.entity(item_e).despawn();
                             break;                        }

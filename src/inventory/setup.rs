@@ -126,26 +126,31 @@ pub fn insert_item_in_inventory(
     for mut inventory in inventory.iter_mut() {
         for (i, item_stack) in &mut inventory.items.iter_mut().enumerate() {
             if i == 0 {
-                item_stack.item_stored = Some(ItemId::Sword);
-                if let Some(def) = item_registry.items.get(&ItemId::Sword) {
+                let sword = "Sword".to_string();
+                if let Some(def) = item_registry.items.get(&sword) {
                      item_stack.quantity = def.max_stack as i32;
+                     item_stack.item_stored = Some(sword);
                 }
                 continue;
             }
             if i == 1 {
-                item_stack.item_stored = Some(ItemId::PickAxe);
-                if let Some(def) = item_registry.items.get(&ItemId::PickAxe) {
+                let pickaxe = "PickAxe".to_string();
+                if let Some(def) = item_registry.items.get(&pickaxe) {
                      item_stack.quantity = def.max_stack as i32;
+                     item_stack.item_stored = Some(pickaxe);
                 }
                 continue;
             }
             if i == 14 {
                 break
             }
-            item_stack.item_stored = Some(ItemId::Inferium);
-            if let Some(def) = item_registry.items.get(&ItemId::Inferium) {
+            let inferium = "Inferium".to_string();
+            if let Some(def) = item_registry.items.get(&inferium) {
                  item_stack.quantity = def.max_stack as i32;
+                 item_stack.item_stored = Some(inferium);
             }
+            
+            
            
         }
     }

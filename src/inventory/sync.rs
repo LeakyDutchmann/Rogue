@@ -11,7 +11,7 @@ pub fn sync_player_inventory(
             let slot_idx = slot_icon.index;
             if let Some(item_stack) = inventory.items.get(slot_idx) {
                 if let Some(itemid) = &item_stack.item_stored {
-                    if let Some(def) = item_registry.items.get(&itemid) {
+                    if let Some(def) = item_registry.items.get(itemid) {
                         let icon = def.icon.clone();
                         commands.entity(slot_e).insert(ImageNode::new(icon));
                     }
@@ -36,13 +36,13 @@ pub fn sync_player_held_item(
             }
             let item_stack = inventory.items.get(active_slot.index as usize).unwrap();
             if let Some(item_id) = &item_stack.item_stored {
-                if held_item.held != Some(*item_id) {
-                    held_item.last_held = held_item.held;
-                    held_item.held = Some(*item_id);
+                if held_item.held != Some(item_id.clone()) {
+                    held_item.last_held = held_item.held.clone();
+                    held_item.held = Some(item_id.clone());
                 }
             } else {
                 if held_item.held.is_some() {
-                    held_item.last_held = held_item.held;
+                    held_item.last_held = held_item.held.clone();
                     held_item.held = None;
                 }
             }

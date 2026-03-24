@@ -9,11 +9,11 @@ pub fn drop_item(
         if msg.key == KeyCode::KeyG {
             if let Ok((tf, mut inventory, active_slot)) = player.single_mut() {
                 if let Some(item) = inventory.items.get_mut(active_slot.index as usize) {
-                    if let Some(item_id) = item.item_stored {
+                    if let Some(item_id) = &item.item_stored {
                         item.quantity -= 1;
                         writer.write(SpawnItemRequest {
                             position: tf.translation.truncate(),
-                            item_id,
+                            item_id: item_id.clone(),
                         });
                         if item.quantity == 0 {
                             item.item_stored = None;
@@ -33,11 +33,11 @@ pub fn drop_cursor_item(
 ) {
     for _msg in reader.read() {
         if let Ok(mut carrier) = cursor.single_mut() {
-            if let Some(item_id) = carrier.item {
+            if let Some(item_id) = &carrier.item {
                 for _ in 0..carrier.quantity {
                     writer.write(SpawnItemRequest {
                         position: player_tf.0.translation.truncate(),
-                        item_id,
+                        item_id: item_id.clone(),
                     });
                 }
                 carrier.clear();
@@ -94,7 +94,7 @@ pub fn item_click_handler(
 ) {
     for msg in reader.read() {
         if let Ok(cursor) = cursor.single() {
-            if let Some(item) = cursor.item {
+            if let Some(_item) = &cursor.item {
                 writer.write(InsertToInventory {
                     quantity: cursor.quantity,
                     slot: Some(msg.slot_index),
@@ -124,20 +124,20 @@ pub fn double_click_handler(
     for msg in reader.read() {
         if let Ok(mut cursor) = cursor.single_mut() {
             if let Ok(mut inventory) = inventory.single_mut() {
-                let item_id = match inventory.items.get(msg.slot_index).and_then(|s| s.item_stored) {
-                    Some(id) => id,
-                    None => if cursor.item.is_none() { return } else { cursor.item.unwrap() },
+                let item_id = match inventory.items.get(msg.slot_index).and_then(|s| s.item_stored.as_ref()) {
+                    Some(id) => id.clone(),
+                    None => if cursor.item.is_none() { return } else { cursor.item.clone().unwrap() },
                 };
                 if let Some(def) = registry.items.get(&item_id) {
                     if cursor.item.is_none() {
-                        cursor.item = Some(item_id);
+                        cursor.item = Some(item_id.clone());
                     }
-                    if cursor.item != Some(item_id) {
+                    if cursor.item.as_ref() != Some(&item_id) {
                         return;
                     }
                     let mut remaining = def.max_stack as i32 - cursor.quantity;
                     if let Some(stack) = inventory.items.get_mut(msg.slot_index) {
-                        if stack.item_stored == Some(item_id) {
+                        if stack.item_stored.as_ref() == Some(&item_id) {
                             let take = remaining.min(stack.quantity);
                             cursor.quantity += take;
                             stack.quantity -= take;
@@ -154,7 +154,7 @@ pub fn double_click_handler(
                         if remaining <= 0 {
                             break;
                         }
-                        if stack.item_stored == Some(item_id) {
+                        if stack.item_stored.as_ref() == Some(&item_id) {
                             let take = remaining.min(stack.quantity);
                             cursor.quantity += take;
                             stack.quantity -= take;
@@ -181,9 +181,9 @@ pub fn item_take_handler(
         if let Ok(mut inventory) = inventory.single_mut() {
             if let Ok(mut cursor) = cursor.single_mut() {
                 if let Some(item_stack) = inventory.items.get_mut(msg.slot) {
-                    if let Some(item_id) = item_stack.item_stored {
-                        cursor.item = Some(item_id);
-                        if let Some(def) = registry.items.get(&item_id) {
+                    if let Some(item_id) = item_stack.item_stored.as_ref() {
+                        cursor.item = Some(item_id.clone());
+                        if let Some(def) = registry.items.get(item_id) {
                             if let Ok(quantity) = msg.quantity.match_quantity(def.max_stack as i32, item_stack.quantity) {
                                 cursor.quantity += quantity;
                                 item_stack.quantity -= quantity;
@@ -209,11 +209,11 @@ pub fn item_put_handler(
         let mut quantity_to_put = msg.quantity;
         if let Ok(mut inventory) = inventory.single_mut() {
             if let Ok(mut cursor) = cursor.single_mut() {
-                if let Some(item_id) = cursor.item {
+                if let Some(item_id) = cursor.item.clone() {
                     if let Some(def) = registry.items.get(&item_id) {
                         if let Some(slot) = msg.slot {
                             if let Some(item_stack) = inventory.items.get_mut(slot) {
-                                if item_stack.item_stored == Some(item_id) {
+                                if item_stack.item_stored.as_ref() == Some(&item_id) {
                                     if item_stack.quantity < def.max_stack as i32 {
                                         let free = def.max_stack as i32 - item_stack.quantity;
                                         if quantity_to_put <= free {
@@ -227,14 +227,14 @@ pub fn item_put_handler(
                                         }
                                     }
                                 } else if item_stack.item_stored.is_none() {
-                                    item_stack.item_stored = Some(item_id);
+                                    item_stack.item_stored = Some(item_id.clone());
                                     item_stack.quantity = quantity_to_put;
                                     cursor.clear();
                                     break;
-                                } else if item_stack.item_stored != Some(item_id) && item_stack.item_stored.is_some() {
-                                    cursor.item = item_stack.item_stored;
+                                } else if item_stack.item_stored.as_ref() != Some(&item_id) && item_stack.item_stored.is_some() {
+                                    cursor.item = item_stack.item_stored.clone();
                                     cursor.quantity = item_stack.quantity;
-                                    item_stack.item_stored = Some(item_id);
+                                    item_stack.item_stored = Some(item_id.clone());
                                     item_stack.quantity = quantity_to_put;
                                     break;
                                 }
@@ -243,7 +243,7 @@ pub fn item_put_handler(
                             let mut pushed = false;
                             for slot in inventory.items.iter_mut() {
                                 if let Some(stored_id) = slot.item_stored.clone() {
-                                    if stored_id == item_id {
+                                    if stored_id == *item_id {
                                         if slot.quantity < def.max_stack as i32 {
                                             let free = def.max_stack as i32 - slot.quantity;
                                             if free >= quantity_to_put {
@@ -266,12 +266,12 @@ pub fn item_put_handler(
                                 for slot in inventory.items.iter_mut() {
                                     if slot.item_stored.is_none() {
                                         if quantity_to_put <= def.max_stack as i32 {
-                                            slot.item_stored = Some(item_id);
+                                            slot.item_stored = Some(item_id.clone());
                                             slot.quantity += quantity_to_put;
                                             cursor.clear();
                                             break;
                                         } else if quantity_to_put > def.max_stack as i32 {
-                                            slot.item_stored = Some(item_id);
+                                            slot.item_stored = Some(item_id.clone());
                                             slot.quantity = def.max_stack as i32;
                                             quantity_to_put -= def.max_stack as i32;
                                             cursor.quantity = quantity_to_put;

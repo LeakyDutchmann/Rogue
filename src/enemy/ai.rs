@@ -113,9 +113,9 @@ pub fn ai_initialize_attack(
 ) { 
     for (hend_e, held_item, childof) in hend_qr.iter() {
         if let Ok((enemy_e, enemy_tf, actor)) = enemy_qr.get(childof.0) {
-            if let Some(item) = held_item.held {
+            if let Some(item) = held_item.held.as_ref() {
                 if let Ok((player_e, player_tf)) = player_tf.single() {
-                    if let Some(def) = registry.items.get(&item) {
+                    if let Some(def) = registry.items.get(item) {
                         if let Some(c_stats) = def.combat_stats {
                             if player_e == enemy_e {
                                 continue;
@@ -135,7 +135,7 @@ pub fn ai_initialize_attack(
                                             max_angle: (c_stats.swing_angle as f32).to_radians(),
                                             hit_triggered: false,
                                             cursor_pos: player_pos,
-                                            item: item,
+                                            item: item.clone(),
                                             item_radius: c_stats.radius as f32,
                                         }
                                     );

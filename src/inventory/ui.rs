@@ -47,9 +47,9 @@ pub fn ui_cursor_update(
             }
             node.left = Val::Px(position.x);
             node.top = Val::Px(position.y);
-            if let Some(item_id) = cursor.item {
+            if let Some(item_id) = cursor.item.as_ref() {
                 if cursor.is_changed() {
-                    if let Some(def) = registry.items.get(&item_id) {
+                    if let Some(def) = registry.items.get(item_id) {
                         commands.entity(entity).insert(ImageNode::new(def.icon.clone()));
                     }
                 }

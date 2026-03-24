@@ -39,7 +39,7 @@ pub struct AttackAnimation {
     pub max_angle: f32,     // radians
     pub hit_triggered: bool,
     pub cursor_pos: Vec2,
-    pub item: ItemId,
+    pub item: String,
     pub item_radius: f32,
 }
 
@@ -53,7 +53,7 @@ pub enum FractionType {
 #[derive(Component)]
 pub struct HitBox {
     pub owner: Entity,
-    pub item_used: ItemId,
+    pub item_used: String,
     pub radius: f32,
     pub start_angle: f32,
     pub end_angle: f32,

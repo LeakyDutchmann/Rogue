@@ -171,15 +171,15 @@ pub fn draw_helditem(
     for (actor_hand, held_item, childof) in held_item.iter_mut() {
         if let Ok(actor_state) = parent.get(childof.0) {
             if actor_state.state != ActorStateType::Dead {
-                if let Some(held) = held_item.held {
-                    if let Some(last_held) = held_item.last_held {
+                if let Some(held) = held_item.held.as_ref() {
+                    if let Some(last_held) = held_item.last_held.as_ref() {
                         if held != last_held {
-                            if let Some(def) = registry.items.get(&held) {
+                            if let Some(def) = registry.items.get(held) {
                                 commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
                             }
                         }
                     } else {
-                        if let Some(def) = registry.items.get(&held) {
+                        if let Some(def) = registry.items.get(held) {
                             commands.entity(actor_hand).insert(Sprite::from_image(def.sprite.clone()));
                         }
                         

@@ -14,8 +14,8 @@ pub fn initialize_attack(
                     if player_e != childof.0 {
                         continue
                     }
-                    if let Some(item) = helditem.held  {
-                        if let Some(def) = registry.items.get(&item) {
+                    if let Some(item) = helditem.held.as_ref()  {
+                        if let Some(def) = registry.items.get(item) {
                             if let Some(stats) = &def.combat_stats {
                                 if let Some(animation_style) = def.animation_style {
                                     commands.entity(hend_e).insert(
@@ -27,7 +27,7 @@ pub fn initialize_attack(
                                             hit_triggered: false,
                                             cursor_pos: *click_pos,
                                             item_radius: stats.radius as f32,
-                                            item: item,
+                                            item: item.clone(),
                                         }
                                     );
                                 }

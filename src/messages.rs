@@ -87,7 +87,7 @@ pub struct KeyPressed {
 #[derive(Message)]
 pub struct SpawnItemRequest {
     pub position: Vec2,
-    pub item_id: ItemId,
+    pub item_id: String,
 }
 
 
@@ -143,7 +143,7 @@ pub enum DamageType {
 
 #[derive(Message)]
 pub struct CalculateDamage {
-    pub attack_item: ItemId,
+    pub attack_item: String,
     pub target: Entity,
     pub from_pos: Vec2,
     pub position: Vec2,
