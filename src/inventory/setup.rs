@@ -141,17 +141,26 @@ pub fn insert_item_in_inventory(
                 }
                 continue;
             }
-            if i == 14 {
-                break
+            if i <= 5 {
+                let structurix = "Structurix_ore".to_string();
+                if let Some(def) = item_registry.items.get(&structurix) {
+                     item_stack.quantity = def.max_stack as i32;
+                     item_stack.item_stored = Some(structurix);
+                }
+            } else if i <= 6 {
+                let secturix = "Secturix_ore".to_string();
+                if let Some(def) = item_registry.items.get(&secturix) {
+                     item_stack.quantity = def.max_stack as i32;
+                     item_stack.item_stored = Some(secturix);
+                }
+            } else if i <= 7{
+                let mechanae = "Mechanae_ore".to_string();
+                if let Some(def) = item_registry.items.get(&mechanae) {
+                     item_stack.quantity = def.max_stack as i32;
+                     item_stack.item_stored = Some(mechanae);
+                     break;
+                }
             }
-            let inferium = "Inferium".to_string();
-            if let Some(def) = item_registry.items.get(&inferium) {
-                 item_stack.quantity = def.max_stack as i32;
-                 item_stack.item_stored = Some(inferium);
-            }
-            
-            
-           
         }
     }
 }

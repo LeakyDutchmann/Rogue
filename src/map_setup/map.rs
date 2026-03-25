@@ -53,17 +53,6 @@ pub fn setup_atlas(
     });
 }
 
-fn pick_tile_material() -> TileMaterial {
-    let mut r = rand::rng();
-    let number = r.random_range(0..100);
-    match number {
-        0..60 => TileMaterial::Structurix,
-        60..80 => TileMaterial::Secturix,
-        80..100 => TileMaterial::Mechanae,
-        _ => TileMaterial::Structurix,
-    }
-}
-
 pub fn map_setup(
     mut commands: Commands,
     atlases: Res<MapAtlases>,
@@ -87,7 +76,7 @@ pub fn map_setup(
             let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
             let position = IVec2::new(x as i32, y as i32);
             if tile_type != TileType::Empty {
-                let material = pick_tile_material();
+                let material = TileMaterial::pick_tile_material();
                 if let Some(atlas) = atlases.atlases.get(&material) {
                     let texture = atlas.texture.clone();
                     commands.spawn((
@@ -102,7 +91,7 @@ pub fn map_setup(
                     MapTile { 
                         position,
                         tile_type,
-                        material: TileMaterial::Structurix,
+                        material: material,
                     },
                     Wall,
                     Colider {

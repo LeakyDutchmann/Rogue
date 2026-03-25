@@ -56,6 +56,26 @@ pub enum TileMaterial {
     None,
 }
 
+impl TileMaterial {
+    pub fn pick_tile_material() -> TileMaterial {
+        let mut r = rand::rng();
+        let number = r.random_range(0..100);
+        match number {
+            0..60 => TileMaterial::Structurix,
+            60..80 => TileMaterial::Secturix,
+            80..100 => TileMaterial::Mechanae,
+            _ => TileMaterial::Structurix,
+        }
+    }
+    pub fn get_ore_id(&self) -> Option<String> {
+        match &self {
+            TileMaterial::Structurix => Some("Structurix_ore".to_string()),
+            TileMaterial::Mechanae => Some("Mechanae_ore".to_string()),
+            TileMaterial::Secturix => Some("Secturix_ore".to_string()),
+            TileMaterial::None => None,
+        }
+    }
+}
 
 #[derive(Component)]
 pub struct MapTile {
