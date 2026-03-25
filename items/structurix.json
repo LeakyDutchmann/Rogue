@@ -1,0 +1,7 @@
+{
+  "name": "Structurix",
+  "icon": "Structurix_ore.png",
+  "sprite": "Structurix_ore.png",
+  "usable": false,
+  "max_stack": 64
+}

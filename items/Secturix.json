@@ -1,0 +1,7 @@
+{
+  "name": "Secturix",
+  "icon": "Secturix_ore.png",
+  "sprite": "Secturix_ore.png",
+  "usable": false,
+  "max_stack": 64
+}

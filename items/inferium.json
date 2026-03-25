@@ -1,7 +1,0 @@
-{
-  "name": "Inferium",
-  "icon": "inferium.png",
-  "sprite": "inferium.png",
-  "usable": false,
-  "max_stack": 64
-}

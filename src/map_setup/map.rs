@@ -60,7 +60,7 @@ fn pick_tile_material() -> TileMaterial {
         0..60 => TileMaterial::Structurix,
         60..80 => TileMaterial::Secturix,
         80..100 => TileMaterial::Mechanae,
-        _ => TileMaterial::None,
+        _ => TileMaterial::Structurix,
     }
 }
 
