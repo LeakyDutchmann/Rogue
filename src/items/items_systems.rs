@@ -46,8 +46,8 @@ pub fn setup_items(
 
 fn generate_random_coords(pos: Vec2) -> Vec3 {
     let mut rng = rand::rng();
-    let dx = rng.random_range(-30.0..30.0);
-    let dy = rng.random_range(-30.0..30.0);
+    let dx = rng.random_range(-10.0..10.0);
+    let dy = rng.random_range(-10.0..10.0);
     Vec3::new(pos.x + dx, pos.y + dy, 0.0)
 }
 
@@ -61,10 +61,17 @@ pub fn pick_up_near_item(
         let item_pos = item_tf.translation.truncate();
         if let Ok((player_tf, mut inventory)) = player.single_mut() {
             let player_pos = player_tf.translation.truncate();
-            if player_pos.distance(item_pos) > 100.0 {
+            let distance = player_pos.distance(item_pos);
+            if distance > 20.0 {
                 continue;
             }
-            if player_pos.distance(item_pos) < 10.0 {
+            if distance > 10.0 {
+                let to_player = (player_pos - item_pos).normalize();
+                commands.entity(item_e).insert(MovementIntent {
+                    direction: to_player,
+                });
+            }
+            if distance <= 10.0 {
                 let mut pushed = false;
                 for slot in inventory.items.iter_mut() {
                     if let Some(stored_id) = slot.item_stored.clone() {

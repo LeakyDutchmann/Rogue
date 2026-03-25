@@ -12,7 +12,8 @@ use serde::{Deserialize};
 use std::collections::HashMap;
 use std::fs;
 use crate::inventory::Inventory;
-
+use crate::components::{Speed, MovementIntent};
+use crate::colision_manager::{Colider, ColiderShape};
 pub struct ItemsPlugin;
 
 impl Plugin for ItemsPlugin {
