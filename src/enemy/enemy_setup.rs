@@ -22,7 +22,7 @@ pub fn setup_enemy(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     empty_cells: Res<EmptyCellsWorldPos>,
 ) {
-    let texture = asset_server.load("enemy_spitesheet.png");
+    let texture = asset_server.load("characters/enemy_spitesheet.png");
     let texture_atlas = TextureAtlasLayout::from_grid (
         UVec2::splat(32), 
         4,

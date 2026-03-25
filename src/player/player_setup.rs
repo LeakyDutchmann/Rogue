@@ -6,7 +6,7 @@ pub fn player_setup(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 
 ) {
-    let texture = asset_server.load("player_spritesheet.png");
+    let texture = asset_server.load("characters/player_spritesheet.png");
     let layout = TextureAtlasLayout::from_grid(
         UVec2::splat(32), 
         4,
