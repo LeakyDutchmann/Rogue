@@ -80,12 +80,20 @@ pub fn inventory_interactions(
 pub fn background_interactions(
     mut query: Query<&Interaction, (Changed<Interaction>, With<UiBackground>)>,
     mut writer: MessageWriter<DropFromCursor>,
-    inventory: Res<InventoryOpen>
+    inventory: Res<InventoryOpen>,
+    cursor: Res<CursorWorldPos>,
+    player: Res<PlayerTransform>,
 ) {
     for interaction in query.iter_mut() {
         if inventory.0 {
             if *interaction == Interaction::Pressed {
-                writer.write(DropFromCursor);
+                if let Some(cursor_pos) = cursor.0 {
+                    let player_pos = player.0.translation.truncate();
+                    let to_cursor = (cursor_pos - player_pos).normalize();
+                    writer.write(DropFromCursor {
+                        direction: to_cursor,
+                    });
+                }
             }
         }
     }

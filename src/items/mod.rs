@@ -14,6 +14,8 @@ use std::fs;
 use crate::inventory::Inventory;
 use crate::components::{Speed, MovementIntent};
 use crate::colision_manager::{Colider, ColiderShape};
+use crate::world::{WorldGrid, CELL_SIZE, get_cells_3x3, get_entities_in_cells};
+
 pub struct ItemsPlugin;
 
 impl Plugin for ItemsPlugin {
@@ -22,7 +24,7 @@ impl Plugin for ItemsPlugin {
             items: HashMap::new(),
         });
         app.add_systems(Startup, setup_items);
-        app.add_systems(Update, (pick_up_near_item, item_spawn_system));
+        app.add_systems(Update, ((pick_up_near_item, item_steering).chain(), item_spawn_system));
     }
 }
 

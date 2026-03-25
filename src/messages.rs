@@ -22,7 +22,9 @@ impl Plugin for MessagesPlugin {
 
 
 #[derive(Message)]
-pub struct DropFromCursor;
+pub struct DropFromCursor {
+    pub direction: Vec2,
+}
 
 
 pub enum ItemQuantity {

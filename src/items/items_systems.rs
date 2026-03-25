@@ -114,7 +114,47 @@ pub fn item_spawn_system(
     }
 }
 
-
+pub fn item_steering(
+    mut enemy_qr: Query<(Entity, &Transform, &mut MovementIntent), With<ItemId>>,
+    colider_qr: Query<(&Transform, &Colider)>,
+    world: Res<WorldGrid>,
+) {
+    for (intender_e, intender_tf, mut intent) in enemy_qr.iter_mut() {
+        let intender_pos = intender_tf.translation.truncate();
+        let intender_dir = intent.direction.normalize();
+        let cell_x = (intender_pos.x / CELL_SIZE).floor() as i32;
+        let cell_y = (intender_pos.y / CELL_SIZE).floor() as i32;
+        let cells = get_cells_3x3((cell_x, cell_y));
+        let entities = get_entities_in_cells(cells, &world);
+        let mut avoidance = Vec2::ZERO;
+        for entity in entities {
+            if entity == intender_e {
+                continue;
+            }
+            if let Ok((tf, _colider)) = colider_qr.get(entity) {
+                let to_colider_raw = tf.translation.truncate() - intender_pos;
+                let distance = to_colider_raw.length();
+                if distance < 0.001 {
+                    continue;
+                }
+                let to_colider = to_colider_raw / distance; 
+                let dot = intender_dir.dot(to_colider);
+                if dot <= 0.0 {
+                    continue;
+                }
+                let distance_weight = 1.0 / distance;   
+                let angle_weight = dot.clamp(0.0, 1.0);
+                let weight = distance_weight * angle_weight;
+                avoidance += -to_colider * weight;
+            }
+        }
+        if avoidance != Vec2::ZERO {
+            intent.direction = (intender_dir + avoidance).normalize();
+        } else {
+            intent.direction = intender_dir;
+        }
+    }
+}
 
 // pub fn update_dropped_items(
 //     mut commands: Commands,

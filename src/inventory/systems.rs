@@ -31,12 +31,12 @@ pub fn drop_cursor_item(
     mut writer: MessageWriter<SpawnItemRequest>,
     player_tf: Res<PlayerTransform>,
 ) {
-    for _msg in reader.read() {
+    for msg in reader.read() {
         if let Ok(mut carrier) = cursor.single_mut() {
             if let Some(item_id) = &carrier.item {
                 for _ in 0..carrier.quantity {
                     writer.write(SpawnItemRequest {
-                        position: player_tf.0.translation.truncate(),
+                        position: player_tf.0.translation.truncate() + msg.direction * 25.0,
                         item_id: item_id.clone(),
                     });
                 }
