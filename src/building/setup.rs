@@ -16,7 +16,13 @@ pub fn setup_building_mode_ui(
             Interaction::None,
             ZIndex(3),
             // FocusPolicy::Block,
-        )).id());
+        )).with_children(|parent| {
+            parent.spawn((
+                BuildingUiSlot {
+                    structure: None,
+                },
+            ));
+        }).id());
     }
     let root =commands.spawn((
         Node {
@@ -76,5 +82,31 @@ pub fn load_structures(
             count += 1;
         }
         println!("Loaded {} structures", count);
+    }
+}
+
+pub fn setup_building_ui_nodes(
+    mut commands: Commands,
+    mut nodes: Query<(Entity, &mut BuildingUiSlot)>,
+    structure_reg: Res<StructureRegistry>,
+) {
+    let mut added: Vec<String> = Vec::new();
+    for (enitity, mut slot) in nodes.iter_mut() {
+        let structures: Vec<(String, StructureDefinition)> = structure_reg.structures.iter()
+            .map(|(name, def)| (name.clone(), def.clone()))
+            .collect();
+        for (name, def) in structures {
+            if slot.structure.is_none() {
+                if added.contains(&name) {
+                    continue;
+                }
+                slot.structure = Some(name.clone());
+                commands.entity(enitity).insert(ImageNode{ 
+                    image: def.sprite, 
+                    ..Default::default() 
+                });
+                added.push(name);
+            }
+        }
     }
 }

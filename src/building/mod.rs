@@ -14,20 +14,26 @@ pub struct BuildingPlugin;
 impl Plugin for BuildingPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(BuildingMode {
-            state: false,
+            state: BuildingState::Off,
         });
         app.insert_resource( StructureRegistry {
             structures: HashMap::new()
         });
         app.add_systems(Update, (toggle_building_mode, set_building_ui_visibility));
-        app.add_systems(Startup, (setup_building_mode_ui, load_structures));
+        app.add_systems(Startup, (setup_building_mode_ui, load_structures, setup_building_ui_nodes).chain());
     }
 }
 
+#[derive(PartialEq, Eq, Clone, Debug)]
+enum BuildingState {
+    Off,
+    On,
+    Placing,
+}
 
 #[derive(Resource)]
 pub struct BuildingMode {
-    state: bool,
+    state: BuildingState,
 }
 
 
@@ -41,6 +47,12 @@ pub struct StructureRegistry {
 pub struct BuildingUiNode;
 
 
+#[derive(Component)]
+pub struct BuildingUiSlot {
+    pub structure: Option<String>,
+}
+
+
 #[derive(Deserialize)]
 pub struct StructureDefinitionRaw {
     pub name: String,
@@ -49,6 +61,7 @@ pub struct StructureDefinitionRaw {
 }
 
 
+#[derive(Clone)]
 pub struct StructureDefinition {
     pub sprite: Handle<Image>,
     pub icon: Handle<Image>,
