@@ -15,6 +15,7 @@ mod enemy;
 mod raycasting;
 mod inventory;
 mod building;
+mod utils;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -34,6 +35,7 @@ use enemy::*;
 use raycasting::*;
 use inventory::*;
 use building::*;
+use utils::*;
 
 fn main() {
     App::new()

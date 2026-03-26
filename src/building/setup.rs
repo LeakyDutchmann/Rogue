@@ -57,3 +57,10 @@ pub fn setup_building_mode_ui(
     }
     commands.entity(root).add_child(actual);
 }
+
+pub fn load_structures(
+    commands: &mut Commands,
+    
+) {
+    
+}

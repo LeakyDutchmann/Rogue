@@ -11,6 +11,7 @@ use crate::messages::SpawnItemRequest;
 use serde::{Deserialize};
 use std::collections::HashMap;
 use std::fs;
+use crate::utils::load_definitions_for;
 use crate::inventory::Inventory;
 use crate::components::{Speed, MovementIntent};
 use crate::colision_manager::{Colider, ColiderShape};

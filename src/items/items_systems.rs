@@ -1,28 +1,11 @@
 use super::*;
 
-
-pub fn read_items(path: &str) -> Result<Vec<ItemDefinitionRaw>, Box<dyn std::error::Error>> {
-    let mut items: Vec<ItemDefinitionRaw> = Vec::new();
-    for entry in fs::read_dir(path)? {
-        let entry = entry?;
-        let path = entry.path();
-        if path.extension().and_then(|s| s.to_str()) == Some("json") {
-            let data = fs::read_to_string(path)?;
-            let structure: ItemDefinitionRaw = serde_json::from_str(&data).unwrap();
-            items.push(structure);
-        } else {
-            continue;
-        }
-    }
-    Ok(items)
-}
-
 pub fn setup_items(
     asset_server: Res<AssetServer>,
     mut item_registry: ResMut<ItemRegistry>,
 ) {
     let path = "./items";
-    if let Ok(items) = read_items(path) {
+    if let Ok(items) = load_definitions_for::<ItemDefinitionRaw>(path) {
         let mut item_count = 0;
         for item in items {
             let icon_texture = asset_server.load(item.icon.clone());
