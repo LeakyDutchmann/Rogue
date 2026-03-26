@@ -62,7 +62,7 @@ pub fn load_structures(
     mut struct_registry: ResMut<StructureRegistry>,
     assest_server: Res<AssetServer>,
 ) { 
-    let path = "./structures";
+    let path = "./data/structures";
     if let Ok(structures) = load_definitions_for::<StructureDefinitionRaw>(path) {
         let mut count = 0;
         for structure in structures {

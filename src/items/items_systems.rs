@@ -4,7 +4,7 @@ pub fn setup_items(
     asset_server: Res<AssetServer>,
     mut item_registry: ResMut<ItemRegistry>,
 ) {
-    let path = "./items";
+    let path = "./data/items";
     if let Ok(items) = load_definitions_for::<ItemDefinitionRaw>(path) {
         let mut item_count = 0;
         for item in items {
