@@ -1,5 +1,7 @@
 use super::*;
 
+use std::fs;
+
 pub fn load_definitions_for<T>(path: &str) -> Result<Vec<T>, Box<dyn std::error::Error>>
     where T: serde::de::DeserializeOwned,
 {
