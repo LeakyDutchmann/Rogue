@@ -2,6 +2,7 @@ mod systems;
 mod setup;
 
 use super::*;
+use serde::Deserialize;
 use systems::*;
 use setup::*;
 
@@ -19,7 +20,7 @@ impl Plugin for BuildingPlugin {
             structures: HashMap::new()
         });
         app.add_systems(Update, (toggle_building_mode, set_building_ui_visibility));
-        app.add_systems(Startup, setup_building_mode_ui);
+        app.add_systems(Startup, (setup_building_mode_ui, load_structures));
     }
 }
 
@@ -40,9 +41,17 @@ pub struct StructureRegistry {
 pub struct BuildingUiNode;
 
 
-pub struct StructureDefinition {
+#[derive(Deserialize)]
+pub struct StructureDefinitionRaw {
     pub name: String,
-    pub texture: Handle<Image>,
+    pub sprite_path: String,
+    pub icon_path: String,
+}
+
+
+pub struct StructureDefinition {
+    pub sprite: Handle<Image>,
+    pub icon: Handle<Image>,
 }
 
 
