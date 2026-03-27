@@ -1,0 +1,7 @@
+{
+  "name": "Mechanae_ore",
+  "icon": "ores/Mechanae_ore.png",
+  "sprite": "ores/Mechanae_ore.png",
+  "usable": false,
+  "max_stack": 64
+}

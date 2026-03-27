@@ -9,9 +9,11 @@ pub fn damage_execution_system(
     mut commands: Commands,
     mut reader: MessageReader<ApplyDamage>,
     mut writer: MessageWriter<MapChanged>,
+    mut item_writer: MessageWriter<SpawnItemRequest>,
     mut health: Query<&mut Health>,
     mut actor_qr: Query<&mut ActorState>,
     deathtimer: Query<&DeathTimer>,
+    tile_type: Query<&MapTile>,
 ) {
     for destruction in reader.read() {
         if let Ok(mut hp) = health.get_mut(destruction.entity) {
@@ -33,7 +35,16 @@ pub fn damage_execution_system(
                     writer.write(MapChanged {
                         position: world_pos_to_tile_pos(destruction.position),
                     });
-                    commands.entity(destruction.entity).despawn();
+                    if let Ok(map_tile) = tile_type.get(destruction.entity) {
+                        if let Some(ore_id) = map_tile.material.get_ore_id() {
+                            item_writer.write(SpawnItemRequest {
+                                position: destruction.position,
+                                item_id: ore_id.clone(),
+                            });
+                            println!("Spawned item: {}", ore_id.clone());
+                            commands.entity(destruction.entity).despawn();
+                        }
+                    }
                 } else {
                     if let Ok(mut actor_state) = actor_qr.get_mut(destruction.entity) {
                         if actor_state.state != ActorStateType::Dead {

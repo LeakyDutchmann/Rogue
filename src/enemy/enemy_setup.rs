@@ -22,8 +22,7 @@ pub fn setup_enemy(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     empty_cells: Res<EmptyCellsWorldPos>,
 ) {
-    let pickaxe_texture = asset_server.load("pickaxe.png");
-    let texture = asset_server.load("enemy_spitesheet.png");
+    let texture = asset_server.load("characters/enemy_spitesheet.png");
     let texture_atlas = TextureAtlasLayout::from_grid (
         UVec2::splat(32), 
         4,
@@ -33,30 +32,8 @@ pub fn setup_enemy(
     );
     let texture_atlas_layout = texture_atlas_layouts.add(texture_atlas);
     
-    for _ in 0..20 {
-        let pos = generate_position_near(&empty_cells.cells, Vec2::from((0.0, 0.0)));
-        
-        let pickaxe_e = commands.spawn((
-            Item {
-                image: pickaxe_texture.clone(),
-                name: "Pickaxe".to_string(),
-            },
-            CombatStats {
-                attack_speed: 100.0,
-                swing_angle: std::f32::consts::PI / 3.0,
-                radius: 32.0,
-            },
-            AnimationPattern{
-                pattern: AnimationStyle::PickAxe,
-            },
-            Durability {
-                durability: 115.0,
-            },
-            WeaponStats {
-                enemy_damage: 7,
-            }
-        )).id();
-        
+    for _ in 0..1 {
+        let pos = generate_position_near(&empty_cells.cells, Vec2::from((0.0, 0.0)));       
         commands.spawn((
             Sprite::from_atlas_image(
                 texture.clone(),
@@ -99,7 +76,7 @@ pub fn setup_enemy(
         )).with_children(|parent| {
             parent.spawn((
                 HeldItem {
-                    held: Some(pickaxe_e),
+                    held: Some("PickAxe".to_string()),
                     last_held: None,
                 },
                 Transform::default(),

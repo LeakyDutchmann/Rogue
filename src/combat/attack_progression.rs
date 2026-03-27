@@ -25,7 +25,7 @@ pub fn attack_progression_system(
                         radius: anim.item_radius,
                         start_angle: start_angle,
                         end_angle: end_angle,
-                        item_used: anim.item,
+                        item_used: anim.item.clone(),
                         aim: anim.cursor_pos,
                         fraction: hurtbox.fraction.clone(),
                     },

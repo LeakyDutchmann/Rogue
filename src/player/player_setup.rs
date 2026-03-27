@@ -6,7 +6,7 @@ pub fn player_setup(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 
 ) {
-    let texture = asset_server.load("player_spritesheet.png");
+    let texture = asset_server.load("characters/player_spritesheet.png");
     let layout = TextureAtlasLayout::from_grid(
         UVec2::splat(32), 
         4,
@@ -16,6 +16,11 @@ pub fn player_setup(
     );
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
     
+    let initial_transform = Transform {
+        translation: Vec3::new(0.0, 0.0, 1.0),
+        ..Default::default()
+    };
+    commands.insert_resource(PlayerTransform(initial_transform));
     commands.spawn((
         Sprite::from_atlas_image(
             texture,
@@ -36,7 +41,7 @@ pub fn player_setup(
             previous: AnimationId::IdleRight,
         },
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-        Transform::from_xyz(0.0, 0.0, 1.0),
+        initial_transform,
         Speed(125.0),
         Colider {
             shape: ColiderShape::Circle { radius: 3.0},
@@ -44,14 +49,11 @@ pub fn player_setup(
             _sensor: true,
         },
         Inventory {
-            capacity: 9,
-            items: vec!{None; 9}
+            _capacity: 36,
+            items: vec![ItemStack { item_stored: None, quantity: 0 }; 36],
         },
         ActiveSlot {
             index: 1,
-        },
-        FieldOfView {
-            triangles: None,
         },
         HurtBox {
             radius: 3.0,

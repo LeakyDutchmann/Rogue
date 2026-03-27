@@ -1,0 +1,50 @@
+use super::*;
+
+mod input;
+mod components;
+mod sync;
+mod systems;
+mod ui;
+mod setup;
+
+use input::*;
+pub use components::*;
+use sync::*;
+use systems::*;
+use ui::*;
+use setup::*;
+
+use crate::items::{HeldItem, ItemRegistry, ItemId};
+use crate::messages::{GetFromInventory, KeyPressed,
+    SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory,
+    DropFromCursor, ClickType, ItemQuantity, DoubleClicked};
+use bevy::window::PrimaryWindow;
+use bevy::ui::FocusPolicy;
+use crate::player::player_setup::player_setup;
+
+pub struct InventoryPlugin;
+
+impl Plugin for InventoryPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(InventoryOpen(false));
+        app.insert_resource(UiClickTrack {
+            last: 0.0,
+        });
+        app.add_systems(Startup, (setup_inventory, insert_item_in_inventory.after(setup_inventory)).after(player_setup));
+        app.add_systems(Update, (toggle_inventory, pick_active_slot_scroll, pick_active_slot));
+        app.add_systems(Update, (inventory_interactions, background_interactions, drop_item, drop_cursor_item, double_click_handler,
+            item_click_handler, item_take_handler, item_put_handler).chain());
+        app.add_systems(Update, (sync_player_inventory, sync_player_held_item));
+        app.add_systems(Update, (show_active_slot, show_inventory, ui_cursor_update, update_item_count));
+    }
+}
+
+
+#[derive(Resource)]
+pub struct UiClickTrack {
+    pub last: f64
+}
+
+
+#[derive(Resource)]
+pub struct InventoryOpen(pub bool);

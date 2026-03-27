@@ -49,7 +49,7 @@ pub fn hit_detection_system(
                 };
                 if in_sector {
                     writer.write( CalculateDamage {
-                        attack_item: hitbox.item_used,
+                        attack_item: hitbox.item_used.clone(),
                         target: entity,
                         from_pos: hitbox_pos,
                         position: tf.translation.truncate(),
@@ -72,7 +72,7 @@ pub fn hit_detection_system(
                             continue
                         } else {
                             writer.write( CalculateDamage {
-                                attack_item: hitbox.item_used,
+                                attack_item: hitbox.item_used.clone(),
                                 target: *entity,
                                 from_pos: hitbox_pos,
                                 position: pos,
@@ -90,32 +90,33 @@ pub fn hit_detection_system(
 }
 
 pub fn calculate_damage(
-    weapon_stats: Query<&WeaponStats>,
-    tool_stats: Query<&ToolStats>,
     mut reader: MessageReader<CalculateDamage>,
     mut writer: MessageWriter<ApplyDamage>,
+    registry: Res<ItemRegistry>,
 ) {
     for msg in reader.read() {
         let mut damage = 0;
-        if let Ok(enemy_dmg) = weapon_stats.get(msg.attack_item) {
-            match msg.damage_type {
-                DamageType::ToEnemyDamage => {
-                    damage = enemy_dmg.enemy_damage;
+        if let Some(def) = registry.items.get(&msg.attack_item) {
+            if let Some(attack_stats) = def.weapon_stats.as_ref().copied() {
+                match msg.damage_type {
+                    DamageType::ToEnemyDamage => {
+                        damage = attack_stats.enemy_damage;
+                    }
+                    DamageType::ToTileDamage => {
+                        damage = attack_stats.enemy_damage / 4;
+                    }
                 }
-                DamageType::ToTileDamage => {
-                    damage = enemy_dmg.enemy_damage / 4;
+            } else if let Some(tool_dmg) = def.tool_stats {
+                match msg.damage_type {
+                    DamageType::ToEnemyDamage => {
+                        damage = tool_dmg.structure_damage / 4;
+                    }
+                    DamageType::ToTileDamage => {
+                        damage = tool_dmg.structure_damage ;
+                    }
                 }
             }
-        } else if let Ok(tool_dmg) = tool_stats.get(msg.attack_item) {
-            match msg.damage_type {
-                DamageType::ToEnemyDamage => {
-                    damage = tool_dmg.structure_damage / 4;
-                }
-                DamageType::ToTileDamage => {
-                    damage = tool_dmg.structure_damage ;
-                }
-            }
-        }
+        } 
         writer.write(ApplyDamage {
             entity: msg.target,
             position: msg.position,

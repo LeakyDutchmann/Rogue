@@ -107,36 +107,44 @@ pub fn ai_steering(
 pub fn ai_initialize_attack(
     mut commands: Commands,
     player_tf: Query<(Entity, &Transform), With<Player>>,
-    enemy_qr: Query<(Entity, &Transform,), With<Enemy>>,
+    enemy_qr: Query<(Entity, &Transform, &ActorState), With<Enemy>>,
     hend_qr: Query<(Entity, &HeldItem, &ChildOf), (Without<AttackAnimation>, Without<CoolDown>)>,
-    attack_stats: Query<(&CombatStats, &AnimationPattern)>,
+    registry: Res<ItemRegistry>,
 ) { 
     for (hend_e, held_item, childof) in hend_qr.iter() {
-        if let Ok((enemy_e, enemy_tf)) = enemy_qr.get(childof.0) {
-            if let Some(item) = held_item.last_held {
-                if let Ok((stats, anim_pattern)) = attack_stats.get(item) {
-                    if let Ok((player_e, player_tf)) = player_tf.single() {
-                        if player_e == enemy_e {
-                            continue;
-                        }
-                        let enemy_pos = enemy_tf.translation.truncate();
-                        let player_pos = player_tf.translation.truncate();
-                        if enemy_pos.distance(player_pos) > stats.radius {
-                            continue
-                        }
-                        commands.entity(hend_e).insert(
-                            AttackAnimation {
-                                anim_pattern: anim_pattern.pattern,
-                                progress: 0.0,
-                                duration: 60.0 / stats.attack_speed,
-                                max_angle: stats.swing_angle,
-                                hit_triggered: false,
-                                cursor_pos: player_pos,
-                                item: item,
-                                item_radius: stats.radius,
+        if let Ok((enemy_e, enemy_tf, actor)) = enemy_qr.get(childof.0) {
+            if let Some(item) = held_item.held.as_ref() {
+                if let Ok((player_e, player_tf)) = player_tf.single() {
+                    if let Some(def) = registry.items.get(item) {
+                        if let Some(c_stats) = def.combat_stats {
+                            if player_e == enemy_e {
+                                continue;
                             }
-                        );
-                    }
+                            let enemy_pos = enemy_tf.translation.truncate();
+                            let player_pos = player_tf.translation.truncate();
+                            if enemy_pos.distance(player_pos) > c_stats.radius as f32 {
+                                continue
+                            }
+                            if let Some(animation_style) = def.animation_style {
+                                if actor.state != ActorStateType::Dead {
+                                    commands.entity(hend_e).insert(
+                                        AttackAnimation {
+                                            anim_pattern: animation_style,
+                                            progress: 0.0,
+                                            duration: 60.0 / c_stats.attack_speed as f32,
+                                            max_angle: (c_stats.swing_angle as f32).to_radians(),
+                                            hit_triggered: false,
+                                            cursor_pos: player_pos,
+                                            item: item.clone(),
+                                            item_radius: c_stats.radius as f32,
+                                        }
+                                    );
+                                }
+                                
+                            }
+                        }
+                        
+                    } 
                 }
             }
             

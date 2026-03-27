@@ -4,6 +4,7 @@ mod components;
 
 use bevy::prelude::*;
 use rand::Rng;
+use std::collections::HashMap;
 pub use map::*;
 pub use components::*;
 use cave_generating::*;
@@ -17,6 +18,9 @@ pub struct MapSetupPlugin;
 
 impl Plugin for MapSetupPlugin {
     fn build(&self, app: &mut App) {
+        app.insert_resource(MapAtlases {
+            atlases: HashMap::new(),
+        });
         app.add_systems(Startup, (setup_atlas, floor_setup, map_setup).chain());
         app.add_systems(Update, update_map);
     }
@@ -33,6 +37,12 @@ pub struct MapAtlas {
 #[derive(Resource)]
 pub struct GameMap {
     tiles: Vec<TileType>,
+}
+
+
+#[derive(Resource)]
+pub struct MapAtlases {
+    pub atlases: HashMap<TileMaterial, MapAtlas>,
 }
 
 

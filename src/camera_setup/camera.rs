@@ -31,19 +31,20 @@ pub fn camera_follow_player(
 }
 
 pub fn camera_scroll_in(
-    mut reader: MessageReader<ScrollMessage>,
+    mut reader: MessageReader<KeyPressed>,
     mut query: Query<&mut Projection, With<Camera2d>>,
 ) {
     for msg in reader.read() {
         for mut projection in query.iter_mut() {
             if let Projection::Orthographic(ref mut ortho) = *projection {
-                match msg.event {
-                ScrollDir::ScrollUp => {
+                match msg.key {
+                    KeyCode::Equal => {
                     ortho.scale *= 0.9;
-                }
-                ScrollDir::ScrollDown => {
-                    ortho.scale *= 1.1;
-                }
+                },
+                    KeyCode::Minus => {
+                        ortho.scale *= 1.1;
+                },
+                _ => {}
             }
             }
         }
