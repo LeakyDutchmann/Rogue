@@ -64,6 +64,21 @@ pub fn setup_building_mode_ui(
         commands.entity(actual).add_child(slot);
     }
     commands.entity(root).add_child(actual);
+    
+    commands.spawn((
+        Node {
+            width: Val::Px(32.0),
+            height: Val::Px(32.0),
+            position_type: PositionType::Absolute,
+            ..default()
+        },
+        CursorStructureCarrier {
+            structure: None,
+        },
+        Text::new(""),
+        // BackgroundColor(Color::WHITE),
+        ZIndex(10000),
+    ));
 }
 
 pub fn load_structures(

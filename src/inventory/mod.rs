@@ -18,7 +18,6 @@ use crate::items::{HeldItem, ItemRegistry, ItemId};
 use crate::messages::{GetFromInventory, KeyPressed,
     SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory,
     DropFromCursor, ClickType, ItemQuantity, DoubleClicked};
-use bevy::window::PrimaryWindow;
 use bevy::ui::FocusPolicy;
 use crate::player::player_setup::player_setup;
 

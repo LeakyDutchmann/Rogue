@@ -19,6 +19,7 @@ mod utils;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
+use bevy::window::PrimaryWindow;
 use mouse::*;
 use map_setup::*;
 use player::*;

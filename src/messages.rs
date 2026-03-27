@@ -16,8 +16,16 @@ impl Plugin for MessagesPlugin {
             .add_message::<InsertToInventory>()
             .add_message::<GetFromInventory>()
             .add_message::<DropFromCursor>()
-            .add_message::<DoubleClicked>();
+            .add_message::<DoubleClicked>()
+            .add_message::<SpawnStructureRequest>();
     }
+}
+
+
+#[derive(Message)]
+pub struct SpawnStructureRequest {
+    pub position: Vec2,
+    pub item_id: String,
 }
 
 

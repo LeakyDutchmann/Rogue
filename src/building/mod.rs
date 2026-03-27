@@ -1,12 +1,14 @@
 mod systems;
 mod setup;
 mod input;
+mod functions;
 
 use super::*;
 use serde::Deserialize;
 use systems::*;
 use setup::*;
 use input::*;
+use functions::*;
 
 use crate::inventory::{InventoryOpen, UiClickTrack};
 use std::collections::HashMap;
@@ -22,11 +24,30 @@ impl Plugin for BuildingPlugin {
         app.insert_resource( StructureRegistry {
             structures: HashMap::new()
         });
+        app.insert_resource(PlacingState {
+            structure: None,
+        });
         app.add_systems(Update, (toggle_building_mode, set_building_ui_visibility));
         app.add_systems(Startup, (setup_building_mode_ui, load_structures, setup_building_ui_nodes).chain());
         app.add_systems(Update, builder_ui_interactions);
+        app.add_systems(Update, (cursor_structure_carrier_update, build_structure, spawn_structure)
+            .chain()
+            .after(builder_ui_interactions)
+        );
     }
 }
+
+#[derive(Component)]
+pub struct StructureId {
+    id: String,
+}
+
+
+#[derive(Resource)]
+pub struct PlacingState {
+    structure: Option<String>,
+}
+
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 enum BuildingState {
@@ -44,6 +65,12 @@ pub struct BuildingMode {
 #[derive(Resource)]
 pub struct StructureRegistry {
     structures: HashMap<String, StructureDefinition>,
+}
+
+
+#[derive(Component)]
+pub struct CursorStructureCarrier {
+    pub structure: Option<String>,
 }
 
 
