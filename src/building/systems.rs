@@ -23,7 +23,7 @@ pub fn toggle_building_mode(
 
 pub fn set_building_ui_visibility(
     building_mode: Res<BuildingMode>,
-    mut ui_node: Query<&mut Visibility, With<BuildingUiNode>>,
+    mut ui_node: Query<&mut Visibility, With<BuildingRootUiNode>>,
 ) {
     for mut visibility in ui_node.iter_mut() {
         *visibility = if building_mode.state == BuildingState::On {

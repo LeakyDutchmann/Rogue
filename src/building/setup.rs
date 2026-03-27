@@ -14,8 +14,9 @@ pub fn setup_building_mode_ui(
             },
             BorderColor::all(Color::srgb(0.5, 0.5, 0.5)),
             Interaction::None,
-            ZIndex(3),
-            // FocusPolicy::Block,
+            ZIndex(2),
+            BuildingUiNode,
+            FocusPolicy::Block,
         )).with_children(|parent| {
             parent.spawn((
                 BuildingUiSlot {
@@ -56,7 +57,8 @@ pub fn setup_building_mode_ui(
         },
         BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
         BorderColor::all(Color::srgb(1.0, 1.0, 1.0)),
-        BuildingUiNode,
+        BuildingRootUiNode,
+        ZIndex(1),
     )).id();
     for slot in slots {
         commands.entity(actual).add_child(slot);

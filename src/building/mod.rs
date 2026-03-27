@@ -1,13 +1,16 @@
 mod systems;
 mod setup;
+mod input;
 
 use super::*;
 use serde::Deserialize;
 use systems::*;
 use setup::*;
+use input::*;
 
-use crate::inventory::InventoryOpen;
+use crate::inventory::{InventoryOpen, UiClickTrack};
 use std::collections::HashMap;
+use bevy::ui::FocusPolicy;
 
 pub struct BuildingPlugin;
 
@@ -21,6 +24,7 @@ impl Plugin for BuildingPlugin {
         });
         app.add_systems(Update, (toggle_building_mode, set_building_ui_visibility));
         app.add_systems(Startup, (setup_building_mode_ui, load_structures, setup_building_ui_nodes).chain());
+        app.add_systems(Update, builder_ui_interactions);
     }
 }
 
@@ -45,6 +49,10 @@ pub struct StructureRegistry {
 
 #[derive(Component)]
 pub struct BuildingUiNode;
+
+
+#[derive(Component)]
+pub struct BuildingRootUiNode;
 
 
 #[derive(Component)]

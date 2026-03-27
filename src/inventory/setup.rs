@@ -115,7 +115,7 @@ pub fn setup_inventory(
         ZIndex(0),
         // BackgroundColor(Color::WHITE),
         Interaction::None,
-        FocusPolicy::Block,
+        FocusPolicy::Pass,
     ));
 }
 
