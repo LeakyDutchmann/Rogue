@@ -4,21 +4,30 @@ pub fn toggle_building_mode(
     keys: Res<ButtonInput<KeyCode>>,
     mut building_mode: ResMut<BuildingMode>,
     mut inventory_open: ResMut<InventoryOpen>,
+    mut cursor: Query<&mut CursorStructureCarrier>,
 ) {
-    if keys.just_pressed(KeyCode::KeyB) {
-        if building_mode.state == BuildingState::Off {
-            building_mode.state = BuildingState::On;
-            inventory_open.0 = true;
-        } else if building_mode.state == BuildingState::On {
-            building_mode.state = BuildingState::Off;
-            inventory_open.0 = false;
+    if let Ok(mut cursor) = cursor.single_mut() {
+        if keys.just_pressed(KeyCode::KeyB) {
+            if building_mode.state == BuildingState::Off {
+                building_mode.state = BuildingState::On;
+                inventory_open.0 = true;
+            } else if building_mode.state == BuildingState::On {
+                building_mode.state = BuildingState::Off;
+                inventory_open.0 = false;
+            } 
         } 
-    } 
-    if keys.just_pressed(KeyCode::Escape) {
-        if building_mode.state == BuildingState::Placing {
-            building_mode.state = BuildingState::On;
+        if keys.just_pressed(KeyCode::Escape) {
+            if building_mode.state == BuildingState::Placing {
+                building_mode.state = BuildingState::On;
+                cursor.structure = None;
+            }
+            if building_mode.state == BuildingState::On {
+                building_mode.state = BuildingState::Off;
+                cursor.structure = None;
+                inventory_open.0 = false;
+            }
         }
-    }
+    } 
 }
 
 pub fn set_building_ui_visibility(
