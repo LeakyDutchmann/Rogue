@@ -24,13 +24,13 @@ impl Plugin for BuildingPlugin {
         app.insert_resource( StructureRegistry {
             structures: HashMap::new()
         });
-        app.insert_resource(PlacingState {
-            structure: None,
+        app.insert_resource(CanPlaceStruct {
+            state: false,
         });
         app.add_systems(Update, (toggle_building_mode, set_building_ui_visibility));
         app.add_systems(Startup, (setup_building_mode_ui, load_structures, setup_building_ui_nodes).chain());
         app.add_systems(Update, builder_ui_interactions);
-        app.add_systems(Update, (cursor_structure_carrier_update, build_structure, spawn_structure)
+        app.add_systems(Update, (cursor_structure_carrier_update, can_place_structure, build_structure, spawn_structure)
             .chain()
             .after(builder_ui_interactions)
         );
@@ -44,8 +44,8 @@ pub struct StructureId {
 
 
 #[derive(Resource)]
-pub struct PlacingState {
-    structure: Option<String>,
+pub struct CanPlaceStruct {
+    pub state: bool,
 }
 
 
@@ -101,5 +101,6 @@ pub struct StructureDefinition {
     pub sprite: Handle<Image>,
     pub icon: Handle<Image>,
 }
+
 
 

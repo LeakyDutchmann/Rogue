@@ -49,7 +49,6 @@ pub fn cursor_structure_carrier_update(
     window: Single<&Window, With<PrimaryWindow>>,
     structure_reg: Res<StructureRegistry>,
     image_node: Query<&ImageNode>,
-    placing_state: Res<PlacingState>,
 ) {
     if let Some(position) = window.cursor_position() {
         for (entity, mut carrier, mut node) in cursor.iter_mut() {
@@ -81,6 +80,7 @@ pub fn build_structure(
     mut building_mode: ResMut<BuildingMode>,
     ui_click: Res<UiClickTrack>,
     time: Res<Time>,
+    can_place: Res<CanPlaceStruct>,
 ) {
     if building_mode.state == BuildingState::Placing {
         for msg in reader.read() {
@@ -91,12 +91,14 @@ pub fn build_structure(
                 }
                 if let Ok(mut cursor) = cursor.single_mut() {
                     if let Some(structure) = &cursor.structure {
-                        writer.write(SpawnStructureRequest {
-                            position: *position,
-                            item_id: structure.clone(),
-                        });
-                        cursor.structure = None;
-                        building_mode.state = BuildingState::On;
+                        if can_place.state == true {
+                            writer.write(SpawnStructureRequest {
+                                position: *position,
+                                item_id: structure.clone(),
+                            });
+                            cursor.structure = None;
+                            building_mode.state = BuildingState::On;
+                        } 
                     }
                 }
             }
@@ -115,4 +117,80 @@ pub fn spawn_structure(
             commands.entity(structure).insert(Transform::from_translation(msg.position.extend((MAX_Y - msg.position.y + 1.0) * 0.001)));
         }
     }
+}
+
+pub fn check_colision_static(pos1: Vec2, pos2: Vec2, size1: (f32, f32), size2: (f32, f32)) -> bool {
+    let left_1 = pos1.x - size1.0 / 2.0;
+    let right_1 = pos1.x + size1.0 / 2.0;
+    let top_1 = pos1.y + size1.1 / 2.0;
+    let bottom_1 = pos1.y - size1.1 / 2.0;
+    
+    let left_2 = pos2.x - size2.0 / 2.0;
+    let right_2 = pos2.x + size2.0 / 2.0;
+    let top_2 = pos2.y + size2.1 / 2.0;
+    let bottom_2 = pos2.y - size2.1 / 2.0;
+    
+    let mut intersects = false;
+    if right_1 < left_2 || left_1 > right_2 || top_1 < bottom_2 || bottom_1 > top_2 {
+        intersects = false;
+    } else {
+        intersects = true;
+    }
+    intersects
+}
+
+pub fn can_place_structure(
+    cursor: Query<&CursorStructureCarrier>,
+    building_mode: Res<BuildingMode>,
+    structure_reg: Res<StructureRegistry>,
+    mut cursor_pos: Res<CursorWorldPos>,
+    coliders: Query<(&Colider, &Transform)>,
+    worldgrid: Res<WorldGrid>,
+    mut can_place: ResMut<CanPlaceStruct>,
+) {
+    if building_mode.state == BuildingState::Placing {
+        if let Ok(cursor) = cursor.single() {
+            if let Some(structure) = &cursor.structure {
+                if let Some(def) = structure_reg.structures.get(structure) {
+                    if let Some(position) = cursor_pos.0 {
+                        let width_1 = 20.0;
+                        let height_1 = 20.0;
+                        let cell_x = (position.x / CELL_SIZE ).floor() as i32;
+                        let cell_y = (position.y / CELL_SIZE ).floor() as i32;
+                        let central_cell = (cell_x, cell_y);
+                        let cells = get_cells_3x3(central_cell);
+                        let entities = get_entities_in_cells(cells, &worldgrid);
+                        let mut intersected_any = false;
+                        for entity in entities {
+                            println!("entered loop");
+                            if let Ok((colider, tf)) = coliders.get(entity) {
+                                println!("matching");
+                                match colider.shape {
+                                    ColiderShape::Rectangle { width, height } => {
+                                        println!("aabb");
+                                        if check_colision_static(position, tf.translation.truncate(), (width_1, height_1), (width, height)) {
+                                            intersected_any = true;
+                                            break;
+                                        }
+                                    },
+                                    ColiderShape::Circle { radius } => {
+                                        println!("circle");
+                                        continue;
+                                    },
+                                }
+                            }
+                        }
+                        if intersected_any {
+                            can_place.state = false;
+                            println!("cannot place at {:?}", position);
+                        } else {
+                            can_place.state = true;
+                            println!("can place at {:?}", position);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }
