@@ -55,6 +55,8 @@ pub fn damage_execution_system(
                                 });
                             }
                         }  
+                    } else {
+                        commands.entity(destruction.entity).despawn();
                     }
                 }
             }

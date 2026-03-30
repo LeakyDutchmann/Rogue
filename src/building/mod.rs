@@ -11,6 +11,7 @@ use input::*;
 use functions::*;
 
 use crate::inventory::{InventoryOpen, UiClickTrack};
+use crate::components::*;
 use std::collections::HashMap;
 use bevy::ui::FocusPolicy;
 
@@ -93,6 +94,9 @@ pub struct StructureDefinitionRaw {
     pub name: String,
     pub sprite_path: String,
     pub icon_path: String,
+    pub width: Option<f32>,
+    pub height: Option<f32>,
+    pub radius: Option<f32>,
 }
 
 
@@ -100,6 +104,9 @@ pub struct StructureDefinitionRaw {
 pub struct StructureDefinition {
     pub sprite: Handle<Image>,
     pub icon: Handle<Image>,
+    pub width: Option<f32>,
+    pub height: Option<f32>,
+    pub radius: Option<f32>,
 }
 
 

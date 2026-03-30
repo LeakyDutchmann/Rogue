@@ -94,6 +94,9 @@ pub fn load_structures(
             let definition = StructureDefinition {
                 sprite,
                 icon,
+                width: structure.width,
+                height: structure.height,
+                radius: structure.radius,
             };
             struct_registry.structures.insert(structure.name.clone(), definition);
             count += 1;

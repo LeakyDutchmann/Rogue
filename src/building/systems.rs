@@ -153,8 +153,14 @@ pub fn can_place_structure(
             if let Some(structure) = &cursor.structure {
                 if let Some(def) = structure_reg.structures.get(structure) {
                     if let Some(position) = cursor_pos.0 {
-                        let width_1 = 20.0;
-                        let height_1 = 20.0;
+                        let width_1 = match def.width {
+                            Some(w) => w,
+                            None => 0.0,
+                        };
+                        let height_1 = match def.height {
+                            Some(h) => h,
+                            None => 0.0,
+                        };
                         let cell_x = (position.x / CELL_SIZE ).floor() as i32;
                         let cell_y = (position.y / CELL_SIZE ).floor() as i32;
                         let central_cell = (cell_x, cell_y);

@@ -16,6 +16,7 @@ pub fn hit_detection_system(
     worldgrid: Res<WorldGrid>,
     mut writer: MessageWriter<CalculateDamage>,
     query: Query<(&MapTile, &Transform), With<Wall>>,
+    struct_query: Query<(&StructureId, &Transform), (With<Wall>, Without<MapTile>)>,
 ) {
     for (hitbx_e, hitbox, hitbox_tf) in hitbox_qr.iter() {
         let hitbox_pos = hitbox_tf.translation.truncate();
@@ -81,6 +82,24 @@ pub fn hit_detection_system(
                             commands.entity(hitbx_e).insert(HitBoxUsed);
                             break;
                         }
+                    } else if let Ok((_structure_id, transform)) = struct_query.get(*entity) {
+                        let pos = transform.translation.truncate();
+                        let to_hurt_box = pos - hitbox_pos;
+                        let distance = to_hurt_box.length();
+                        if distance > hitbox.radius {
+                            continue
+                        } else {
+                            writer.write( CalculateDamage {
+                                attack_item: hitbox.item_used.clone(),
+                                target: *entity,
+                                from_pos: hitbox_pos,
+                                position: pos,
+                                damage_type: DamageType::ToStructureDamage,
+                            });
+                            commands.entity(hitbx_e).insert(HitBoxUsed);
+                            println!("kicked struct");
+                            break;
+                        } 
                     }
                 }
             }
@@ -105,6 +124,9 @@ pub fn calculate_damage(
                     DamageType::ToTileDamage => {
                         damage = attack_stats.enemy_damage / 4;
                     }
+                    DamageType::ToStructureDamage => {
+                        damage = attack_stats.enemy_damage / 4;
+                    }
                 }
             } else if let Some(tool_dmg) = def.tool_stats {
                 match msg.damage_type {
@@ -113,6 +135,9 @@ pub fn calculate_damage(
                     }
                     DamageType::ToTileDamage => {
                         damage = tool_dmg.structure_damage ;
+                    }
+                    DamageType::ToStructureDamage => {
+                        damage = tool_dmg.structure_damage;
                     }
                 }
             }

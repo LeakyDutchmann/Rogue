@@ -148,6 +148,7 @@ pub struct ApplyDamage {
 pub enum DamageType {
     ToTileDamage,
     ToEnemyDamage,
+    ToStructureDamage,
 }
 
 
