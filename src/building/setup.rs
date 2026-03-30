@@ -65,6 +65,7 @@ pub fn setup_building_mode_ui(
     }
     commands.entity(root).add_child(actual);
     
+    //below is cursor, maybe shall make separated system to initialize it
     commands.spawn((
         Node {
             width: Val::Px(32.0),

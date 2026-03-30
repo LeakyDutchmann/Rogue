@@ -10,7 +10,7 @@ pub fn builder_ui_interactions(
 ) {
     for (entity, interaction, children, mut border) in slots.iter_mut() {
         if interaction == &Interaction::Pressed {
-            *border = BorderColor::all(Color::srgb(1.0, 1.0, 1.0));
+            // *border = BorderColor::all(Color::srgb(2.0, 2.0, 2.0));
             for child in children {
                 if let Ok(building_slot) = builder_slots.get(*child) {
                     if let Some(structure) = &building_slot.structure {
@@ -24,10 +24,6 @@ pub fn builder_ui_interactions(
                 }
             }
             println!("pressed");
-        } else if interaction == &Interaction::Hovered {
-            *border = BorderColor::all(Color::srgb(1.0, 1.0, 1.0));
-        } else {
-            *border = BorderColor::all(Color::srgb(0.5, 0.5, 0.5));
-        }
+        } 
     }
 }

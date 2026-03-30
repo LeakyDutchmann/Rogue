@@ -16,6 +16,7 @@ mod raycasting;
 mod inventory;
 mod building;
 mod utils;
+mod ui;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -37,6 +38,7 @@ use raycasting::*;
 use inventory::*;
 use building::*;
 use utils::*;
+use ui::*;
 
 fn main() {
     App::new()
@@ -46,7 +48,7 @@ fn main() {
         .add_plugins(MessagesPlugin)
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin, InventoryPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
-        .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin, BuildingPlugin))
+        .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin, BuildingPlugin, UiPlugin))
         .add_plugins(VisionPlugin)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();

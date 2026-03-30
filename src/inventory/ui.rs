@@ -1,5 +1,6 @@
 use super::*;
 
+// i spent almost hour fixing bug which was an issue of this function logic, fuck it.
 pub fn show_active_slot(
     active_slot: Query<&ActiveSlot>,
     mut ui_slots: Query<(&mut BorderColor, &Slot)>
@@ -9,7 +10,7 @@ pub fn show_active_slot(
             if slot.index == active_slot.index as usize {
                 bd_color.set_all(Color::srgb(1.0, 1.0, 1.0));
             } else {
-                bd_color.set_all(Color::srgb(0.5, 0.5, 0.5));
+                // bd_color.set_all(Color::srgb(0.5, 0.5, 0.5));
             }
         }
     }
