@@ -17,6 +17,7 @@ mod inventory;
 mod building;
 mod utils;
 mod ui;
+mod crafting;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
@@ -39,6 +40,7 @@ use inventory::*;
 use building::*;
 use utils::*;
 use ui::*;
+use crafting::*;
 
 fn main() {
     App::new()
@@ -48,7 +50,7 @@ fn main() {
         .add_plugins(MessagesPlugin)
         .add_plugins((MapSetupPlugin, PlayerSetupPlugin, CameraSetupPlugin, MouseInputPlugin, AnimationSetupPlugin, InventoryPlugin))
         .add_plugins((ColisionPlugin, MovementPlugin))
-        .add_plugins((WorldPlugin, ItemsPlugin, CombatPlugin, BuildingPlugin, UiPlugin))
+        .add_plugins((WorldPlugin, CraftingPlugin, ItemsPlugin, CombatPlugin, BuildingPlugin, UiPlugin))
         .add_plugins(VisionPlugin)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();

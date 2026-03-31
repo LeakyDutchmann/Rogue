@@ -3,5 +3,10 @@
   "icon_path": "structures/oven.png",
   "sprite_path": "structures/oven.png",
   "width": 20.0,
-  "height": 20.0
+  "height": 20.0,
+  "recipe": {
+    "ingredients": {
+      "Structurix": 10
+    }
+  }
 }

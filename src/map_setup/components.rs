@@ -69,7 +69,7 @@ impl TileMaterial {
     }
     pub fn get_ore_id(&self) -> Option<String> {
         match &self {
-            TileMaterial::Structurix => Some("Structurix_ore".to_string()),
+            TileMaterial::Structurix => Some("Structurix".to_string()),
             TileMaterial::Mechanae => Some("Mechanae_ore".to_string()),
             TileMaterial::Secturix => Some("Secturix_ore".to_string()),
             TileMaterial::None => None,

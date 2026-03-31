@@ -10,7 +10,6 @@ pub fn hover_system(
         if *interaction == Interaction::Hovered {
             *border_color = BorderColor::all(Color::srgb(1.0, 1.0, 1.0));
             hovered = Some(entity);
-            println!("Hovering slot");
         } else if *interaction == Interaction::Pressed {
             *border_color = BorderColor::all(Color::srgb(1.0, 0.4, 0.0));
         } else {
@@ -55,19 +54,15 @@ pub fn update_tool_tip(
         if let Ok(inventory) = player_inventory.single() {
             if let Some(entity) = hovering_state.entity {
                 if let Ok(children) = children.get(entity) {
-                    println!("get_children");
                     let mut structure_id: Option<String> = None;
                     let mut item_id_found: Option<String> = None;
                     for child in children.iter() {
-                        println!("child: {:?}", child);
                         if let Ok(structure_slot) = structure_identificator.get(child) {
-                            println!("get_structure_slot");
                             if let Some(structure) = &structure_slot.structure {
                                 structure_id = Some(structure.clone());
                                 break;                   
                             } 
                         } else if let Ok(item_slot) = item_identificator.get(child) {
-                            println!("get_item_slot");
                             if let Some(item) = inventory.items.get(item_slot.index) {
                                 if let Some(item_id) = &item.item_stored {
                                     if structure_id.is_none() {

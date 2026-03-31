@@ -167,7 +167,7 @@ pub fn insert_item_in_inventory(
                 continue;
             }
             if i <= 5 {
-                let structurix = "Structurix_ore".to_string();
+                let structurix = "Structurix".to_string();
                 if let Some(def) = item_registry.items.get(&structurix) {
                      item_stack.quantity = def.max_stack as i32;
                      item_stack.item_stored = Some(structurix);

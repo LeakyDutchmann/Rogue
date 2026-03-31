@@ -1,7 +1,7 @@
 {
-  "name": "Structurix_ore",
-  "icon": "ores/Structurix_ore.png",
-  "sprite": "ores/Structurix_ore.png",
+  "name": "Structurix",
+  "icon": "materials/structurix.png",
+  "sprite": "materials/structurix.png",
   "usable": false,
   "max_stack": 64
 }

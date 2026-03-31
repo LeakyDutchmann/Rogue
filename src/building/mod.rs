@@ -14,6 +14,7 @@ use crate::inventory::{InventoryOpen, UiClickTrack};
 use crate::components::*;
 use std::collections::HashMap;
 use bevy::ui::FocusPolicy;
+use crate::crafting::{RecipeRegistry, RecipeDefinition};
 
 pub struct BuildingPlugin;
 
@@ -97,6 +98,7 @@ pub struct StructureDefinitionRaw {
     pub width: Option<f32>,
     pub height: Option<f32>,
     pub radius: Option<f32>,
+    pub recipe: Option<RecipeDefinition>,
 }
 
 
