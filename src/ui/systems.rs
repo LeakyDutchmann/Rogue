@@ -1,11 +1,14 @@
 use super::*;
 
 pub fn hover_system(
-    mut query: Query<(&mut BorderColor, &Interaction), Without<UiBackground>>
+    mut query: Query<(Entity, &mut BorderColor, &Interaction), Without<UiBackground>>,
+    mut hovering_state: ResMut<UiHoveringState>,
 ) {
-    for (mut border_color, interaction) in query.iter_mut() {
+    let mut hovered: Option<Entity> = None;
+    for (entity, mut border_color, interaction) in query.iter_mut() {
         if *interaction == Interaction::Hovered {
             *border_color = BorderColor::all(Color::srgb(1.0, 1.0, 1.0));
+            hovered = Some(entity);
             println!("Hovering slot");
         } else if *interaction == Interaction::Pressed {
             *border_color = BorderColor::all(Color::srgb(1.0, 0.4, 0.0));
@@ -13,4 +16,73 @@ pub fn hover_system(
             *border_color = BorderColor::all(Color::srgb(0.5, 0.5, 0.5));
         }
     }
+    if let Some(entity) = hovered {
+        hovering_state.entity = Some(entity);
+    } else {
+        hovering_state.entity = None;
+    }
+}
+
+
+pub fn tool_tip_follow_cursor(
+    windows: Query<&mut Window, With<PrimaryWindow>>,
+    mut query: Query<&mut Node, With<ToolTip>>,
+) {
+    if let Ok(window) = windows.single() {
+        if let Some(cursor_pos) = window.cursor_position() {
+            if let Ok(mut node) = query.single_mut() {
+                node.left = Val::Px(cursor_pos.x);
+                node.top = Val::Px(cursor_pos.y);
+            }
+        }
+    }
+}
+
+pub fn update_tool_tip(
+    mut query: Query<(&mut Node, &mut Text), With<ToolTip>>,
+    children: Query<&Children>,
+    hovering_state: Res<UiHoveringState>,
+    item_identificator: Query<&SlotIcon>,
+    structure_identificator: Query<&BuildingUiSlot>,
+    player_inventory: Query<&Inventory, With<Player>>,
+) {
+    if let Ok((mut node, mut text)) = query.single_mut() {
+        if let Ok(inventory) = player_inventory.single() {
+            if let Some(entity) = hovering_state.entity {
+                if let Ok(children) = children.get(entity) {
+                    println!("get_children");
+                    let mut structure_id: Option<String> = None;
+                    let mut item_id_found: Option<String> = None;
+                    for child in children.iter() {
+                        println!("child: {:?}", child);
+                        if let Ok(structure_slot) = structure_identificator.get(child) {
+                            println!("get_structure_slot");
+                            if let Some(structure) = &structure_slot.structure {
+                                structure_id = Some(structure.clone());
+                                break;                   
+                            } 
+                        } else if let Ok(item_slot) = item_identificator.get(child) {
+                            println!("get_item_slot");
+                            if let Some(item) = inventory.items.get(item_slot.index) {
+                                if let Some(item_id) = &item.item_stored {
+                                    if structure_id.is_none() {
+                                        item_id_found = Some(item_id.clone());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if let Some(structure_id) = structure_id {
+                        text.0 = structure_id;
+                    } else if let Some(item_id) = item_id_found {
+                        text.0 = item_id;
+                    } else {
+                        text.0 = "".to_string();
+                    }
+                }
+            } else {
+                text.0 = "".to_string();
+            }
+        }
+    } 
 }

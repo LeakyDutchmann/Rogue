@@ -24,6 +24,9 @@ pub fn mouse_click_handler(
     if buttons.pressed(MouseButton::Left) {
         writer.write(MouseClickEvent::LeftClick(position));
     }
+    if buttons.pressed(MouseButton::Right) {
+        writer.write(MouseClickEvent::RightClick(position));
+    }
 }
 
 pub fn scroll_events(

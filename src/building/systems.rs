@@ -3,17 +3,14 @@ use super::*;
 pub fn toggle_building_mode(
     keys: Res<ButtonInput<KeyCode>>,
     mut building_mode: ResMut<BuildingMode>,
-    mut inventory_open: ResMut<InventoryOpen>,
     mut cursor: Query<&mut CursorStructureCarrier>,
 ) {
     if let Ok(mut cursor) = cursor.single_mut() {
         if keys.just_pressed(KeyCode::KeyB) {
             if building_mode.state == BuildingState::Off {
                 building_mode.state = BuildingState::On;
-                inventory_open.0 = true;
             } else if building_mode.state == BuildingState::On {
                 building_mode.state = BuildingState::Off;
-                inventory_open.0 = false;
             } 
         } 
         if keys.just_pressed(KeyCode::Escape) {
@@ -24,7 +21,6 @@ pub fn toggle_building_mode(
             if building_mode.state == BuildingState::On {
                 building_mode.state = BuildingState::Off;
                 cursor.structure = None;
-                inventory_open.0 = false;
             }
         }
     } 
@@ -33,6 +29,7 @@ pub fn toggle_building_mode(
 pub fn set_building_ui_visibility(
     building_mode: Res<BuildingMode>,
     mut ui_node: Query<&mut Visibility, With<BuildingRootUiNode>>,
+    mut inventory_open: ResMut<InventoryOpen>,
 ) {
     for mut visibility in ui_node.iter_mut() {
         *visibility = if building_mode.state == BuildingState::On {
@@ -84,22 +81,28 @@ pub fn build_structure(
 ) {
     if building_mode.state == BuildingState::Placing {
         for msg in reader.read() {
-            if let MouseClickEvent::LeftClick(position) = msg {
-                let now = time.elapsed_secs_f64();
-                if now - ui_click.last < 0.5 {
-                    continue;
-                }
-                if let Ok(mut cursor) = cursor.single_mut() {
-                    if let Some(structure) = &cursor.structure {
-                        if can_place.state == true {
-                            writer.write(SpawnStructureRequest {
-                                position: *position,
-                                item_id: structure.clone(),
-                            });
-                            cursor.structure = None;
-                            building_mode.state = BuildingState::On;
-                        } 
+            let now = time.elapsed_secs_f64();
+            if now - ui_click.last < 0.5 {
+                continue;
+            }
+            if let Ok(mut cursor) = cursor.single_mut() {
+                match msg {
+                    MouseClickEvent::LeftClick(position) => {
+                        if let Some(structure) = &cursor.structure {
+                            if can_place.state == true {
+                                writer.write(SpawnStructureRequest {
+                                    position: position.clone(),
+                                    item_id: structure.clone(),
+                                });
+                                cursor.structure = None;
+                                building_mode.state = BuildingState::On;
+                            }
+                        }
                     }
+                    MouseClickEvent::RightClick(_position) => {
+                        cursor.structure = None;
+                        building_mode.state = BuildingState::On;
+                    } 
                 }
             }
         }

@@ -111,7 +111,7 @@ pub enum ScrollDir {
 #[derive(Message, Clone)]
 pub enum MouseClickEvent {
     LeftClick(Vec2),
-    _RightClick(Vec2),
+    RightClick(Vec2),
 }
 
 

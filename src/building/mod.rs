@@ -51,7 +51,7 @@ pub struct CanPlaceStruct {
 
 
 #[derive(PartialEq, Eq, Clone, Debug)]
-enum BuildingState {
+pub enum BuildingState {
     Off,
     On,
     Placing,
@@ -59,7 +59,7 @@ enum BuildingState {
 
 #[derive(Resource)]
 pub struct BuildingMode {
-    state: BuildingState,
+    pub state: BuildingState,
 }
 
 

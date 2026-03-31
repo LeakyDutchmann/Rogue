@@ -20,6 +20,7 @@ use crate::messages::{GetFromInventory, KeyPressed,
     DropFromCursor, ClickType, ItemQuantity, DoubleClicked};
 use bevy::ui::FocusPolicy;
 use crate::player::player_setup::player_setup;
+use crate::building::{BuildingMode, BuildingState};
 
 pub struct InventoryPlugin;
 

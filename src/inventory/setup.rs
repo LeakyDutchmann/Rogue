@@ -24,7 +24,6 @@ pub fn setup_inventory(
                 SlotIcon {
                     index: i,
                 },
-                ZIndex(5),
             ));
             parent.spawn((
                 Text::new(""),
@@ -34,7 +33,6 @@ pub fn setup_inventory(
                     ..Default::default()
                 },
                 SlotCounter,
-                ZIndex(6),
             ));
         }).id());
     }
@@ -92,7 +90,7 @@ pub fn setup_inventory(
     for slot in slice_for_inv_grid {
         commands.entity(inventory_grid).add_child(*slot);
     }
-    let mut root = commands.spawn((
+    let root = commands.spawn((
         Node {
             border: UiRect::all(Val::Px(2.0)),
             width: Val::Px(500.0),
@@ -105,8 +103,8 @@ pub fn setup_inventory(
             padding: UiRect::all(Val::Px(4.0)),
             ..default()
         },
-        BackgroundColor(Color::srgb(0.5, 0.5, 0.5)),
-        BorderColor::all(Color::srgb(0.8, 0.8, 0.8)),
+        // BackgroundColor(Color::srgb(0.5, 0.5, 0.5)),
+        // BorderColor::all(Color::srgb(0.8, 0.8, 0.8)),
         ZIndex(1)
     )).id();
     commands.entity(root).add_child(hotbar);
