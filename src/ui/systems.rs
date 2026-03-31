@@ -48,6 +48,7 @@ pub fn update_tool_tip(
     item_identificator: Query<&SlotIcon>,
     structure_identificator: Query<&BuildingUiSlot>,
     player_inventory: Query<&Inventory, With<Player>>,
+    recipe_registry: Res<RecipeRegistry>,
     time: Res<Time>,
 ) {
     if let Ok((mut node, mut text, mut visibility)) = query.single_mut() {
@@ -75,7 +76,12 @@ pub fn update_tool_tip(
                     let now = time.elapsed_secs_f64();
                     if now - hovering_state.last_time > 0.15 {
                         if let Some(structure_id) = structure_id {
-                            text.0 = structure_id;
+                            text.0 = structure_id.clone();
+                            if let Some(recipe) = recipe_registry.recipes.get(&structure_id) {
+                                for (item, amount) in &recipe.ingredients {
+                                    text.0.push_str(&format!("\n{}: {}\n", item, amount));
+                                }
+                            }
                             *visibility = Visibility::Visible;
                         } else if let Some(item_id) = item_id_found {
                             text.0 = item_id;
