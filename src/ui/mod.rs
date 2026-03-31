@@ -12,7 +12,8 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(UiHoveringState {
-            entity: None 
+            entity: None,
+            last_time: 0.0,
         });
         app.add_systems(Startup, spawn_tool_tip);
         app.add_systems(Update, hover_system);
@@ -23,6 +24,7 @@ impl Plugin for UiPlugin {
 #[derive(Resource)]
 pub struct UiHoveringState {
     pub entity: Option<Entity>,
+    pub last_time: f64,
 }
 
 

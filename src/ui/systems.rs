@@ -3,6 +3,7 @@ use super::*;
 pub fn hover_system(
     mut query: Query<(Entity, &mut BorderColor, &Interaction), Without<UiBackground>>,
     mut hovering_state: ResMut<UiHoveringState>,
+    time: Res<Time>,
 ) {
     let mut hovered: Option<Entity> = None;
     for (entity, mut border_color, interaction) in query.iter_mut() {
@@ -17,7 +18,10 @@ pub fn hover_system(
         }
     }
     if let Some(entity) = hovered {
-        hovering_state.entity = Some(entity);
+        if hovering_state.entity != Some(entity) {
+            hovering_state.entity = Some(entity);
+            hovering_state.last_time = time.elapsed_secs_f64();
+        }
     } else {
         hovering_state.entity = None;
     }
@@ -45,6 +49,7 @@ pub fn update_tool_tip(
     item_identificator: Query<&SlotIcon>,
     structure_identificator: Query<&BuildingUiSlot>,
     player_inventory: Query<&Inventory, With<Player>>,
+    time: Res<Time>,
 ) {
     if let Ok((mut node, mut text, mut visibility)) = query.single_mut() {
         if let Ok(inventory) = player_inventory.single() {
@@ -72,17 +77,24 @@ pub fn update_tool_tip(
                             }
                         }
                     }
-                    if let Some(structure_id) = structure_id {
-                        text.0 = structure_id;
-                        *visibility = Visibility::Visible;
-                    } else if let Some(item_id) = item_id_found {
-                        text.0 = item_id;
-                        *visibility = Visibility::Visible;
+                    let now = time.elapsed_secs_f64();
+                    if now - hovering_state.last_time > 0.15 {
+                        if let Some(structure_id) = structure_id {
+                            text.0 = structure_id;
+                            *visibility = Visibility::Visible;
+                        } else if let Some(item_id) = item_id_found {
+                            text.0 = item_id;
+                            *visibility = Visibility::Visible;
+                        } else {
+                            text.0 = "".to_string();
+                            *visibility = Visibility::Hidden;
+                        }
                     } else {
                         text.0 = "".to_string();
                         *visibility = Visibility::Hidden;
                     }
-                }
+                    
+                }  
             } else {
                 text.0 = "".to_string();
                 *visibility = Visibility::Hidden;
