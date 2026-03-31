@@ -79,7 +79,7 @@ pub fn update_tool_tip(
                             text.0 = structure_id.clone();
                             if let Some(recipe) = recipe_registry.recipes.get(&structure_id) {
                                 for (item, amount) in &recipe.ingredients {
-                                    text.0.push_str(&format!("\n{}: {}\n", item, amount));
+                                    text.0.push_str(&format!("\n{}: {}", item, amount));
                                 }
                             }
                             *visibility = Visibility::Visible;
