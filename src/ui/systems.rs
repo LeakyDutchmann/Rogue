@@ -39,14 +39,14 @@ pub fn tool_tip_follow_cursor(
 }
 
 pub fn update_tool_tip(
-    mut query: Query<(&mut Node, &mut Text), With<ToolTip>>,
+    mut query: Query<(&mut Node, &mut Text, &mut Visibility), With<ToolTip>>,
     children: Query<&Children>,
     hovering_state: Res<UiHoveringState>,
     item_identificator: Query<&SlotIcon>,
     structure_identificator: Query<&BuildingUiSlot>,
     player_inventory: Query<&Inventory, With<Player>>,
 ) {
-    if let Ok((mut node, mut text)) = query.single_mut() {
+    if let Ok((mut node, mut text, mut visibility)) = query.single_mut() {
         if let Ok(inventory) = player_inventory.single() {
             if let Some(entity) = hovering_state.entity {
                 if let Ok(children) = children.get(entity) {
@@ -74,14 +74,18 @@ pub fn update_tool_tip(
                     }
                     if let Some(structure_id) = structure_id {
                         text.0 = structure_id;
+                        *visibility = Visibility::Visible;
                     } else if let Some(item_id) = item_id_found {
                         text.0 = item_id;
+                        *visibility = Visibility::Visible;
                     } else {
                         text.0 = "".to_string();
+                        *visibility = Visibility::Hidden;
                     }
                 }
             } else {
                 text.0 = "".to_string();
+                *visibility = Visibility::Hidden;
             }
         }
     } 
