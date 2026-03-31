@@ -95,7 +95,6 @@ pub fn load_structures(
             let icon = assest_server.load(&structure.icon_path);
             if let Some(recipe) = structure.recipe {
                 recipe_registry.recipes.insert(structure.name.clone(), recipe);
-                println!("loaded recipe for {}", structure.name);
             }
             let definition = StructureDefinition {
                 sprite,

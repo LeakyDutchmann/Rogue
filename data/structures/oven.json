@@ -1,5 +1,5 @@
 {
-  "name": "Oven",
+  "name": "Basic_Oven",
   "icon_path": "structures/oven.png",
   "sprite_path": "structures/oven.png",
   "width": 20.0,
