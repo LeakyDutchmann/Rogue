@@ -163,7 +163,6 @@ pub fn insert_item_in_inventory(
                 if let Some(def) = item_registry.items.get(&pickaxe) {
                      item_stack.quantity = def.max_stack as i32;
                      item_stack.item_stored = Some(pickaxe);
-                     break;
                 }
                 continue;
             }

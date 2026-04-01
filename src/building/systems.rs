@@ -138,6 +138,7 @@ pub fn build_structure(
 pub fn spawn_structure(
     mut commands: Commands,
     mut reader: MessageReader<SpawnStructureRequest>,
+    mut writer: MessageWriter<MapChanged>,
     structure_reg: Res<StructureRegistry>,
 ) {
     for msg in reader.read() {
