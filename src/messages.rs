@@ -17,8 +17,16 @@ impl Plugin for MessagesPlugin {
             .add_message::<GetFromInventory>()
             .add_message::<DropFromCursor>()
             .add_message::<DoubleClicked>()
-            .add_message::<SpawnStructureRequest>();
+            .add_message::<SpawnStructureRequest>()
+            .add_message::<RemoveFromInventory>();
     }
+}
+
+
+#[derive(Message)]
+pub struct RemoveFromInventory {
+    pub quantity: i32,
+    pub item: String
 }
 
 

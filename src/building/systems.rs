@@ -78,6 +78,9 @@ pub fn build_structure(
     ui_click: Res<UiClickTrack>,
     time: Res<Time>,
     can_place: Res<CanPlaceStruct>,
+    mut writer_remove_from_inv: MessageWriter<RemoveFromInventory>,
+    recipe_reg: Res<RecipeRegistry>,
+    inventory: Query<&Inventory, With<Player>>,
 ) {
     if building_mode.state == BuildingState::Placing {
         for msg in reader.read() {
@@ -90,12 +93,35 @@ pub fn build_structure(
                     MouseClickEvent::LeftClick(position) => {
                         if let Some(structure) = &cursor.structure {
                             if can_place.state == true {
-                                writer.write(SpawnStructureRequest {
-                                    position: position.clone(),
-                                    item_id: structure.clone(),
-                                });
-                                cursor.structure = None;
-                                building_mode.state = BuildingState::On;
+                                if let Ok(inventory) = inventory.single() {
+                                    if let Some(recipe) = recipe_reg.recipes.get(structure) {
+                                        let mut ingredients: Vec<(String, i32)> = Vec::new();
+                                        let mut missing_ingreients: Vec<(String, i32)> = Vec::new();
+                                        for (item, quantity) in &recipe.ingredients {
+                                            if check_if_inventory_has_item(inventory, item, quantity.clone()) {
+                                                ingredients.push((item.clone(), quantity.clone()));
+                                            } else {
+                                                missing_ingreients.push((item.clone(), quantity.clone()));
+                                                println!("missing ingredient: {} ({})", item, quantity);
+                                            }
+                                        }
+                                        if missing_ingreients.is_empty() {
+                                            for (item, quantity) in ingredients {
+                                                writer_remove_from_inv.write(RemoveFromInventory {
+                                                    quantity: quantity.clone(),
+                                                    item: item.clone(),
+                                                });
+                                            }
+                                            writer.write(SpawnStructureRequest {
+                                                position: position.clone(),
+                                                item_id: structure.clone(),
+                                            });
+                                            cursor.structure = None;
+                                            building_mode.state = BuildingState::On;
+                                        }
+                                    }
+                                    
+                                }
                             }
                         }
                     }
@@ -171,19 +197,15 @@ pub fn can_place_structure(
                         let entities = get_entities_in_cells(cells, &worldgrid);
                         let mut intersected_any = false;
                         for entity in entities {
-                            println!("entered loop");
                             if let Ok((colider, tf)) = coliders.get(entity) {
-                                println!("matching");
                                 match colider.shape {
                                     ColiderShape::Rectangle { width, height } => {
-                                        println!("aabb");
                                         if check_colision_static(position, tf.translation.truncate(), (width_1, height_1), (width, height)) {
                                             intersected_any = true;
                                             break;
                                         }
                                     },
                                     ColiderShape::Circle { radius } => {
-                                        println!("circle");
                                         continue;
                                     },
                                 }
@@ -191,10 +213,8 @@ pub fn can_place_structure(
                         }
                         if intersected_any {
                             can_place.state = false;
-                            println!("cannot place at {:?}", position);
                         } else {
                             can_place.state = true;
-                            println!("can place at {:?}", position);
                         }
                     }
                 }

@@ -287,3 +287,36 @@ pub fn item_put_handler(
     }
 }
 
+pub fn remove_from_inventory(
+    mut commands: Commands,
+    mut reader: MessageReader<RemoveFromInventory>, 
+    mut inventory: Query<&mut Inventory, With<Player>>,
+) {
+    for msg in reader.read() {
+        if let Ok(mut inv) = inventory.single_mut() {
+            let mut quantity_to_remove = msg.quantity;
+            for slot in inv.items.iter_mut() {
+                if let Some(item_id) = &slot.item_stored {
+                    if item_id == &msg.item {
+                        if quantity_to_remove >= 0 {
+                            if slot.quantity > quantity_to_remove {
+                                slot.quantity -= quantity_to_remove;
+                                quantity_to_remove = 0;
+                            } else if slot.quantity == quantity_to_remove {
+                                slot.quantity = 0;
+                                quantity_to_remove = 0;
+                                slot.item_stored = None;
+                            } else if slot.quantity < quantity_to_remove {
+                                quantity_to_remove -= slot.quantity;
+                                slot.quantity = 0;
+                                slot.item_stored = None;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

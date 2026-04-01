@@ -18,7 +18,7 @@ impl Plugin for CraftingPlugin {
 
 #[derive(Deserialize)]
 pub struct RecipeDefinition {
-    pub ingredients: HashMap<String, u32>,
+    pub ingredients: HashMap<String, i32>,
 }
 
 

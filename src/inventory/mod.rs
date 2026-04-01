@@ -6,6 +6,7 @@ mod sync;
 mod systems;
 mod ui;
 mod setup;
+mod functions;
 
 use input::*;
 pub use components::*;
@@ -13,11 +14,12 @@ use sync::*;
 use systems::*;
 use ui::*;
 use setup::*;
+pub use functions::*;
 
 use crate::items::{HeldItem, ItemRegistry, ItemId};
 use crate::messages::{GetFromInventory, KeyPressed,
     SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory,
-    DropFromCursor, ClickType, ItemQuantity, DoubleClicked};
+    DropFromCursor, ClickType, ItemQuantity, DoubleClicked, RemoveFromInventory};
 use bevy::ui::FocusPolicy;
 use crate::player::player_setup::player_setup;
 use crate::building::{BuildingMode, BuildingState};
@@ -36,6 +38,7 @@ impl Plugin for InventoryPlugin {
             item_click_handler, item_take_handler, item_put_handler).chain());
         app.add_systems(Update, (sync_player_inventory, sync_player_held_item));
         app.add_systems(Update, (show_active_slot, show_inventory, ui_cursor_update, update_item_count));
+        app.add_systems(Update, remove_from_inventory);
     }
 }
 
