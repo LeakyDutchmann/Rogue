@@ -1,43 +1,20 @@
 use crate::map_setup::*;
-
+use noise::{NoiseFn, Perlin, Seedable};
 
 pub fn generate_cave() -> Vec<TileType> {
     let mut map = vec![TileType::Empty; MAP_WIDTH * MAP_HEIGHT];
+    let mut seed: u32 = 32726;
+    let perlin = Perlin::new(seed);
+    let scale = 0.1;
     for x in 0..MAP_WIDTH {
-        map[xy_idx(x, 0)] = TileType::WallCentre;
-        map[xy_idx(x, 49)] = TileType::WallCentre;
-    }
-    for y in 0..MAP_HEIGHT {
-        map[xy_idx(0, y)] = TileType::WallCentre;
-        map[xy_idx(79, y)] = TileType::WallCentre;
-    }
-    
-    let mut rng = rand::rng();
-    for _i in 0..400 {
-        let x = rng.random_range(1..79);
-        let y = rng.random_range(1..49);
-        let idx = xy_idx(x, y);
-        if idx != xy_idx(40, 25) {
-            map[idx] = TileType::WallCentre;
-        }
-        
-    }
-    for _ in 0..5 {
-        let old_map = map.clone();
-    
         for y in 0..MAP_HEIGHT {
-            for x in 0..MAP_WIDTH {
+            let val = perlin.get([x as f64 * scale, y as f64 * scale]);
+            if val > -0.4 {
                 let idx = xy_idx(x, y);
-    
-                if cave_condition(&old_map, x, y) {
-                    map[idx] = TileType::WallCentre;
-                } else {
-                    map[idx] = TileType::Empty;
-                }
+                map[idx] = TileType::WallCentre;
             }
         }
     }
-    
     map
 }
 
