@@ -32,7 +32,7 @@ pub fn setup_enemy(
     );
     let texture_atlas_layout = texture_atlas_layouts.add(texture_atlas);
     
-    for _ in 0..100 {
+    for _ in 0..1 {
         let pos = generate_position_near(&empty_cells.cells, Vec2::from((0.0, 0.0)));       
         commands.spawn((
             Sprite::from_atlas_image(
@@ -76,7 +76,7 @@ pub fn setup_enemy(
         )).with_children(|parent| {
             parent.spawn((
                 HeldItem {
-                    held: None,
+                    held: Some("PickAxe".to_string()),
                     last_held: None,
                 },
                 Transform::default(),
