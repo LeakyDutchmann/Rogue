@@ -12,7 +12,7 @@ pub use components::*;
 use cave_generating::*;
 use crate::components::Health;
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::messages::{MapChanged, SpawnChunk};
+use crate::messages::{MapChanged, SpawnChunk, DisableChunk};
 use crate::player::PlayerTransform;
 use systems::*;
 use functions::*;
@@ -37,13 +37,18 @@ impl Plugin for MapSetupPlugin {
         });
         app.add_systems(Startup, (setup_atlas, map_setup).chain());
         app.add_systems(Update, update_map);
-        app.add_systems(Update, (chunk_handler, spawn_chunk, track_chunks));
+        app.add_systems(Update, (track_chunks, chunk_handler, spawn_chunk, despawn_chunk));
     }
 }
 
 
 #[derive(Resource)]
 pub struct PlayerChunk {
+    pub position: IVec2,
+}
+
+#[derive(Component)]
+pub struct ParrentChunk {
     pub position: IVec2,
 }
 

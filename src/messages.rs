@@ -19,12 +19,19 @@ impl Plugin for MessagesPlugin {
             .add_message::<DoubleClicked>()
             .add_message::<SpawnStructureRequest>()
             .add_message::<RemoveFromInventory>()
-            .add_message::<SpawnChunk>();
+            .add_message::<SpawnChunk>()
+            .add_message::<DisableChunk>();
     }
 }
 
 #[derive(Message)]
 pub struct SpawnChunk {
+    pub position: IVec2,
+}
+
+
+#[derive(Message)]
+pub struct DisableChunk {
     pub position: IVec2,
 }
 

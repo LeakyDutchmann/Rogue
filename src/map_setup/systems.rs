@@ -48,6 +48,7 @@ pub fn spawn_chunk(
                                 ),
                         Transform::from_xyz(pos_x, pos_y, -1.0),
                         MapTile { position, tile_type, material: TileMaterial::None},
+                        ParrentChunk { position: msg.position },
                     ));
                 }
             }
@@ -58,6 +59,23 @@ pub fn spawn_chunk(
         };
         chunkgrid.chunks.insert(chunk.position, chunk);
         println!("spawned chunk at {:?}", msg.position);
+    }
+}
+
+pub fn despawn_chunk(
+    mut commands: Commands,
+    mut reader: MessageReader<DisableChunk>,
+    mut chunkgrid: ResMut<ChunkGrid>,
+    query: Query<(Entity, &ParrentChunk)>,
+) {
+    for msg in reader.read() {
+        for (entity, parrent_chunk) in query.iter() {
+            if msg.position == parrent_chunk.position {
+                commands.entity(entity).despawn();
+            }
+        }
+        chunkgrid.chunks.remove(&msg.position);
+        println!("despawned chunk at {:?}", msg.position);
     }
 }
 
@@ -89,6 +107,7 @@ pub fn chunk_handler(
     chunkgrid: Res<ChunkGrid>,
     player_chunk: Res<PlayerChunk>,
     mut writer: MessageWriter<SpawnChunk>,
+    mut disable_writer: MessageWriter<DisableChunk>,
 ) {
     let active_chunks = vec![
         player_chunk.position,
@@ -102,9 +121,15 @@ pub fn chunk_handler(
         player_chunk.position + IVec2::new(0, -1),
         player_chunk.position + IVec2::new(0, 1),
     ];
-    for chunk_pos in active_chunks {
+    for chunk_pos in &active_chunks {
         if !chunkgrid.chunks.contains_key(&chunk_pos) {
-            writer.write(SpawnChunk { position: chunk_pos });
+            writer.write(SpawnChunk { position: chunk_pos.clone() });
+        }
+    }
+    for (pos, _chunk) in chunkgrid.chunks.iter() {
+        if !active_chunks.contains(pos) {
+            disable_writer.write(DisableChunk { position: pos.clone() });
+            println!("disabling chunk: ({}, {})", pos.x, pos.y);
         }
     }
 }
