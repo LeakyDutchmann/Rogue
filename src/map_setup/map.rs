@@ -4,13 +4,13 @@ pub fn floor_setup(
     mut commands: Commands,
     atlases: Res<MapAtlases>,
 ) {
-    for x in 0..MAP_WIDTH {
-        for y in 0..MAP_HEIGHT {
+    for x in 0..CHUNK_WIDTH {
+        for y in 0..CHUNK_HEIGHT {
             let tile_type = TileType::Floor;
             let mut rng = rand::rng();
             let sprite_index = rng.random_range(0..3);
-            let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
-            let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
+            let pos_x = (x as f32 - CHUNK_WIDTH as f32 / 2.0) * TILE_SIZE;
+            let pos_y = (y as f32 - CHUNK_HEIGHT as f32 / 2.0) * TILE_SIZE;
             let position = IVec2::new(x as i32, y as i32);
             if let Some(atlas) = atlases.atlases.get(&TileMaterial::Structurix) {
                 commands.spawn((
@@ -56,62 +56,93 @@ pub fn setup_atlas(
 pub fn map_setup(
     mut commands: Commands,
     atlases: Res<MapAtlases>,
+    global_seed: Res<GlobalSeed>,
+    mut chunkgrid: ResMut<ChunkGrid>,
+    mut writer: MessageWriter<SpawnChunk>,
 ) {
-    let map = generate_cave();
     commands.insert_resource(GameMap {
-        tiles: map.clone(),
+        tiles: Vec::new(),
     });
-    for y in 0..MAP_HEIGHT {
-        for x in 0..MAP_WIDTH {
-            let idx = xy_idx(x, y);
-            let mut tile_type = map[idx];
-            if tile_type != TileType::Empty {
-                tile_type = pick_tile_type(&map, x, y);
-            }
-            // Select sprite index from atlas
-            let sprite_index = tile_type.tile_type_to_index();
-
-            // Calculate position (centered on screen)
-            let pos_x = (x as f32 - MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
-            let pos_y = (y as f32 - MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
-            let position = IVec2::new(x as i32, y as i32);
-            if tile_type != TileType::Empty {
-                let material = TileMaterial::pick_tile_material();
-                if let Some(atlas) = atlases.atlases.get(&material) {
-                    let texture = atlas.texture.clone();
-                    commands.spawn((
-                    Sprite::from_atlas_image(
-                                texture,
-                                TextureAtlas {
-                                    layout: atlas.layout.clone(),
-                                    index: sprite_index,
-                                },
-                            ),
-                    Transform::from_xyz(pos_x, pos_y, (MAX_Y - pos_y + 1.0) * 0.001),
-                    MapTile { 
-                        position,
-                        tile_type,
-                        material: material,
-                    },
-                    Wall,
-                    Colider {
-                        shape: ColiderShape::Rectangle {
-                            width: TILE_SIZE,
-                            height: TILE_SIZE,
-                        },
-                        _offsety: 0.0,
-                        _sensor: true,
-                    },
-                    Health(100),
-                ));
-                }    
-            }
-        }
-    }
+    writer.write(SpawnChunk { position: IVec2::new(0, 0) });
+    writer.write(SpawnChunk { position: IVec2::new(0, 1) });
+    writer.write(SpawnChunk { position: IVec2::new(0, -1) });
+    writer.write(SpawnChunk { position: IVec2::new(1, 0) });
+    writer.write(SpawnChunk { position: IVec2::new(-1, 0) });
+    writer.write(SpawnChunk { position: IVec2::new(1, 1) });
+    writer.write(SpawnChunk { position: IVec2::new(-1, -1) });
+    writer.write(SpawnChunk { position: IVec2::new(1, -1) });
+    writer.write(SpawnChunk { position: IVec2::new(-1, 1) });
+    
 }
 
+// pub fn map_setup(
+//     mut commands: Commands,
+//     atlases: Res<MapAtlases>,
+//     global_seed: Res<GlobalSeed>,
+//     mut chunkgrid: ResMut<ChunkGrid>,
+// ) {
+//     let map = generate_chunk(global_seed.value as u32);
+//     commands.insert_resource(GameMap {
+//         tiles: map.clone(),
+//     });
+//     let mut chunk_map: Vec<TileType> = map.clone();
+//     for y in 0..CHUNK_HEIGHT {
+//         for x in 0..CHUNK_WIDTH {
+//             let idx = xy_idx(x, y);
+//             let mut tile_type = map[idx];
+//             if tile_type != TileType::Empty {
+//                 tile_type = pick_tile_type(&map, x, y);
+//             }
+//             chunk_map[idx] = tile_type;
+//             // Select sprite index from atlas
+//             let sprite_index = tile_type.tile_type_to_index();
+
+//             // Calculate position (centered on screen)
+//             let pos_x = (x as f32 - CHUNK_WIDTH as f32 / 2.0) * TILE_SIZE;
+//             let pos_y = (y as f32 - CHUNK_HEIGHT as f32 / 2.0) * TILE_SIZE;
+//             let position = IVec2::new(x as i32, y as i32);
+//             if tile_type != TileType::Empty {
+//                 let material = TileMaterial::pick_tile_material();
+//                 if let Some(atlas) = atlases.atlases.get(&material) {
+//                     let texture = atlas.texture.clone();
+//                     commands.spawn((
+//                     Sprite::from_atlas_image(
+//                                 texture,
+//                                 TextureAtlas {
+//                                     layout: atlas.layout.clone(),
+//                                     index: sprite_index,
+//                                 },
+//                             ),
+//                     Transform::from_xyz(pos_x, pos_y, (MAX_Y - pos_y + 1.0) * 0.001),
+//                     MapTile { 
+//                         position,
+//                         tile_type,
+//                         material: material,
+//                     },
+//                     Wall,
+//                     Colider {
+//                         shape: ColiderShape::Rectangle {
+//                             width: TILE_SIZE,
+//                             height: TILE_SIZE,
+//                         },
+//                         _offsety: 0.0,
+//                         _sensor: true,
+//                     },
+//                     Health(100),
+//                 ));
+//                 }    
+//             }
+//         }    
+//     }
+//     let chunk = Chunk {
+//         map: chunk_map,
+//         position: (0, 0),
+//     };
+//     chunkgrid.chunks.insert((0, 0), chunk);
+// }
+
 pub fn xy_idx(x: usize, y: usize) -> usize {
-    (y as usize * MAP_WIDTH) + x as usize
+    (y as usize * CHUNK_WIDTH) + x as usize
 }
 
 fn has_tile_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
@@ -126,7 +157,7 @@ fn has_tile_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
 }
 
 fn has_tile_above(map: &Vec<TileType>, x: usize, y: usize) -> bool {
-    if y + 1 >=  MAP_HEIGHT {
+    if y + 1 >=  CHUNK_HEIGHT {
         return false;
     }
 
@@ -149,7 +180,7 @@ fn has_tile_left(map: &Vec<TileType>, x: usize, y: usize) -> bool {
 }
 
 fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
-    if x + 1 >= MAP_WIDTH {
+    if x + 1 >= CHUNK_WIDTH {
         return false;
     }
 
@@ -171,11 +202,11 @@ pub fn update_map(
         let changed_idx = xy_idx(changed_x as usize, changed_y as usize);
         copied[changed_idx] = TileType::Empty;
         for x in changed_x.saturating_sub(2)..=(changed_x + 2)  {
-            if x as usize >= MAP_WIDTH {
+            if x as usize >= CHUNK_WIDTH {
                 continue; 
             }
             for y in changed_y.saturating_sub(2)..=(changed_y + 2) {
-                if y as usize >= MAP_HEIGHT {
+                if y as usize >= CHUNK_HEIGHT {
                     continue; 
                 }
                 let idx = xy_idx(x as usize, y as usize);
@@ -197,7 +228,7 @@ pub fn update_map(
     }
 }
 
-fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
+pub fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
     let idx = xy_idx(x, y);
     let mut tile_type = map[idx];
     if tile_type != TileType::Empty {
@@ -231,17 +262,17 @@ fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
 
 
 pub fn world_pos_to_tile_pos(world: Vec2) -> IVec2 {
-    let x = ((world.x + (MAP_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
-    let y = ((world.y + (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
+    let x = ((world.x + (CHUNK_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
+    let y = ((world.y + (CHUNK_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
     IVec2::new(x, y)
 }
 
 pub fn tile_pos_to_world_pos(tile: IVec2) -> Vec2 {
     let x = tile.x as f32 * TILE_SIZE
-        - (MAP_WIDTH as f32 / 2.0) * TILE_SIZE;
+        - (CHUNK_WIDTH as f32 / 2.0) * TILE_SIZE;
 
     let y = tile.y as f32 * TILE_SIZE
-        - (MAP_HEIGHT as f32 / 2.0) * TILE_SIZE;
+        - (CHUNK_HEIGHT as f32 / 2.0) * TILE_SIZE;
 
     Vec2::new(x, y)
 }

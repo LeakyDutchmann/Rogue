@@ -18,8 +18,14 @@ impl Plugin for MessagesPlugin {
             .add_message::<DropFromCursor>()
             .add_message::<DoubleClicked>()
             .add_message::<SpawnStructureRequest>()
-            .add_message::<RemoveFromInventory>();
+            .add_message::<RemoveFromInventory>()
+            .add_message::<SpawnChunk>();
     }
+}
+
+#[derive(Message)]
+pub struct SpawnChunk {
+    pub position: IVec2,
 }
 
 
