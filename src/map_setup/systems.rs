@@ -17,18 +17,14 @@ pub fn spawn_chunk(
     mut chunkgrid: ResMut<ChunkGrid>,
 ) {
     for msg in reader.read() {
-        let seed_u64 = get_chunk_seed(global_seed.value, msg.position.x, msg.position.y);
-        let seed = (seed_u64 ^ (seed_u64 >> 32)) as u32;
+        let seed_u64 = get_seed(global_seed.value, msg.position.x, msg.position.y);
+        let seed_u32 = (seed_u64 ^ (seed_u64 >> 32)) as u32;
         let mut rng = StdRng::seed_from_u64(seed_u64);
-        let mut chunk_map = generate_chunk(seed);
+        let chunk_map = generate_chunk(global_seed.value as u32, msg.position);
         for local_x in 0..CHUNK_WIDTH {
             for local_y in 0..CHUNK_HEIGHT {
                 let idx = xy_idx(local_x, local_y);
-                let mut tile_type = chunk_map[idx];
-                if tile_type != TileType::Empty {
-                    tile_type = pick_tile_type(&chunk_map, local_x, local_y);
-                }
-                chunk_map[idx] = tile_type;
+                let tile_type = chunk_map[idx];
                 let pos_x = (msg.position.x as f32 * CHUNK_WIDTH as f32 * TILE_SIZE
                     + local_x as f32 * TILE_SIZE)
                     - CHUNK_WIDTH as f32 * TILE_SIZE / 2.0
@@ -54,31 +50,34 @@ pub fn spawn_chunk(
                         MapTile { position, tile_type: TileType::Floor, material: TileMaterial::None},
                         ParrentChunk { position: msg.position },
                     ));
-                    commands.spawn((
-                        Sprite::from_atlas_image(
-                                    atlas.texture.clone(),
-                                    TextureAtlas {
-                                        layout: atlas.layout.clone(),
-                                        index: sprite_index,
-                                    },
-                                ),
-                        Transform::from_xyz(pos_x, pos_y, (32.0 - pos_y + 1.0) * 0.001),
-                        MapTile { 
-                            position,
-                            tile_type,
-                            material: material,
-                        },
-                        Wall,
-                        Colider {
-                            shape: ColiderShape::Rectangle {
-                                width: TILE_SIZE,
-                                height: TILE_SIZE,
+                    if tile_type != TileType::Empty {
+                        commands.spawn((
+                            Sprite::from_atlas_image(
+                                        atlas.texture.clone(),
+                                        TextureAtlas {
+                                            layout: atlas.layout.clone(),
+                                            index: sprite_index,
+                                        },
+                                    ),
+                            Transform::from_xyz(pos_x, pos_y, (32.0 - pos_y + 1.0) * 0.001),
+                            MapTile { 
+                                position,
+                                tile_type,
+                                material: material,
                             },
-                            _offsety: 0.0,
-                            _sensor: true,
-                        },
-                        Health(100),
-                    ));
+                            Wall,
+                            Colider {
+                                shape: ColiderShape::Rectangle {
+                                    width: TILE_SIZE,
+                                    height: TILE_SIZE,
+                                },
+                                _offsety: 0.0,
+                                _sensor: true,
+                            },
+                            Health(100),
+                            ParrentChunk { position: msg.position },
+                        ));
+                    }
                 }
             }
         }

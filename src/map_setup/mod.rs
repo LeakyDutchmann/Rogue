@@ -18,7 +18,7 @@ use rand::rngs::StdRng;
 use rand::SeedableRng;
 use systems::*;
 use functions::*;
-
+use noise::{NoiseFn, Perlin, Seedable};
 
 
 pub struct MapSetupPlugin;
@@ -29,7 +29,7 @@ impl Plugin for MapSetupPlugin {
             atlases: HashMap::new(),
         });
         app.insert_resource(GlobalSeed {
-            value: 12323253,
+            value: 897991921,
         });
         app.insert_resource(ChunkGrid {
             chunks: HashMap::new(),
