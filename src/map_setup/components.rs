@@ -57,9 +57,8 @@ pub enum TileMaterial {
 }
 
 impl TileMaterial {
-    pub fn pick_tile_material() -> TileMaterial {
-        let mut r = rand::rng();
-        let number = r.random_range(0..100);
+    pub fn pick_tile_material(generator: &mut StdRng) -> TileMaterial {
+        let number = generator.random_range(0..100);
         match number {
             0..60 => TileMaterial::Structurix,
             60..80 => TileMaterial::Secturix,

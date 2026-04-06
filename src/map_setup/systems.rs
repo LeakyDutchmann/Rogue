@@ -1,5 +1,7 @@
 use super::*;
 
+
+
 pub fn track_player_pos(
     res: Res<PlayerTransform>,
     mut chunkgrid: ResMut<ChunkGrid>,
@@ -17,6 +19,7 @@ pub fn spawn_chunk(
     for msg in reader.read() {
         let seed_u64 = get_chunk_seed(global_seed.value, msg.position.x, msg.position.y);
         let seed = (seed_u64 ^ (seed_u64 >> 32)) as u32;
+        let mut rng = StdRng::seed_from_u64(seed_u64);
         let mut chunk_map = generate_chunk(seed);
         for local_x in 0..CHUNK_WIDTH {
             for local_y in 0..CHUNK_HEIGHT {
@@ -35,9 +38,22 @@ pub fn spawn_chunk(
                     - CHUNK_HEIGHT as f32 * TILE_SIZE / 2.0
                     + TILE_SIZE / 2.0;
                 let position = IVec2::new(pos_x as i32, pos_y as i32);
-                let mut rng = rand::rng();
-                let sprite_index = rng.random_range(0..3);
-                if let Some(atlas) = atlases.atlases.get(&TileMaterial::Structurix) {
+                let sprite_index = tile_type.tile_type_to_index();
+                let floor_index = rng.random_range(0..3);
+                let material = TileMaterial::pick_tile_material(&mut rng);
+                if let Some(atlas) = atlases.atlases.get(&material) {
+                    commands.spawn((
+                        Sprite::from_atlas_image(
+                                    atlas.texture.clone(),
+                                    TextureAtlas {
+                                        layout: atlas.layout.clone(),
+                                        index: floor_index,
+                                    },
+                                ),
+                        Transform::from_xyz(pos_x, pos_y, -1.0),
+                        MapTile { position, tile_type: TileType::Floor, material: TileMaterial::None},
+                        ParrentChunk { position: msg.position },
+                    ));
                     commands.spawn((
                         Sprite::from_atlas_image(
                                     atlas.texture.clone(),
@@ -46,9 +62,22 @@ pub fn spawn_chunk(
                                         index: sprite_index,
                                     },
                                 ),
-                        Transform::from_xyz(pos_x, pos_y, -1.0),
-                        MapTile { position, tile_type, material: TileMaterial::None},
-                        ParrentChunk { position: msg.position },
+                        Transform::from_xyz(pos_x, pos_y, (32.0 - pos_y + 1.0) * 0.001),
+                        MapTile { 
+                            position,
+                            tile_type,
+                            material: material,
+                        },
+                        Wall,
+                        Colider {
+                            shape: ColiderShape::Rectangle {
+                                width: TILE_SIZE,
+                                height: TILE_SIZE,
+                            },
+                            _offsety: 0.0,
+                            _sensor: true,
+                        },
+                        Health(100),
                     ));
                 }
             }

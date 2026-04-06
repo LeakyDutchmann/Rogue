@@ -14,6 +14,8 @@ use crate::components::Health;
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::messages::{MapChanged, SpawnChunk, DisableChunk};
 use crate::player::PlayerTransform;
+use rand::rngs::StdRng;
+use rand::SeedableRng;
 use systems::*;
 use functions::*;
 
@@ -27,7 +29,7 @@ impl Plugin for MapSetupPlugin {
             atlases: HashMap::new(),
         });
         app.insert_resource(GlobalSeed {
-            value: 12343253,
+            value: 12323253,
         });
         app.insert_resource(ChunkGrid {
             chunks: HashMap::new(),
