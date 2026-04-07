@@ -1,4 +1,4 @@
-use crate::world::*;
+use crate::{map_setup::CHUNK_WIDTH, world::*};
 
 pub fn insert_entities(
     mut entities: Query<(Entity, &Transform)>,
@@ -95,3 +95,34 @@ pub fn update_bounds(
 //     }
 // }
 
+pub fn track_of_cells(
+    cells: Res<WorldGrid>,
+) {
+    if !cells.is_changed() {
+        return;
+    }
+    let mut count = 0;
+    for (_, _) in cells.cells.iter() {
+        count += 1;
+    }
+    println!("Number of cells: {}", count);
+}
+
+pub fn modify_grid(
+    mut commands: Commands,
+    mut cells: ResMut<WorldGrid>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for (grid_pos, entities) in cells.cells.iter_mut() {
+        let x = grid_pos.0 as f32 * CELL_SIZE;
+        let y = grid_pos.1 as f32 * CELL_SIZE;
+        let translation = Vec3::new(x, y, 20.0);
+        commands.spawn((
+            Mesh2d(meshes.add(Rectangle::new(16.0, 16.0))),
+            MeshMaterial2d(materials.add(Color::srgb(0.1, 0.4, 0.1))),
+            Transform::from_translation(translation)
+        ));
+        println!("spawning at ({}, {})", grid_pos.0, grid_pos.1);
+    }
+}

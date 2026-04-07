@@ -27,12 +27,10 @@ pub fn spawn_chunk(
                 let tile_type = chunk_map[idx];
                 let pos_x = (msg.position.x as f32 * CHUNK_WIDTH as f32 * TILE_SIZE
                     + local_x as f32 * TILE_SIZE)
-                    - CHUNK_WIDTH as f32 * TILE_SIZE / 2.0
-                    + TILE_SIZE / 2.0;
+                    - CHUNK_WIDTH as f32 * TILE_SIZE / 2.0;
                 let pos_y = (msg.position.y as f32 * CHUNK_HEIGHT as f32 * TILE_SIZE
                     + local_y as f32 * TILE_SIZE)
-                    - CHUNK_HEIGHT as f32 * TILE_SIZE / 2.0
-                    + TILE_SIZE / 2.0;
+                    - CHUNK_HEIGHT as f32 * TILE_SIZE / 2.0;
                 let position = IVec2::new(pos_x as i32, pos_y as i32);
                 let sprite_index = tile_type.tile_type_to_index();
                 let floor_index = rng.random_range(0..3);

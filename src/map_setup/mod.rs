@@ -38,7 +38,6 @@ impl Plugin for MapSetupPlugin {
             position: IVec2::new(0, 0),
         });
         app.add_systems(Startup, (setup_atlas, map_setup).chain());
-        app.add_systems(Update, update_map);
         app.add_systems(Update, (track_chunks, chunk_handler, spawn_chunk, despawn_chunk));
     }
 }

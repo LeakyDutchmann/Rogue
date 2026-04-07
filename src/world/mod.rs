@@ -28,10 +28,11 @@ impl Plugin for WorldPlugin {
         app.add_systems(Startup, insert_entities.after(map_setup));
         app.add_systems(Startup, find_empty_cells.after(insert_entities));
         app.add_systems(Startup, setup_bounds.after(find_empty_cells));
+        // app.add_systems(Update, modify_grid);
         app.add_systems(Update, (update_empty_cells, update_worldgird));
         app.add_systems(Update, update_bounds.after(update_empty_cells));
-        // app.add_systems(Startup, modify_empty.after(find_empty_cells));
-        // app.add_systems(Update, check_grid.after(apply_movement));
+        app.add_systems(Update, track_of_cells);
+
         
     }
 }
