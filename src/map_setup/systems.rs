@@ -9,59 +9,125 @@ pub fn track_player_pos(
     println!("player pos: {:?}", res.0);
 }
 
-pub fn spawn_chunk(
+pub struct TileSpawnData {
+    pub position: IVec2,
+    pub tile_type: TileType,
+    pub material: TileMaterial,
+    pub sprite_index: usize,
+    pub floor_index: usize,
+    pub pos_x: f32,
+    pub pos_y: f32,
+}
+
+pub struct ChunkSpawnData {
+    pub position: IVec2,
+    pub tiles: Vec<TileSpawnData>,
+    pub map: Vec<TileType>,
+}
+
+#[derive(Component)]
+pub struct PendingChunk {
+    pub task: Task<ChunkSpawnData>
+}
+
+pub fn prepare_chunk(
     mut commands: Commands,
     mut reader: MessageReader<SpawnChunk>,
-    atlases: Res<MapAtlases>,
     global_seed: Res<GlobalSeed>,
-    mut chunkgrid: ResMut<ChunkGrid>,
+    mut chunk_grid: ResMut<ChunkGrid>,
 ) {
+    let task_pool = AsyncComputeTaskPool::get();
     for msg in reader.read() {
-        let seed_u64 = get_seed(global_seed.value, msg.position.x, msg.position.y);
-        let seed_u32 = (seed_u64 ^ (seed_u64 >> 32)) as u32;
-        let mut rng = StdRng::seed_from_u64(seed_u64);
-        let chunk_map = generate_chunk(global_seed.value as u32, msg.position);
-        for local_x in 0..CHUNK_WIDTH {
-            for local_y in 0..CHUNK_HEIGHT {
-                let idx = xy_idx(local_x, local_y);
-                let tile_type = chunk_map[idx];
-                let pos_x = (msg.position.x as f32 * CHUNK_WIDTH as f32 * TILE_SIZE
-                    + local_x as f32 * TILE_SIZE)
-                    - CHUNK_WIDTH as f32 * TILE_SIZE / 2.0;
-                let pos_y = (msg.position.y as f32 * CHUNK_HEIGHT as f32 * TILE_SIZE
-                    + local_y as f32 * TILE_SIZE)
-                    - CHUNK_HEIGHT as f32 * TILE_SIZE / 2.0;
-                let position = IVec2::new(pos_x as i32, pos_y as i32);
-                let sprite_index = tile_type.tile_type_to_index();
-                let floor_index = rng.random_range(0..3);
-                let material = TileMaterial::pick_tile_material(&mut rng);
-                if let Some(atlas) = atlases.atlases.get(&material) {
+        let seed_value = global_seed.value;
+        let chunk_pos = msg.position;
+        
+        let task = task_pool.spawn(async move {
+            let seed_u64 = get_seed(seed_value, chunk_pos.x, chunk_pos.y);
+            let mut rng = StdRng::seed_from_u64(seed_u64);
+            let chunk_map = generate_chunk(seed_value as u32, chunk_pos);
+            
+            let mut tiles: Vec<TileSpawnData> = Vec::with_capacity(CHUNK_WIDTH * CHUNK_HEIGHT);
+            
+            for local_x in 0..CHUNK_WIDTH {
+                for local_y in 0..CHUNK_HEIGHT {
+                    let idx = xy_idx(local_x, local_y);
+                    let tile_type = chunk_map[idx];
+                    let pos_x = (chunk_pos.x as f32 * CHUNK_WIDTH as f32 * TILE_SIZE
+                        + local_x as f32 * TILE_SIZE)
+                        - CHUNK_WIDTH as f32 * TILE_SIZE / 2.0;
+                    let pos_y = (chunk_pos.y as f32 * CHUNK_HEIGHT as f32 * TILE_SIZE
+                        + local_y as f32 * TILE_SIZE)
+                        - CHUNK_HEIGHT as f32 * TILE_SIZE / 2.0;
+                    let position = IVec2::new(pos_x as i32, pos_y as i32);
+                    let sprite_index = tile_type.tile_type_to_index();
+                    let floor_index = rng.random_range(0..3);
+                    let material = TileMaterial::pick_tile_material(&mut rng);
+                    let tile = TileSpawnData {
+                        position,
+                        tile_type,
+                        material,
+                        sprite_index,
+                        floor_index,
+                        pos_x,
+                        pos_y,
+                    };
+                    tiles.push(tile);
+                }
+            }
+            let chunk = ChunkSpawnData {
+                position: chunk_pos,
+                tiles,
+                map: chunk_map,
+            };
+            chunk
+        });
+        commands.spawn(PendingChunk { task: task });
+        chunk_grid.pending_chunks.insert(chunk_pos);
+        
+    }
+}
+
+pub fn spawn_chunk(
+    mut chunkgrid: ResMut<ChunkGrid>,
+    atlases: Res<MapAtlases>,
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut PendingChunk)>,
+) {
+    for (entity, mut pending_chunk) in query.iter_mut() {
+        if let Some(chunk_data) = future::block_on(future::poll_once(&mut pending_chunk.task)) {
+            commands.entity(entity).despawn();
+            for tile in chunk_data.tiles {
+                if let Some(atlas) = atlases.atlases.get(&tile.material) {
                     commands.spawn((
                         Sprite::from_atlas_image(
                                     atlas.texture.clone(),
                                     TextureAtlas {
                                         layout: atlas.layout.clone(),
-                                        index: floor_index,
+                                        index: tile.floor_index,
                                     },
                                 ),
-                        Transform::from_xyz(pos_x, pos_y, -1.0),
-                        MapTile { position, tile_type: TileType::Floor, material: TileMaterial::None},
-                        ParrentChunk { position: msg.position },
-                    ));
-                    if tile_type != TileType::Empty {
+                        Transform::from_xyz(tile.pos_x, tile.pos_y, -1.0),
+                        MapTile { 
+                            position: tile.position,
+                            tile_type: TileType::Floor,
+                            material: TileMaterial::None,
+                        },
+                        ParrentChunk { position: chunk_data.position },
+                    )); 
+                    if tile.tile_type != TileType::Empty {
                         commands.spawn((
                             Sprite::from_atlas_image(
                                         atlas.texture.clone(),
                                         TextureAtlas {
                                             layout: atlas.layout.clone(),
-                                            index: sprite_index,
+                                            index: tile.sprite_index,
                                         },
                                     ),
-                            Transform::from_xyz(pos_x, pos_y, (32.0 - pos_y + 1.0) * 0.001),
+                            Transform::from_xyz(tile.pos_x, tile.pos_y, (MAX_Y - tile.pos_y + 1.0) * 0.001),
                             MapTile { 
-                                position,
-                                tile_type,
-                                material: material,
+                                position: tile.position,
+                                tile_type: tile.tile_type,
+                                material: tile.material,
                             },
                             Wall,
                             Colider {
@@ -73,18 +139,20 @@ pub fn spawn_chunk(
                                 _sensor: true,
                             },
                             Health(100),
-                            ParrentChunk { position: msg.position },
-                        ));
+                            ParrentChunk { position: chunk_data.position },
+                        )); 
                     }
                 }
-            }
+            } 
+            chunkgrid.chunks.insert(
+                chunk_data.position,
+                Chunk {
+                    position: chunk_data.position,
+                    map: chunk_data.map,
+                },
+            );
+            chunkgrid.pending_chunks.remove(&chunk_data.position);
         }
-        let chunk = Chunk {
-            position: msg.position,
-            map: chunk_map,
-        };
-        chunkgrid.chunks.insert(chunk.position, chunk);
-        println!("spawned chunk at {:?}", msg.position);
     }
 }
 
@@ -101,7 +169,6 @@ pub fn despawn_chunk(
             }
         }
         chunkgrid.chunks.remove(&msg.position);
-        println!("despawned chunk at {:?}", msg.position);
     }
 }
 
@@ -124,7 +191,6 @@ pub fn track_chunks(
     let center_chunk_y = (player_pos.y / (CHUNK_HEIGHT as f32 * TILE_SIZE)).round() as i32;
     if player_chunk.position != IVec2::new(center_chunk_x, center_chunk_y) {
         player_chunk.position = IVec2::new(center_chunk_x, center_chunk_y);
-        println!("player chunk: ({}, {})", center_chunk_x, center_chunk_y);
     }
     
 }
@@ -148,14 +214,14 @@ pub fn chunk_handler(
         player_chunk.position + IVec2::new(0, 1),
     ];
     for chunk_pos in &active_chunks {
-        if !chunkgrid.chunks.contains_key(&chunk_pos) {
+        if !chunkgrid.chunks.contains_key(&chunk_pos) && !chunkgrid.pending_chunks.contains(&chunk_pos) {
             writer.write(SpawnChunk { position: chunk_pos.clone() });
+            println!("spawning chunk: ({}, {})", chunk_pos.x, chunk_pos.y);
         }
     }
     for (pos, _chunk) in chunkgrid.chunks.iter() {
         if !active_chunks.contains(pos) {
             disable_writer.write(DisableChunk { position: pos.clone() });
-            println!("disabling chunk: ({}, {})", pos.x, pos.y);
         }
     }
 }

@@ -6,7 +6,7 @@ mod functions;
 
 use bevy::prelude::*;
 use rand::Rng;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 pub use map::*;
 pub use components::*;
 use cave_generating::*;
@@ -19,6 +19,8 @@ use rand::SeedableRng;
 use systems::*;
 use functions::*;
 use noise::{NoiseFn, Perlin, Seedable};
+use bevy::tasks::{AsyncComputeTaskPool, Task};
+use futures_lite::future;
 
 
 pub struct MapSetupPlugin;
@@ -33,12 +35,13 @@ impl Plugin for MapSetupPlugin {
         });
         app.insert_resource(ChunkGrid {
             chunks: HashMap::new(),
+            pending_chunks: HashSet::new(),
         });
         app.insert_resource(PlayerChunk {
             position: IVec2::new(0, 0),
         });
         app.add_systems(Startup, (setup_atlas, map_setup).chain());
-        app.add_systems(Update, (track_chunks, chunk_handler, spawn_chunk, despawn_chunk));
+        app.add_systems(Update, (track_chunks, chunk_handler, prepare_chunk, spawn_chunk, despawn_chunk));
     }
 }
 
@@ -69,6 +72,7 @@ pub struct Chunk {
 #[derive(Resource)]
 pub struct ChunkGrid {
     pub chunks: HashMap<IVec2, Chunk>,
+    pub pending_chunks: HashSet<IVec2>,
 }
 
 

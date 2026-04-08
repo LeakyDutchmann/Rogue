@@ -63,19 +63,19 @@ pub fn map_setup(
     commands.insert_resource(GameMap {
         tiles: Vec::new(),
     });
-    writer.write(SpawnChunk { position: IVec2::new(0, 0) });
-    writer.write(SpawnChunk { position: IVec2::new(0, 1) });
-    writer.write(SpawnChunk { position: IVec2::new(0, -1) });
-    writer.write(SpawnChunk { position: IVec2::new(1, 0) });
-    writer.write(SpawnChunk { position: IVec2::new(-1, 0) });
-    writer.write(SpawnChunk { position: IVec2::new(1, 1) });
-    writer.write(SpawnChunk { position: IVec2::new(-1, -1) });
-    writer.write(SpawnChunk { position: IVec2::new(1, -1) });
-    writer.write(SpawnChunk { position: IVec2::new(-1, 1) });
+    // writer.write(SpawnChunk {position: IVec2::new(0, 0) });
+    // writer.write(SpawnChunk { position: IVec2::new(0, 1) });
+    // writer.write(SpawnChunk { position: IVec2::new(0, -1) });
+    // writer.write(SpawnChunk { position: IVec2::new(1, 0) });
+    // writer.write(SpawnChunk { position: IVec2::new(-1, 0) });
+    // writer.write(SpawnChunk { position: IVec2::new(1, 1) });
+    // writer.write(SpawnChunk { position: IVec2::new(-1, -1) });
+    // writer.write(SpawnChunk { position: IVec2::new(1, -1) });
+    // writer.write(SpawnChunk { position: IVec2::new(-1, 1) });
     
 }
 
-// pub fn old_map_setup(
+// pub fn old_map_setup(´__
 //     mut commands: Commands,
 //     atlases: Res<MapAtlases>,
 //     global_seed: Res<GlobalSeed>,
