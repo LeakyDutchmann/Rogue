@@ -171,10 +171,9 @@ pub fn track_chunks(
     mut player_chunk: ResMut<PlayerChunk>,
 ) {
     let player_pos = player_tf.0.translation.truncate();
-    let center_chunk_x = (player_pos.x / (CHUNK_WIDTH as f32 * TILE_SIZE)).round() as i32;
-    let center_chunk_y = (player_pos.y / (CHUNK_HEIGHT as f32 * TILE_SIZE)).round() as i32;
-    if player_chunk.position != IVec2::new(center_chunk_x, center_chunk_y) {
-        player_chunk.position = IVec2::new(center_chunk_x, center_chunk_y);
+    let player_chunk_pos = get_chunk_pos(player_pos);
+    if player_chunk.position != player_chunk_pos {
+        player_chunk.position = player_chunk_pos;
     }
     
 }
@@ -187,15 +186,14 @@ pub fn chunk_handler(
 ) {
     let active_chunks = vec![
         player_chunk.position,
-        player_chunk.position + IVec2::new(1, 0),
-        player_chunk.position + IVec2::new(0, 1),
-        player_chunk.position + IVec2::new(1, 1),
-        player_chunk.position + IVec2::new(1, -1),
-        player_chunk.position + IVec2::new(-1, 0),
-        player_chunk.position + IVec2::new(-1, -1),
-        player_chunk.position + IVec2::new(-1, 1),
-        player_chunk.position + IVec2::new(0, -1),
-        player_chunk.position + IVec2::new(0, 1),
+        // player_chunk.position + IVec2::new(0, 1),
+        // player_chunk.position + IVec2::new(1, 1),
+        // player_chunk.position + IVec2::new(1, 0),
+        // player_chunk.position + IVec2::new(1, -1),
+        // player_chunk.position + IVec2::new(0, -1),
+        // player_chunk.position + IVec2::new(-1, -1),
+        // player_chunk.position + IVec2::new(-1, 0),
+        // player_chunk.position + IVec2::new(-1, 1),
     ];
     for chunk_pos in &active_chunks {
         if !chunkgrid.chunks.contains_key(&chunk_pos) && !chunkgrid.pending_chunks.contains(&chunk_pos) {
@@ -211,10 +209,27 @@ pub fn chunk_handler(
 }
 
 pub fn update_map(
+    mut commands: Commands,
     mut reader: MessageReader<MapChanged>,
+    query: Query<(Entity, &Transform, &MapTile)>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     for msg in reader.read() {
         println!("map changed: local_pos: ({}, {}), chunk_pos: ({}, {})",
             msg.local_pos.x, msg.local_pos.y, msg.chunk_pos.x, msg.chunk_pos.y);
+        for (entity, tf, map_tile) in query.iter() {
+            let tile_loc = IVec2::new(map_tile.local_pos.x as i32, map_tile.local_pos.y as i32);
+            let translation = tf.translation.truncate();
+            let translation = translation.extend(30.0);
+            if tile_loc == msg.local_pos {
+                commands.spawn((
+                    Mesh2d(meshes.add(Rectangle::new(16.0, 16.0))),
+                    MeshMaterial2d(materials.add(Color::srgb(0.1, 0.4, 0.1))),
+                    Transform::from_translation(translation)
+                ));
+                commands.entity(entity).despawn();
+            }
+        }
     }
 }

@@ -44,7 +44,7 @@ pub fn damage_execution_system(
                                 item_id: ore_id.clone(),
                             });
                             println!("Spawned item: {}", ore_id.clone());
-                            commands.entity(destruction.entity).despawn();
+                            // commands.entity(destruction.entity).despawn();
                         }
                     }
                 } else {

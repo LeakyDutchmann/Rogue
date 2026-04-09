@@ -31,7 +31,6 @@ impl Plugin for WorldPlugin {
         // app.add_systems(Update, modify_grid);
         app.add_systems(Update, (update_empty_cells, update_worldgird));
         app.add_systems(Update, update_bounds.after(update_empty_cells));
-        app.add_systems(Update, track_of_cells);
 
         
     }
