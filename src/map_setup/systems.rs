@@ -10,13 +10,12 @@ pub fn track_player_pos(
 }
 
 pub struct TileSpawnData {
-    pub position: IVec2,
+    pub position: Vec2,
+    pub local_pos: USizeVec2,
     pub tile_type: TileType,
     pub material: TileMaterial,
     pub sprite_index: usize,
     pub floor_index: usize,
-    pub pos_x: f32,
-    pub pos_y: f32,
 }
 
 pub struct ChunkSpawnData {
@@ -52,24 +51,18 @@ pub fn prepare_chunk(
                 for local_y in 0..CHUNK_HEIGHT {
                     let idx = xy_idx(local_x, local_y);
                     let tile_type = chunk_map[idx];
-                    let pos_x = (chunk_pos.x as f32 * CHUNK_WIDTH as f32 * TILE_SIZE
-                        + local_x as f32 * TILE_SIZE)
-                        - CHUNK_WIDTH as f32 * TILE_SIZE / 2.0;
-                    let pos_y = (chunk_pos.y as f32 * CHUNK_HEIGHT as f32 * TILE_SIZE
-                        + local_y as f32 * TILE_SIZE)
-                        - CHUNK_HEIGHT as f32 * TILE_SIZE / 2.0;
-                    let position = IVec2::new(pos_x as i32, pos_y as i32);
+                    
+                    let position = tile_pos_to_world_pos(IVec2::new(local_x as i32, local_y as i32), chunk_pos);
                     let sprite_index = tile_type.tile_type_to_index();
                     let floor_index = rng.random_range(0..3);
                     let material = TileMaterial::pick_tile_material(&mut rng);
                     let tile = TileSpawnData {
                         position,
+                        local_pos: USizeVec2::new(local_x, local_y),
                         tile_type,
                         material,
                         sprite_index,
                         floor_index,
-                        pos_x,
-                        pos_y,
                     };
                     tiles.push(tile);
                 }
@@ -106,9 +99,9 @@ pub fn spawn_chunk(
                                         index: tile.floor_index,
                                     },
                                 ),
-                        Transform::from_xyz(tile.pos_x, tile.pos_y, -1.0),
+                        Transform::from_xyz(tile.position.x, tile.position.y, -1.0),
                         MapTile { 
-                            position: tile.position,
+                            local_pos: tile.local_pos,
                             tile_type: TileType::Floor,
                             material: TileMaterial::None,
                         },
@@ -123,9 +116,9 @@ pub fn spawn_chunk(
                                             index: tile.sprite_index,
                                         },
                                     ),
-                            Transform::from_xyz(tile.pos_x, tile.pos_y, (MAX_Y - tile.pos_y + 1.0) * 0.001),
+                            Transform::from_xyz(tile.position.x, tile.position.y, (MAX_Y - tile.position.y + 1.0) * 0.001),
                             MapTile { 
-                                position: tile.position,
+                                local_pos: tile.local_pos,
                                 tile_type: tile.tile_type,
                                 material: tile.material,
                             },
@@ -172,15 +165,6 @@ pub fn despawn_chunk(
     }
 }
 
-pub fn call_spawn_chunk(
-    keys: Res<ButtonInput<KeyCode>>,
-    mut writer: MessageWriter<SpawnChunk>,
-) {
-    if keys.just_pressed(KeyCode::KeyJ) {
-        writer.write(SpawnChunk { position: IVec2::new(-1, 0) });
-    }
-}
-
 pub fn track_chunks(
     player_tf: Res<PlayerTransform>,
     mut chunkgrid: ResMut<ChunkGrid>,
@@ -223,5 +207,14 @@ pub fn chunk_handler(
         if !active_chunks.contains(pos) {
             disable_writer.write(DisableChunk { position: pos.clone() });
         }
+    }
+}
+
+pub fn update_map(
+    mut reader: MessageReader<MapChanged>,
+) {
+    for msg in reader.read() {
+        println!("map changed: local_pos: ({}, {}), chunk_pos: ({}, {})",
+            msg.local_pos.x, msg.local_pos.y, msg.chunk_pos.x, msg.chunk_pos.y);
     }
 }

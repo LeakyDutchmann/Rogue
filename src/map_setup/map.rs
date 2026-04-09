@@ -1,35 +1,4 @@
-use crate::map_setup::*;
-
-pub fn floor_setup(
-    mut commands: Commands,
-    atlases: Res<MapAtlases>,
-) {
-    for x in 0..CHUNK_WIDTH {
-        for y in 0..CHUNK_HEIGHT {
-            let tile_type = TileType::Floor;
-            let mut rng = rand::rng();
-            let sprite_index = rng.random_range(0..3);
-            let pos_x = (x as f32 - CHUNK_WIDTH as f32 / 2.0) * TILE_SIZE;
-            let pos_y = (y as f32 - CHUNK_HEIGHT as f32 / 2.0) * TILE_SIZE;
-            let position = IVec2::new(x as i32, y as i32);
-            if let Some(atlas) = atlases.atlases.get(&TileMaterial::Structurix) {
-                commands.spawn((
-                    Sprite::from_atlas_image(
-                                atlas.texture.clone(),
-                                TextureAtlas {
-                                    layout: atlas.layout.clone(),
-                                    index: sprite_index,
-                                },
-                            ),
-                    Transform::from_xyz(pos_x, pos_y, -1.0),
-                    MapTile { position, tile_type, material: TileMaterial::None},
-                ));
-            }
-        }
-    }
-}   
-
-
+use super::*;
 
 pub fn setup_atlas(
     mut commands: Commands,
@@ -136,9 +105,7 @@ pub fn map_setup(
 //     }
 // }
 
-pub fn xy_idx(x: usize, y: usize) -> usize {
-    (y as usize * CHUNK_WIDTH) + x as usize
-}
+
 
 fn has_tile_below(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     if y == 0 {
@@ -185,44 +152,6 @@ fn has_tile_right(map: &Vec<TileType>, x: usize, y: usize) -> bool {
     right_tile_type != TileType::Empty
 }
 
-pub fn update_map(
-    mut map: ResMut<GameMap>,
-    mut query: Query<(&mut Sprite, &mut MapTile), With<Wall>>,
-    mut reader: MessageReader<MapChanged>,
-) {
-    let mut copied = map.tiles.clone();
-    for changes in reader.read() {
-        let changed_x = changes.position.x;
-        let changed_y = changes.position.y;
-        let changed_idx = xy_idx(changed_x as usize, changed_y as usize);
-        copied[changed_idx] = TileType::Empty;
-        for x in changed_x.saturating_sub(2)..=(changed_x + 2)  {
-            if x as usize >= CHUNK_WIDTH {
-                continue; 
-            }
-            for y in changed_y.saturating_sub(2)..=(changed_y + 2) {
-                if y as usize >= CHUNK_HEIGHT {
-                    continue; 
-                }
-                let idx = xy_idx(x as usize, y as usize);
-                let mut tile_type = copied[idx];
-                //come back and fix this unreaded tile_type
-                tile_type = pick_tile_type(&copied, x as usize, y as usize);
-                map.tiles[idx] = tile_type;
-                for (mut sprite, mut tile) in query.iter_mut() {
-                    if tile.position.x == x && tile.position.y == y {
-                        let tile_idx = xy_idx(tile.position.x as usize, tile.position.y as usize);
-                        tile.tile_type = map.tiles[tile_idx];
-                        if let Some(atlas) = sprite.texture_atlas.as_mut() {
-                            atlas.index = tile.tile_type.tile_type_to_index();
-                        }
-                    } 
-                }
-            }
-        }
-    }
-}
-
 pub fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
     let idx = xy_idx(x, y);
     let mut tile_type = map[idx];
@@ -256,18 +185,4 @@ pub fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
 }
 
 
-pub fn world_pos_to_tile_pos(world: Vec2) -> IVec2 {
-    let x = ((world.x + (CHUNK_WIDTH as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
-    let y = ((world.y + (CHUNK_HEIGHT as f32 / 2.0) * TILE_SIZE) / TILE_SIZE).round() as i32;
-    IVec2::new(x, y)
-}
 
-pub fn tile_pos_to_world_pos(tile: IVec2) -> Vec2 {
-    let x = tile.x as f32 * TILE_SIZE
-        - (CHUNK_WIDTH as f32 / 2.0) * TILE_SIZE;
-
-    let y = tile.y as f32 * TILE_SIZE
-        - (CHUNK_HEIGHT as f32 / 2.0) * TILE_SIZE;
-
-    Vec2::new(x, y)
-}

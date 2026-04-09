@@ -17,10 +17,11 @@ use crate::player::PlayerTransform;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 use systems::*;
-use functions::*;
+pub use functions::*;
 use noise::{NoiseFn, Perlin, Seedable};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
+use bevy::math::USizeVec2;
 
 
 pub struct MapSetupPlugin;
@@ -42,6 +43,7 @@ impl Plugin for MapSetupPlugin {
         });
         app.add_systems(Startup, (setup_atlas, map_setup).chain());
         app.add_systems(Update, (track_chunks, chunk_handler, prepare_chunk, spawn_chunk, despawn_chunk));
+        app.add_systems(Update, update_map);
     }
 }
 

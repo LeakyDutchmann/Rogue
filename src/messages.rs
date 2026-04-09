@@ -152,7 +152,8 @@ pub struct FindPath {
 
 #[derive(Message)]
 pub struct MapChanged {
-    pub position: IVec2,
+    pub local_pos: IVec2,
+    pub chunk_pos: IVec2,
 }
 
 

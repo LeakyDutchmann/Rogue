@@ -78,7 +78,7 @@ impl TileMaterial {
 
 #[derive(Component)]
 pub struct MapTile {
-    pub position: IVec2,
+    pub local_pos: USizeVec2,
     pub tile_type: TileType,
     pub material: TileMaterial,
 }
