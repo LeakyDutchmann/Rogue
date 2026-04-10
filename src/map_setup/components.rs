@@ -86,3 +86,6 @@ pub struct MapTile {
 
 #[derive(Component)]
 pub struct Wall;
+
+#[derive(Component)]
+pub struct Floor;

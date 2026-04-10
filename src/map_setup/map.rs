@@ -184,5 +184,26 @@ pub fn pick_tile_type(map: &Vec<TileType>, x: usize, y: usize) -> TileType {
     tile_type
 }
 
-
+pub fn pick_tile_type_in_world(conditions: (bool, bool, bool, bool)) -> TileType {
+    
+    let tile_type =  match conditions {
+            (true, true, true, true) => TileType::WallCentre,
+            (true, true, true, false) => TileType::WallSideEast,
+            (false, false, true, true) => TileType::WallNorthSouth,
+            (true, false, false, false) => TileType::WallEndSouth,
+            (false, false, false, false) => TileType::WallSingle,
+            (true, true, false, true) => TileType::WallSideWest,
+            (true, false, true, false) => TileType::WallCornerNW,
+            (false, false, true, false) => TileType::WallEndWest,  
+            (true, false, true, true) => TileType::WallSideNorth,
+            (false, false, false, true) => TileType::WallEndEast,                    
+            (false, true, true, true) => TileType::WallSideSouth,                            
+            (true, true, false, false) => TileType::WallEastWest,
+            (false, true, false, true) => TileType::WallCornerSE,
+            (false, true, true, false) => TileType::WallCornerSW,
+            (true, false, false, true) => TileType::WallCornerNE,
+            (false, true, false, false) => TileType::WallEndNorth,
+    };
+    tile_type
+}
 

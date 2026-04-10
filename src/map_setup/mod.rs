@@ -22,6 +22,7 @@ use noise::{NoiseFn, Perlin, Seedable};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
 use bevy::math::USizeVec2;
+use crate::world::{CELL_SIZE, get_cells_3x3, get_entities_in_cells, WorldGrid};
 
 
 pub struct MapSetupPlugin;
@@ -97,7 +98,7 @@ pub struct MapAtlases {
 }
 
 
-pub const CHUNK_HEIGHT: usize = 4;
-pub const CHUNK_WIDTH: usize = 4;
+pub const CHUNK_HEIGHT: usize = 16;
+pub const CHUNK_WIDTH: usize = 16;
 pub const TILE_SIZE: f32 = 32.0;
 pub const MAX_Y: f32 = ((CHUNK_HEIGHT / 2) * TILE_SIZE as usize) as f32;
