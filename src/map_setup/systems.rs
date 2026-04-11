@@ -99,7 +99,7 @@ pub fn spawn_chunk(
                                         index: tile.floor_index,
                                     },
                                 ),
-                        Transform::from_xyz(tile.position.x, tile.position.y, -1.0),
+                        Transform::from_xyz(tile.position.x, tile.position.y, -tile.position.y * 0.001 -10.0),
                         MapTile { 
                             local_pos: tile.local_pos,
                             tile_type: TileType::Floor,
@@ -117,7 +117,7 @@ pub fn spawn_chunk(
                                             index: tile.sprite_index,
                                         },
                                     ),
-                            Transform::from_xyz(tile.position.x, tile.position.y, (MAX_Y - tile.position.y + 1.0) * 0.001),
+                            Transform::from_xyz(tile.position.x, tile.position.y, -tile.position.y * 0.001),
                             MapTile { 
                                 local_pos: tile.local_pos,
                                 tile_type: tile.tile_type,

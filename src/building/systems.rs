@@ -144,7 +144,7 @@ pub fn spawn_structure(
     for msg in reader.read() {
         if let Some(def) = structure_reg.structures.get(&msg.item_id) {
             let structure = assemble_structure(&def, &mut commands, &msg.item_id);
-            commands.entity(structure).insert(Transform::from_translation(msg.position.extend((MAX_Y - msg.position.y + 1.0) * 0.001)));
+            commands.entity(structure).insert(Transform::from_translation(msg.position.extend((- msg.position.y + 1.0) * 0.001)));
         }
     }
 }
