@@ -80,7 +80,6 @@ pub fn hit_detection_system(
                                 damage_type: DamageType::ToTileDamage,
                             });
                             commands.entity(hitbx_e).insert(HitBoxUsed);
-                            println!("hit tile: {:?}", pos);
                             break;
                         }
                     } else if let Ok((_structure_id, transform)) = struct_query.get(*entity) {

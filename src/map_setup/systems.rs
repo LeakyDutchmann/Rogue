@@ -199,7 +199,6 @@ pub fn chunk_handler(
     for chunk_pos in &active_chunks {
         if !chunkgrid.chunks.contains_key(&chunk_pos) && !chunkgrid.pending_chunks.contains(&chunk_pos) {
             writer.write(SpawnChunk { position: chunk_pos.clone() });
-            println!("spawning chunk: ({}, {})", chunk_pos.x, chunk_pos.y);
         }
     }
     for (pos, _chunk) in chunkgrid.chunks.iter() {
@@ -220,8 +219,6 @@ pub fn update_map(
     worldgrid: Res<WorldGrid>,
 ) {
     for msg in reader.read() {
-        println!("map changed: local_pos: ({}, {}), chunk_pos: ({}, {})",
-            msg.local_pos.x, msg.local_pos.y, msg.chunk_pos.x, msg.chunk_pos.y);
         let world_pos = tile_pos_to_world_pos(msg.local_pos, msg.chunk_pos);
         let cell_x = (world_pos.x / CELL_SIZE).round() as i32;
         let cell_y = (world_pos.y / CELL_SIZE).round() as i32;
@@ -275,43 +272,5 @@ pub fn update_map(
                 }
             }
         }
-    }
-}
-
-pub fn update_map_proto(
-    mut commands: Commands,
-    mut reader: MessageReader<MapChanged>,
-    mut query: Query<(Entity, &Transform, &MapTile, &ParrentChunk, &mut Sprite), With<Wall>>,
-    mut chunkgrid: ResMut<ChunkGrid>,
-) {
-    for msg in reader.read() {
-        println!("map changed: local_pos: ({}, {}), chunk_pos: ({}, {})",
-            msg.local_pos.x, msg.local_pos.y, msg.chunk_pos.x, msg.chunk_pos.y);
-        let tiles_to_update = vec![
-            msg.local_pos + IVec2::new(1, 0),
-            msg.local_pos + IVec2::new(-1, 0),
-            msg.local_pos + IVec2::new(0, 1),
-            msg.local_pos + IVec2::new(0, -1),
-        ];
-        if let Some(chunk) = chunkgrid.chunks.get_mut(&msg.chunk_pos) {
-            let changed_idx = xy_idx(msg.local_pos.x as usize, msg.local_pos.y as usize);
-            chunk.map[changed_idx] = TileType::Empty;
-            for (entity, tf, map_tile, parent_chunk, mut sprite) in query.iter_mut() {
-                let tile_loc = IVec2::new(map_tile.local_pos.x as i32, map_tile.local_pos.y as i32);
-                let translation = tf.translation.truncate();
-                let translation = translation.extend(30.0);
-                if tiles_to_update.contains(&tile_loc) {
-                    if parent_chunk.position == msg.chunk_pos {
-                        let tile_type = pick_tile_type(&chunk.map, tile_loc.x as usize, tile_loc.y as usize);
-                        let index = tile_type.tile_type_to_index();
-                        if let Some(atlas) = sprite.texture_atlas.as_mut() {
-                            atlas.index = index;
-                        }
-                    }
-                    
-                }
-            }
-        }
-        
     }
 }
