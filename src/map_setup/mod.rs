@@ -1,4 +1,4 @@
-mod map;
+mod setup;
 mod cave_generating;
 mod components;
 mod systems;
@@ -7,7 +7,7 @@ mod functions;
 use bevy::prelude::*;
 use rand::Rng;
 use std::collections::{HashMap, HashSet};
-pub use map::*;
+pub use setup::*;
 pub use components::*;
 use cave_generating::*;
 use crate::components::Health;
@@ -42,7 +42,7 @@ impl Plugin for MapSetupPlugin {
         app.insert_resource(PlayerChunk {
             position: IVec2::new(0, 0),
         });
-        app.add_systems(Startup, (setup_atlas, map_setup).chain());
+        app.add_systems(Startup, (setup_atlas).chain());
         app.add_systems(Update, (track_chunks, chunk_handler, prepare_chunk, spawn_chunk, despawn_chunk));
         app.add_systems(Update, update_map);
     }

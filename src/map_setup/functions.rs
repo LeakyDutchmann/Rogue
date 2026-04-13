@@ -60,3 +60,25 @@ pub fn world_pos_to_tile_pos(world: Vec2, chunk_pos: IVec2) -> IVec2 {
 pub fn xy_idx(x: usize, y: usize) -> usize {
     (y as usize * CHUNK_WIDTH) + x as usize
 }
+
+pub fn pick_tile_type_in_world(conditions: (bool, bool, bool, bool)) -> TileType {
+    let tile_type =  match conditions {
+            (true, true, true, true) => TileType::WallCentre,
+            (true, true, true, false) => TileType::WallSideEast,
+            (false, false, true, true) => TileType::WallNorthSouth,
+            (true, false, false, false) => TileType::WallEndSouth,
+            (false, false, false, false) => TileType::WallSingle,
+            (true, true, false, true) => TileType::WallSideWest,
+            (true, false, true, false) => TileType::WallCornerNW,
+            (false, false, true, false) => TileType::WallEndWest,  
+            (true, false, true, true) => TileType::WallSideNorth,
+            (false, false, false, true) => TileType::WallEndEast,                    
+            (false, true, true, true) => TileType::WallSideSouth,                            
+            (true, true, false, false) => TileType::WallEastWest,
+            (false, true, false, true) => TileType::WallCornerSE,
+            (false, true, true, false) => TileType::WallCornerSW,
+            (true, false, false, true) => TileType::WallCornerNE,
+            (false, true, false, false) => TileType::WallEndNorth,
+    };
+    tile_type
+}

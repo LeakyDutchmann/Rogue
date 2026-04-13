@@ -1,14 +1,5 @@
 use super::*;
 
-
-
-pub fn track_player_pos(
-    res: Res<PlayerTransform>,
-    mut chunkgrid: ResMut<ChunkGrid>,
-) {
-    println!("player pos: {:?}", res.0);
-}
-
 pub struct TileSpawnData {
     pub position: Vec2,
     pub local_pos: USizeVec2,
@@ -22,11 +13,6 @@ pub struct ChunkSpawnData {
     pub position: IVec2,
     pub tiles: Vec<TileSpawnData>,
     pub map: Vec<TileType>,
-}
-
-#[derive(Component)]
-pub struct PendingChunk {
-    pub task: Task<ChunkSpawnData>
 }
 
 pub fn prepare_chunk(

@@ -89,3 +89,8 @@ pub struct Wall;
 
 #[derive(Component)]
 pub struct Floor;
+
+#[derive(Component)]
+pub struct PendingChunk {
+    pub task: Task<ChunkSpawnData>
+}
