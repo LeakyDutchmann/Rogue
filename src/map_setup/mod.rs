@@ -69,6 +69,7 @@ pub struct GlobalSeed {
 pub struct Chunk {
     pub map: Vec<TileType>,
     pub position: IVec2,
+    pub changed: bool,
 }
 
 
@@ -98,7 +99,7 @@ pub struct MapAtlases {
 }
 
 
-pub const CHUNK_HEIGHT: usize = 16;
-pub const CHUNK_WIDTH: usize = 16;
+pub const CHUNK_HEIGHT: usize = 4;
+pub const CHUNK_WIDTH: usize = 4;
 pub const TILE_SIZE: f32 = 32.0;
 pub const MAX_Y: f32 = ((CHUNK_HEIGHT / 2) * TILE_SIZE as usize) as f32;
