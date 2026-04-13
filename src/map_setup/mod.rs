@@ -12,7 +12,7 @@ pub use components::*;
 use cave_generating::*;
 use crate::components::Health;
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::messages::{MapChanged, SpawnChunk, DisableChunk};
+use crate::messages::{MapChanged, SpawnChunk, DisableChunk, SaveChunk};
 use crate::player::PlayerTransform;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
@@ -21,6 +21,7 @@ pub use functions::*;
 use noise::{NoiseFn, Perlin, Seedable};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
+use std::sync::{Arc};
 use bevy::math::USizeVec2;
 use crate::world::{CELL_SIZE, get_cells_3x3, get_entities_in_cells, WorldGrid};
 
@@ -42,8 +43,11 @@ impl Plugin for MapSetupPlugin {
         app.insert_resource(PlayerChunk {
             position: IVec2::new(0, 0),
         });
+        app.insert_resource( SavedChunks {
+            chunks: HashMap::new(),
+        });
         app.add_systems(Startup, (setup_atlas).chain());
-        app.add_systems(Update, (track_chunks, chunk_handler, prepare_chunk, spawn_chunk, despawn_chunk));
+        app.add_systems(Update, (track_chunks, chunk_handler, prepare_chunk, spawn_chunk, despawn_chunk, save_chunk, poll_saving_chunks));
         app.add_systems(Update, update_map);
     }
 }
@@ -53,6 +57,7 @@ impl Plugin for MapSetupPlugin {
 pub struct PlayerChunk {
     pub position: IVec2,
 }
+
 
 #[derive(Component)]
 pub struct ParrentChunk {
@@ -64,6 +69,7 @@ pub struct ParrentChunk {
 pub struct GlobalSeed {
     pub value: u64,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Hash)]
 pub struct Chunk {
@@ -79,6 +85,11 @@ pub struct ChunkGrid {
     pub pending_chunks: HashSet<IVec2>,
 }
 
+
+#[derive(Resource)]
+pub struct SavedChunks {
+    pub chunks: HashMap<IVec2, ChunkSpawnData>,
+}
 
 #[derive(Resource)]
 pub struct MapAtlas {
@@ -99,7 +110,7 @@ pub struct MapAtlases {
 }
 
 
-pub const CHUNK_HEIGHT: usize = 4;
-pub const CHUNK_WIDTH: usize = 4;
+pub const CHUNK_HEIGHT: usize = 16;
+pub const CHUNK_WIDTH: usize = 16;
 pub const TILE_SIZE: f32 = 32.0;
 pub const MAX_Y: f32 = ((CHUNK_HEIGHT / 2) * TILE_SIZE as usize) as f32;

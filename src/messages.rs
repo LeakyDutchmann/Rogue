@@ -20,7 +20,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<SpawnStructureRequest>()
             .add_message::<RemoveFromInventory>()
             .add_message::<SpawnChunk>()
-            .add_message::<DisableChunk>();
+            .add_message::<DisableChunk>()
+            .add_message::<SaveChunk>();
     }
 }
 
@@ -32,6 +33,12 @@ pub struct SpawnChunk {
 
 #[derive(Message)]
 pub struct DisableChunk {
+    pub position: IVec2,
+}
+
+
+#[derive(Message)]
+pub struct SaveChunk {
     pub position: IVec2,
 }
 

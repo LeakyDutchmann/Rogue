@@ -94,3 +94,8 @@ pub struct Floor;
 pub struct PendingChunk {
     pub task: Task<ChunkSpawnData>
 }
+
+#[derive(Component)]
+pub struct SavingPendingChunk {
+    pub task: Task<ChunkSpawnData>
+}
