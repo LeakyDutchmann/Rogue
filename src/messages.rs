@@ -1,4 +1,5 @@
 use super::*;
+use crate::map_setup::ChunkSpawnData;
 
 pub struct MessagesPlugin;
 
@@ -19,14 +20,27 @@ impl Plugin for MessagesPlugin {
             .add_message::<DoubleClicked>()
             .add_message::<SpawnStructureRequest>()
             .add_message::<RemoveFromInventory>()
-            .add_message::<SpawnChunk>()
+            .add_message::<PrepareChunk>()
             .add_message::<DisableChunk>()
-            .add_message::<SaveChunk>();
+            .add_message::<SaveChunk>()
+            .add_message::<DirectChunkSpawnRequest>()
+            .add_message::<SpawnChunk>();
     }
 }
 
 #[derive(Message)]
 pub struct SpawnChunk {
+    pub data: ChunkSpawnData,
+}
+
+#[derive(Message)]
+pub struct DirectChunkSpawnRequest {
+    pub position: IVec2,
+}
+
+
+#[derive(Message)]
+pub struct PrepareChunk {
     pub position: IVec2,
 }
 

@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Clone)]
 pub struct TileSpawnData {
     pub position: Vec2,
     pub local_pos: USizeVec2,
@@ -9,6 +10,7 @@ pub struct TileSpawnData {
     pub floor_index: usize,
 }
 
+
 pub struct ChunkSpawnData {
     pub position: IVec2,
     pub tiles: Vec<TileSpawnData>,
@@ -17,7 +19,7 @@ pub struct ChunkSpawnData {
 
 pub fn prepare_chunk(
     mut commands: Commands,
-    mut reader: MessageReader<SpawnChunk>,
+    mut reader: MessageReader<PrepareChunk>,
     global_seed: Res<GlobalSeed>,
     mut chunk_grid: ResMut<ChunkGrid>,
 ) {
@@ -25,7 +27,6 @@ pub fn prepare_chunk(
     for msg in reader.read() {
         let seed_value = global_seed.value;
         let chunk_pos = msg.position;
-        
         let task = task_pool.spawn(async move {
             let seed_u64 = get_seed(seed_value, chunk_pos.x, chunk_pos.y);
             let mut rng = StdRng::seed_from_u64(seed_u64);
@@ -60,9 +61,25 @@ pub fn prepare_chunk(
             };
             chunk
         });
-        commands.spawn(PendingChunk { task: task });
+        commands.spawn(PendingTaskChunk { task: task });
         chunk_grid.pending_chunks.insert(chunk_pos);
         
+    }
+}
+
+pub fn poll_pending_chunks(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut PendingTaskChunk)>,
+    mut chunkgrid: ResMut<ChunkGrid>,
+    mut writer: MessageWriter<SpawnChunk>
+) {
+    for (entity, mut pending_chunk) in query.iter_mut() {
+        if let Some(chunk_data) = future::block_on(future::poll_once(&mut pending_chunk.task)) {
+            commands.spawn(
+                PendingChunk { chunk: chunk_data }
+            );
+            commands.entity(entity).despawn();
+        }
     }
 }
 
@@ -73,67 +90,67 @@ pub fn spawn_chunk(
     mut query: Query<(Entity, &mut PendingChunk)>,
 ) {
     for (entity, mut pending_chunk) in query.iter_mut() {
-        if let Some(chunk_data) = future::block_on(future::poll_once(&mut pending_chunk.task)) {
-            commands.entity(entity).despawn();
-            for tile in chunk_data.tiles {
-                if let Some(atlas) = atlases.atlases.get(&tile.material) {
+        let tiles = std::mem::take(&mut pending_chunk.chunk.tiles);
+        let map = std::mem::take(&mut pending_chunk.chunk.map);
+        commands.entity(entity).despawn();
+        for tile in tiles {
+            if let Some(atlas) = atlases.atlases.get(&tile.material) {
+                commands.spawn((
+                    Sprite::from_atlas_image(
+                                atlas.texture.clone(),
+                                TextureAtlas {
+                                    layout: atlas.layout.clone(),
+                                    index: tile.floor_index,
+                                },
+                            ),
+                    Transform::from_xyz(tile.position.x, tile.position.y, -tile.position.y * 0.001 -10.0),
+                    MapTile { 
+                        local_pos: tile.local_pos,
+                        tile_type: TileType::Floor,
+                        material: TileMaterial::None,
+                    },
+                    ParrentChunk { position: pending_chunk.chunk.position },
+                    Floor,
+                )); 
+                if tile.tile_type != TileType::Empty {
                     commands.spawn((
                         Sprite::from_atlas_image(
                                     atlas.texture.clone(),
                                     TextureAtlas {
                                         layout: atlas.layout.clone(),
-                                        index: tile.floor_index,
+                                        index: tile.sprite_index,
                                     },
                                 ),
-                        Transform::from_xyz(tile.position.x, tile.position.y, -tile.position.y * 0.001 -10.0),
+                        Transform::from_xyz(tile.position.x, tile.position.y, -tile.position.y * 0.001),
                         MapTile { 
                             local_pos: tile.local_pos,
-                            tile_type: TileType::Floor,
-                            material: TileMaterial::None,
+                            tile_type: tile.tile_type,
+                            material: tile.material,
                         },
-                        ParrentChunk { position: chunk_data.position },
-                        Floor,
+                        Wall,
+                        Colider {
+                            shape: ColiderShape::Rectangle {
+                                width: TILE_SIZE,
+                                height: TILE_SIZE,
+                            },
+                            _offsety: 0.0,
+                            _sensor: true,
+                        },
+                        Health(100),
+                        ParrentChunk { position: pending_chunk.chunk.position },
                     )); 
-                    if tile.tile_type != TileType::Empty {
-                        commands.spawn((
-                            Sprite::from_atlas_image(
-                                        atlas.texture.clone(),
-                                        TextureAtlas {
-                                            layout: atlas.layout.clone(),
-                                            index: tile.sprite_index,
-                                        },
-                                    ),
-                            Transform::from_xyz(tile.position.x, tile.position.y, -tile.position.y * 0.001),
-                            MapTile { 
-                                local_pos: tile.local_pos,
-                                tile_type: tile.tile_type,
-                                material: tile.material,
-                            },
-                            Wall,
-                            Colider {
-                                shape: ColiderShape::Rectangle {
-                                    width: TILE_SIZE,
-                                    height: TILE_SIZE,
-                                },
-                                _offsety: 0.0,
-                                _sensor: true,
-                            },
-                            Health(100),
-                            ParrentChunk { position: chunk_data.position },
-                        )); 
-                    }
                 }
-            } 
-            chunkgrid.chunks.insert(
-                chunk_data.position,
-                Chunk {
-                    position: chunk_data.position,
-                    map: chunk_data.map,
-                    changed: false,
-                },
-            );
-            chunkgrid.pending_chunks.remove(&chunk_data.position);
-        }
+            }
+        } 
+        chunkgrid.chunks.insert(
+            pending_chunk.chunk.position,
+            Chunk {
+                position: pending_chunk.chunk.position,
+                map: map,
+                changed: false,
+            },
+        );
+        chunkgrid.pending_chunks.remove(&pending_chunk.chunk.position);
     }
 }
 
@@ -167,10 +184,11 @@ pub fn track_chunks(
 }
 
 pub fn chunk_handler(
+    mut commands: Commands,
     chunkgrid: Res<ChunkGrid>,
     player_chunk: Res<PlayerChunk>,
-    saved: Res<SavedChunks>,
-    mut writer: MessageWriter<SpawnChunk>,
+    mut saved: ResMut<SavedChunks>,
+    mut writer: MessageWriter<PrepareChunk>,
     mut disable_writer: MessageWriter<DisableChunk>,
     mut save_writer: MessageWriter<SaveChunk>,
 ) {
@@ -187,16 +205,31 @@ pub fn chunk_handler(
     ];
     for chunk_pos in &active_chunks {
         if !chunkgrid.chunks.contains_key(&chunk_pos) && !chunkgrid.pending_chunks.contains(&chunk_pos) {
-            writer.write(SpawnChunk { position: chunk_pos.clone() });
+            if saved.chunks.contains_key(chunk_pos) {
+                let chunk_data = saved.chunks.get_mut(chunk_pos).unwrap();
+                let map = chunk_data.map.clone();
+                let tiles = chunk_data.tiles.clone();
+                let chunk = ChunkSpawnData {
+                    position: chunk_pos.clone(),
+                    tiles,
+                    map,
+                };
+                commands.spawn(
+                    PendingChunk {
+                        chunk: chunk
+                    }
+                ); 
+            } else {
+                writer.write(PrepareChunk { position: chunk_pos.clone() });
+            }
+            
         }
     }
     for (pos, chunk) in chunkgrid.chunks.iter() {
         if !active_chunks.contains(pos) {
             if chunk.changed {
-                if !saved.chunks.contains_key(pos) {
-                    save_writer.write(SaveChunk { position: pos.clone() });
-                    continue;
-                }
+                save_writer.write(SaveChunk { position: pos.clone() });
+                continue;
             }
             disable_writer.write(DisableChunk { position: pos.clone() });
         }

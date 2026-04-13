@@ -48,7 +48,7 @@ impl TileType {
     }
 }
 
-#[derive(Hash, PartialEq, Eq)]
+#[derive(Hash, PartialEq, Eq, Clone)]
 pub enum TileMaterial {
     Structurix,
     Mechanae,
@@ -91,9 +91,16 @@ pub struct Wall;
 pub struct Floor;
 
 #[derive(Component)]
-pub struct PendingChunk {
+pub struct PendingTaskChunk {
     pub task: Task<ChunkSpawnData>
 }
+
+
+#[derive(Component)]
+pub struct PendingChunk {
+    pub chunk: ChunkSpawnData,
+}
+
 
 #[derive(Component)]
 pub struct SavingPendingChunk {
