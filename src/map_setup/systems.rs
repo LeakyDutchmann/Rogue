@@ -10,11 +10,19 @@ pub struct TileSpawnData {
     pub floor_index: usize,
 }
 
+#[derive(Clone)]
+pub struct StructureSpawnData {
+    pub id: String,
+    pub pos: Vec2,
+    pub hp: i32,
+}
+
 
 pub struct ChunkSpawnData {
     pub position: IVec2,
     pub tiles: Vec<TileSpawnData>,
     pub map: Vec<TileType>,
+    pub structures: Vec<StructureSpawnData>,
 }
 
 pub fn prepare_chunk(
@@ -58,6 +66,7 @@ pub fn prepare_chunk(
                 position: chunk_pos,
                 tiles,
                 map: chunk_map,
+                structures: Vec::new()
             };
             chunk
         });
@@ -88,10 +97,13 @@ pub fn spawn_chunk(
     atlases: Res<MapAtlases>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut PendingChunk)>,
+    struct_reg: Res<StructureRegistry>,
 ) {
     for (entity, mut pending_chunk) in query.iter_mut() {
         let tiles = std::mem::take(&mut pending_chunk.chunk.tiles);
         let map = std::mem::take(&mut pending_chunk.chunk.map);
+        let structures = std::mem::take(&mut pending_chunk.chunk.structures);
+        
         commands.entity(entity).despawn();
         for tile in tiles {
             if let Some(atlas) = atlases.atlases.get(&tile.material) {
@@ -142,6 +154,30 @@ pub fn spawn_chunk(
                 }
             }
         } 
+        for structure in structures {
+           if let Some(def) = struct_reg.structures.get(&structure.id) {
+               if let Some(width) = def.width {
+                   if let Some(height) = def.height {
+                       commands.spawn((
+                           StructureId { id: structure.id.clone() },
+                           Sprite::from_image(def.sprite.clone()),
+                           Transform::from_xyz(structure.pos.x, structure.pos.y, -structure.pos.y * 0.001),
+                           Wall,
+                           Colider {
+                               shape: ColiderShape::Rectangle {
+                                   width: width,
+                                   height: height,
+                               },
+                               _offsety: 0.0,
+                               _sensor: true,
+                           },
+                           Health(structure.hp),
+                           ParrentChunk { position: pending_chunk.chunk.position },
+                       )); 
+                   }
+               }
+           }
+        }
         chunkgrid.chunks.insert(
             pending_chunk.chunk.position,
             Chunk {
@@ -209,10 +245,12 @@ pub fn chunk_handler(
                 let chunk_data = saved.chunks.get_mut(chunk_pos).unwrap();
                 let map = chunk_data.map.clone();
                 let tiles = chunk_data.tiles.clone();
+                let structures = chunk_data.structures.clone();
                 let chunk = ChunkSpawnData {
                     position: chunk_pos.clone(),
                     tiles,
                     map,
+                    structures
                 };
                 commands.spawn(
                     PendingChunk {
@@ -311,6 +349,7 @@ pub fn update_map(
 }
 
 pub fn save_chunk(
+    structures: Query<(Entity, &StructureId, &Transform, &ParrentChunk, &Health)>,
     mut commands: Commands,
     mut reader: MessageReader<SaveChunk>,
     mut disable_writer: MessageWriter<DisableChunk>,
@@ -325,6 +364,18 @@ pub fn save_chunk(
             let map_pointer = Arc::new(&chunk.map);
             let map = (*map_pointer).clone();
             let seed_value = global_seed.value;
+            let mut structures_in_chunk: Vec<StructureSpawnData> = Vec::new();
+            //looking for structures here
+            for (entity, struct_id, transform, parent_chunk, hp) in structures.iter() {
+                if parent_chunk.position == chunk_pos {
+                    let structure = StructureSpawnData {
+                        id: struct_id.id.clone(),
+                        pos: transform.translation.truncate(),
+                        hp: hp.0,
+                    };
+                    structures_in_chunk.push(structure);
+                }
+            }
             let task = task_pool.spawn(async move {
                 let seed_u64 = get_seed(seed_value, chunk_pos.x, chunk_pos.y);
                 let mut rng = StdRng::seed_from_u64(seed_u64);
@@ -353,6 +404,7 @@ pub fn save_chunk(
                     position: chunk_pos,
                     tiles,
                     map: map,
+                    structures: structures_in_chunk,
                 };
                 saved_chunk
             });
@@ -381,4 +433,17 @@ pub fn poll_saving_chunks(
             commands.entity(entity).despawn();
         }
     }
+}
+
+pub fn track_of_saved_chunks(
+    saved: Res<SavedChunks>,
+) {
+    if !saved.is_changed() {
+        return;
+    }
+    let mut count = 0;
+    for (pos, chunk) in saved.chunks.iter() {
+        count += 1;
+    }
+    println!("saved chunks: {}", count);
 }

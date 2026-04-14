@@ -112,9 +112,11 @@ pub fn build_structure(
                                                     item: item.clone(),
                                                 });
                                             }
+                                            let chunk = get_chunk_pos(position.clone());
                                             writer.write(SpawnStructureRequest {
                                                 position: position.clone(),
                                                 item_id: structure.clone(),
+                                                chunk_position: chunk,
                                             });
                                             cursor.structure = None;
                                             building_mode.state = BuildingState::On;
@@ -144,6 +146,7 @@ pub fn spawn_structure(
     for msg in reader.read() {
         if let Some(def) = structure_reg.structures.get(&msg.item_id) {
             let structure = assemble_structure(&def, &mut commands, &msg.item_id);
+            commands.entity(structure).insert(ParrentChunk { position: msg.chunk_position });
             commands.entity(structure).insert(Transform::from_translation(msg.position.extend((- msg.position.y + 1.0) * 0.001)));
         }
     }

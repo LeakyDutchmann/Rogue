@@ -14,6 +14,7 @@ pub fn damage_execution_system(
     mut actor_qr: Query<&mut ActorState>,
     deathtimer: Query<&DeathTimer>,
     tile_type: Query<&MapTile>,
+    mut chunkgrid: ResMut<ChunkGrid>,
 ) {
     for destruction in reader.read() {
         if let Ok(mut hp) = health.get_mut(destruction.entity) {
@@ -29,6 +30,12 @@ pub fn damage_execution_system(
                         to: destruction.position,
                     });
                 }   
+            }
+            if destruction.damage_type == DamageType::ToStructureDamage {
+                let chunk_pos = get_chunk_pos(destruction.position);
+                if let Some(chunk) = chunkgrid.chunks.get_mut(&chunk_pos) {
+                    chunk.changed = true;
+                }
             }
             if hp.0 <= 0 {
                 if destruction.damage_type == DamageType::ToTileDamage {

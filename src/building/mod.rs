@@ -15,6 +15,7 @@ use crate::components::*;
 use std::collections::HashMap;
 use bevy::ui::FocusPolicy;
 use crate::crafting::{RecipeRegistry, RecipeDefinition};
+use crate::map_setup::ParrentChunk;
 
 pub struct BuildingPlugin;
 
@@ -41,7 +42,7 @@ impl Plugin for BuildingPlugin {
 
 #[derive(Component)]
 pub struct StructureId {
-    id: String,
+    pub id: String,
 }
 
 
@@ -66,7 +67,7 @@ pub struct BuildingMode {
 
 #[derive(Resource)]
 pub struct StructureRegistry {
-    structures: HashMap<String, StructureDefinition>,
+    pub structures: HashMap<String, StructureDefinition>,
 }
 
 

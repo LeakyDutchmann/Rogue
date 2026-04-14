@@ -68,6 +68,7 @@ pub struct RemoveFromInventory {
 pub struct SpawnStructureRequest {
     pub position: Vec2,
     pub item_id: String,
+    pub chunk_position: IVec2,
 }
 
 

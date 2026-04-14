@@ -14,6 +14,8 @@ use crate::components::Health;
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, DirectChunkSpawnRequest, SpawnChunk};
 use crate::player::PlayerTransform;
+use crate::items::ItemId;
+use crate::building::{StructureRegistry, StructureId};
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 pub use systems::*;
@@ -49,7 +51,7 @@ impl Plugin for MapSetupPlugin {
         app.add_systems(Startup, (setup_atlas).chain());
         app.add_systems(Update, (track_chunks, chunk_handler, 
             prepare_chunk, poll_pending_chunks, spawn_chunk, despawn_chunk, save_chunk, poll_saving_chunks));
-        app.add_systems(Update, update_map);
+        app.add_systems(Update, (update_map, track_of_saved_chunks));
     }
 }
 
