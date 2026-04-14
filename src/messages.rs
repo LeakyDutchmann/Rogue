@@ -23,7 +23,7 @@ impl Plugin for MessagesPlugin {
             .add_message::<PrepareChunk>()
             .add_message::<DisableChunk>()
             .add_message::<SaveChunk>()
-            .add_message::<DirectChunkSpawnRequest>()
+            .add_message::<LoadChunk>()
             .add_message::<SpawnChunk>();
     }
 }
@@ -34,7 +34,7 @@ pub struct SpawnChunk {
 }
 
 #[derive(Message)]
-pub struct DirectChunkSpawnRequest {
+pub struct LoadChunk {
     pub position: IVec2,
 }
 

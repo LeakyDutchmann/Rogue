@@ -11,8 +11,9 @@ pub use setup::*;
 pub use components::*;
 use cave_generating::*;
 use crate::components::Health;
+use serde::{Serialize, Deserialize};
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, DirectChunkSpawnRequest, SpawnChunk};
+use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk, SpawnChunk};
 use crate::player::PlayerTransform;
 use crate::items::ItemId;
 use crate::building::{StructureRegistry, StructureId};
@@ -46,11 +47,12 @@ impl Plugin for MapSetupPlugin {
             position: IVec2::new(0, 0),
         });
         app.insert_resource( SavedChunks {
-            chunks: HashMap::new(),
+            chunks: HashSet::new(),
         });
-        app.add_systems(Startup, (setup_atlas).chain());
+        app.add_systems(Startup, (setup_atlas, setup_world_dir).chain());
         app.add_systems(Update, (track_chunks, chunk_handler, 
-            prepare_chunk, poll_pending_chunks, spawn_chunk, despawn_chunk, save_chunk, poll_saving_chunks));
+            prepare_chunk, chunk_loader, poll_pending_chunks, poll_chunk_loading,
+            spawn_chunk, despawn_chunk, save_chunk, poll_saving_chunks));
         app.add_systems(Update, (update_map, track_of_saved_chunks));
     }
 }
@@ -91,7 +93,7 @@ pub struct ChunkGrid {
 
 #[derive(Resource)]
 pub struct SavedChunks {
-    pub chunks: HashMap<IVec2, ChunkSpawnData>,
+    pub chunks: HashSet<IVec2>,
 }
 
 #[derive(Resource)]

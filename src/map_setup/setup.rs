@@ -22,5 +22,14 @@ pub fn setup_atlas(
     });
 }
 
-
+pub fn setup_world_dir(
+    mut saved: ResMut<SavedChunks>,
+) {
+    std::fs::create_dir_all("world").unwrap();
+    if let Some(chunk_positions) = get_positions_of_saved_chunks() {
+        for pos in chunk_positions {
+            saved.chunks.insert(pos);
+        }
+    }
+}
 

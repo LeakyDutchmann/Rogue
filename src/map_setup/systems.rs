@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct TileSpawnData {
     pub position: Vec2,
     pub local_pos: USizeVec2,
@@ -10,14 +10,14 @@ pub struct TileSpawnData {
     pub floor_index: usize,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct StructureSpawnData {
     pub id: String,
     pub pos: Vec2,
     pub hp: i32,
 }
 
-
+#[derive(Serialize, Deserialize)]
 pub struct ChunkSpawnData {
     pub position: IVec2,
     pub tiles: Vec<TileSpawnData>,
@@ -227,6 +227,7 @@ pub fn chunk_handler(
     mut writer: MessageWriter<PrepareChunk>,
     mut disable_writer: MessageWriter<DisableChunk>,
     mut save_writer: MessageWriter<SaveChunk>,
+    mut load_writer: MessageWriter<LoadChunk>,
 ) {
     let active_chunks = vec![
         player_chunk.position,
@@ -241,24 +242,12 @@ pub fn chunk_handler(
     ];
     for chunk_pos in &active_chunks {
         if !chunkgrid.chunks.contains_key(&chunk_pos) && !chunkgrid.pending_chunks.contains(&chunk_pos) {
-            if saved.chunks.contains_key(chunk_pos) {
-                let chunk_data = saved.chunks.get_mut(chunk_pos).unwrap();
-                let map = chunk_data.map.clone();
-                let tiles = chunk_data.tiles.clone();
-                let structures = chunk_data.structures.clone();
-                let chunk = ChunkSpawnData {
-                    position: chunk_pos.clone(),
-                    tiles,
-                    map,
-                    structures
-                };
-                commands.spawn(
-                    PendingChunk {
-                        chunk: chunk
-                    }
-                ); 
+            if saved.chunks.contains(chunk_pos) {
+                load_writer.write(LoadChunk { position: chunk_pos.clone() });
+                println!("loading at: {:?}", chunk_pos);
             } else {
                 writer.write(PrepareChunk { position: chunk_pos.clone() });
+                println!("generating at: {:?}", chunk_pos);
             }
             
         }
@@ -361,8 +350,7 @@ pub fn save_chunk(
         if let Some(chunk) = chunkgrid.chunks.get(&msg.position) {
             let task_pool = AsyncComputeTaskPool::get();
             let chunk_pos = msg.position;
-            let map_pointer = Arc::new(&chunk.map);
-            let map = (*map_pointer).clone();
+            let map = chunk.map.clone();
             let seed_value = global_seed.value;
             let mut structures_in_chunk: Vec<StructureSpawnData> = Vec::new();
             //looking for structures here
@@ -406,10 +394,19 @@ pub fn save_chunk(
                     map: map,
                     structures: structures_in_chunk,
                 };
-                saved_chunk
+                if let Ok(serialized) = bincode::serialize(&saved_chunk) {
+                    let path = chunk_path_from_pos(chunk_pos);
+                
+                    if let Err(e) = std::fs::write(&path, serialized) {
+                        println!("FAILED WRITE {:?}: {:?}", path, e);
+                    }
+                } else {
+                    println!("FAILED SERIALIZE chunk {:?}", chunk_pos);
+                }
             });
             commands.spawn(
                 SavingPendingChunk {
+                    pos: chunk_pos,
                     task: task
                 }
             );
@@ -424,12 +421,12 @@ pub fn poll_saving_chunks(
     mut saved: ResMut<SavedChunks>,
     mut disable_writer: MessageWriter<DisableChunk>,
 ) {
+   
     for (entity, mut pending) in chunks.iter_mut() {
-        if let Some(result) = future::block_on(future::poll_once(&mut pending.task)) {
-            let pos = result.position.clone();
-            saved.chunks.insert(pos, result);
-            println!("chunk saveed {:?}", pos);
-            disable_writer.write(DisableChunk { position: pos });
+        if pending.task.is_finished() {
+            saved.chunks.insert(pending.pos);
+            println!("chunk saveed {:?}", pending.pos);
+            disable_writer.write(DisableChunk { position: pending.pos });
             commands.entity(entity).despawn();
         }
     }
@@ -442,8 +439,58 @@ pub fn track_of_saved_chunks(
         return;
     }
     let mut count = 0;
-    for (pos, chunk) in saved.chunks.iter() {
+    for _pos in saved.chunks.iter() {
         count += 1;
     }
     println!("saved chunks: {}", count);
+}
+
+pub fn chunk_loader(
+    mut commands: Commands,
+    mut reader: MessageReader<LoadChunk>,
+    saved: Res<SavedChunks>,
+    mut chunkgrid: ResMut<ChunkGrid>,
+) {
+    for msg in reader.read() {
+        let chunk_pos = msg.position;
+        
+        let task_pool = AsyncComputeTaskPool::get();
+        
+        let task = task_pool.spawn(async move {
+            let path = chunk_path_from_pos(chunk_pos);
+        
+            if let Ok(bytes) = std::fs::read(path) {
+                if let Ok(chunk) = bincode::deserialize::<ChunkSpawnData>(&bytes) {
+                    return Some(chunk);
+                }
+            }
+        
+            None
+        });
+        commands.spawn(
+            LoadingPendingChunk {
+                chunk: task,
+            }
+        );
+        chunkgrid.pending_chunks.insert(chunk_pos);
+        
+    } 
+}
+
+pub fn poll_chunk_loading(
+    mut commands: Commands,
+    mut chunks: Query<(Entity, &mut LoadingPendingChunk)>,
+) {
+    for (entity, mut pending) in chunks.iter_mut() {
+        if let Some(chunk) = future::block_on(future::poll_once(&mut pending.chunk)) {
+            if let Some(chunk) = chunk {
+                commands.spawn(
+                    PendingChunk {
+                        chunk,
+                    }
+                );
+                commands.entity(entity).despawn();
+            }
+        }
+    }
 }

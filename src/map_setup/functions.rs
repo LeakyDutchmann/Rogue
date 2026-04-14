@@ -82,3 +82,35 @@ pub fn pick_tile_type_in_world(conditions: (bool, bool, bool, bool)) -> TileType
     };
     tile_type
 }
+
+pub fn chunk_path_from_pos(pos: IVec2) -> String {
+    format!("world/{}_{}.chunk", pos.x, pos.y)
+}
+
+use bevy::math::IVec2;
+use std::fs;
+
+pub fn get_positions_of_saved_chunks() -> Option<Vec<IVec2>> {
+    let mut items = Vec::new();
+    let entries = fs::read_dir("world").ok()?;
+    for entry in entries {
+        let entry = entry.ok()?;
+        let path = entry.path();
+        let file_name = match path.file_stem().and_then(|s| s.to_str()) {
+            Some(name) => name,
+            None => continue,
+        };
+        let mut parts = file_name.split('_');
+        let x = match parts.next()?.parse::<i32>() {
+            Ok(v) => v,
+            Err(_) => continue,
+        };
+        let y = match parts.next()?.parse::<i32>() {
+            Ok(v) => v,
+            Err(_) => continue,
+        };
+
+        items.push(IVec2::new(x, y));
+    }
+    Some(items)
+}

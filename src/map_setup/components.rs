@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Debug, PartialEq, Copy, Clone, Hash)]
+#[derive(Debug, PartialEq, Copy, Clone, Hash, Serialize, Deserialize)]
 pub enum TileType {
     Floor, // atlas index = 1..3 **
     WallSideEast,
@@ -48,7 +48,7 @@ impl TileType {
     }
 }
 
-#[derive(Hash, PartialEq, Eq, Clone)]
+#[derive(Hash, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum TileMaterial {
     Structurix,
     Mechanae,
@@ -104,5 +104,11 @@ pub struct PendingChunk {
 
 #[derive(Component)]
 pub struct SavingPendingChunk {
-    pub task: Task<ChunkSpawnData>
+    pub pos: IVec2,
+    pub task: Task<()>
+}
+
+#[derive(Component)]
+pub struct LoadingPendingChunk {
+    pub chunk: Task<Option<ChunkSpawnData>>,
 }
