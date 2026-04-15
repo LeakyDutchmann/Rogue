@@ -57,6 +57,7 @@ pub fn world_pos_to_tile_pos(world: Vec2, chunk_pos: IVec2) -> IVec2 {
     IVec2::new(local_x as i32, local_y as i32)
 }
 
+
 pub fn xy_idx(x: usize, y: usize) -> usize {
     (y as usize * CHUNK_WIDTH) + x as usize
 }
@@ -87,9 +88,6 @@ pub fn chunk_path_from_pos(pos: IVec2) -> String {
     format!("world/{}_{}.chunk", pos.x, pos.y)
 }
 
-use bevy::math::IVec2;
-use std::fs;
-
 pub fn get_positions_of_saved_chunks() -> Option<Vec<IVec2>> {
     let mut items = Vec::new();
     let entries = fs::read_dir("world").ok()?;
@@ -114,3 +112,4 @@ pub fn get_positions_of_saved_chunks() -> Option<Vec<IVec2>> {
     }
     Some(items)
 }
+

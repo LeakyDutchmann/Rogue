@@ -32,4 +32,3 @@ pub fn setup_world_dir(
         }
     }
 }
-

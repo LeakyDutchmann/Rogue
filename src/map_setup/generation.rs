@@ -1,6 +1,5 @@
 use crate::map_setup::*;
 
-
 pub fn generate_chunk(global_seed: u32, chunk_pos: IVec2) -> Vec<TileType> {
     let mut map = vec![TileType::Empty; CHUNK_WIDTH * CHUNK_HEIGHT];
     let perlin = Perlin::new(global_seed);
@@ -52,6 +51,53 @@ pub fn generate_chunk(global_seed: u32, chunk_pos: IVec2) -> Vec<TileType> {
     map
 }
 
-
-
-
+pub fn prepare_chunk(
+    mut commands: Commands,
+    mut reader: MessageReader<PrepareChunk>,
+    global_seed: Res<GlobalSeed>,
+    mut chunk_grid: ResMut<ChunkGrid>,
+) {
+    let task_pool = AsyncComputeTaskPool::get();
+    for msg in reader.read() {
+        let seed_value = global_seed.value;
+        let chunk_pos = msg.position;
+        let task = task_pool.spawn(async move {
+            let seed_u64 = get_seed(seed_value, chunk_pos.x, chunk_pos.y);
+            let mut rng = StdRng::seed_from_u64(seed_u64);
+            let chunk_map = generate_chunk(seed_value as u32, chunk_pos);
+            
+            let mut tiles: Vec<TileSpawnData> = Vec::with_capacity(CHUNK_WIDTH * CHUNK_HEIGHT);
+            
+            for local_x in 0..CHUNK_WIDTH {
+                for local_y in 0..CHUNK_HEIGHT {
+                    let idx = xy_idx(local_x, local_y);
+                    let tile_type = chunk_map[idx];
+                    
+                    let position = tile_pos_to_world_pos(IVec2::new(local_x as i32, local_y as i32), chunk_pos);
+                    let sprite_index = tile_type.tile_type_to_index();
+                    let floor_index = rng.random_range(0..3);
+                    let material = TileMaterial::pick_tile_material(&mut rng);
+                    let tile = TileSpawnData {
+                        position,
+                        local_pos: USizeVec2::new(local_x, local_y),
+                        tile_type,
+                        material,
+                        sprite_index,
+                        floor_index,
+                    };
+                    tiles.push(tile);
+                }
+            }
+            let chunk = ChunkSpawnData {
+                position: chunk_pos,
+                tiles,
+                map: chunk_map,
+                structures: Vec::new()
+            };
+            chunk
+        });
+        commands.spawn(PendingTaskChunk { task: task });
+        chunk_grid.pending_chunks.insert(chunk_pos);
+        
+    }
+}
