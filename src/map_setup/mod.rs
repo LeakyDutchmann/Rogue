@@ -9,36 +9,38 @@ mod persistence;
 mod map_manager;
 mod types;
 
+
+
+pub use setup::*;
+pub use components::*;
+use tasks::*;
+pub use types::*;
+use map_manager::*;
+use generation::*;
+use persistence::*;
+pub use systems::*;
+pub use functions::*;
+use spawning::*;
+
 use bevy::prelude::*;
 use rand::Rng;
 use bevy::math::IVec2;
 use std::fs;
 use std::collections::{HashMap, HashSet};
-pub use setup::*;
-pub use components::*;
-use tasks::*;
-use types::*;
-use map_manager::*;
-use generation::*;
-use persistence::*;
-use crate::components::Health;
 use serde::{Serialize, Deserialize};
-use crate::colision_manager::{Colider, ColiderShape};
-use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk, SpawnChunk};
-use crate::player::PlayerTransform;
-use crate::items::ItemId;
-use crate::building::{StructureRegistry, StructureId};
 use rand::rngs::StdRng;
 use rand::SeedableRng;
-pub use systems::*;
-pub use functions::*;
-use spawning::*;
-use noise::{NoiseFn, Perlin, Seedable};
+use noise::{NoiseFn, Perlin};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
-use std::sync::{Arc};
 use bevy::math::USizeVec2;
+
+use crate::colision_manager::{Colider, ColiderShape};
+use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk};
+use crate::player::PlayerTransform;
+use crate::building::{StructureRegistry, StructureId};
 use crate::world::{CELL_SIZE, get_cells_3x3, get_entities_in_cells, WorldGrid};
+use crate::components::Health;
 
 
 pub struct MapSetupPlugin;
@@ -108,16 +110,11 @@ pub struct SavedChunks {
     pub chunks: HashSet<IVec2>,
 }
 
+
 #[derive(Resource)]
 pub struct MapAtlas {
     pub texture: Handle<Image>,
     pub layout: Handle<TextureAtlasLayout>,
-}
-
-
-#[derive(Resource)]
-pub struct GameMap {
-    tiles: Vec<TileType>,
 }
 
 
@@ -130,4 +127,3 @@ pub struct MapAtlases {
 pub const CHUNK_HEIGHT: usize = 16;
 pub const CHUNK_WIDTH: usize = 16;
 pub const TILE_SIZE: f32 = 32.0;
-pub const MAX_Y: f32 = ((CHUNK_HEIGHT / 2) * TILE_SIZE as usize) as f32;

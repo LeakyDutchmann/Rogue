@@ -2,7 +2,6 @@ use super::*;
 
 pub fn track_chunks(
     player_tf: Res<PlayerTransform>,
-    mut chunkgrid: ResMut<ChunkGrid>,
     mut player_chunk: ResMut<PlayerChunk>,
 ) {
     let player_pos = player_tf.0.translation.truncate();
@@ -13,10 +12,9 @@ pub fn track_chunks(
 }
 
 pub fn chunk_handler(
-    mut commands: Commands,
     chunkgrid: Res<ChunkGrid>,
     player_chunk: Res<PlayerChunk>,
-    mut saved: ResMut<SavedChunks>,
+    saved: Res<SavedChunks>,
     mut writer: MessageWriter<PrepareChunk>,
     mut disable_writer: MessageWriter<DisableChunk>,
     mut save_writer: MessageWriter<SaveChunk>,
@@ -37,10 +35,8 @@ pub fn chunk_handler(
         if !chunkgrid.chunks.contains_key(&chunk_pos) && !chunkgrid.pending_chunks.contains(&chunk_pos) {
             if saved.chunks.contains(chunk_pos) {
                 load_writer.write(LoadChunk { position: chunk_pos.clone() });
-                println!("loading at: {:?}", chunk_pos);
             } else {
                 writer.write(PrepareChunk { position: chunk_pos.clone() });
-                println!("generating at: {:?}", chunk_pos);
             }
             
         }

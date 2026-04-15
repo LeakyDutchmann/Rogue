@@ -1,7 +1,6 @@
 use super::*;
 
 pub fn setup_atlas(
-    mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut map_atlases: ResMut<MapAtlases>,

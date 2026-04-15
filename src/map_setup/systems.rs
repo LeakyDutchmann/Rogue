@@ -1,12 +1,9 @@
 use super::*;
 
 pub fn update_map(
-    mut commands: Commands,
     mut reader: MessageReader<MapChanged>,
-    mut query: Query<(Entity, &Transform, &MapTile, &mut Sprite), Without<Floor>>,
+    mut query: Query<(&Transform, &MapTile, &mut Sprite), Without<Floor>>,
     tile_identifier: Query<Entity, With<Wall>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     mut chunkgrid: ResMut<ChunkGrid>,
     worldgrid: Res<WorldGrid>,
 ) {
@@ -20,7 +17,7 @@ pub fn update_map(
             let cells_to_update = get_cells_3x3((cell_x, cell_y));
             let root_entities = get_entities_in_cells(cells_to_update, &worldgrid);
             for entity in root_entities {
-                if let Ok((entity, tf, map_tile, mut sprite)) = query.get_mut(entity) {
+                if let Ok((tf, map_tile, mut sprite)) = query.get_mut(entity) {
                     let translation = tf.translation.truncate();
                     let mut has_wall_north = false;
                     let mut has_wall_south = false;

@@ -1,11 +1,9 @@
 use super::*;
 
 pub fn save_chunk(
-    structures: Query<(Entity, &StructureId, &Transform, &ParrentChunk, &Health)>,
+    structures: Query<(&StructureId, &Transform, &ParrentChunk, &Health)>,
     mut commands: Commands,
     mut reader: MessageReader<SaveChunk>,
-    mut disable_writer: MessageWriter<DisableChunk>,
-    mut saved: ResMut<SavedChunks>,
     global_seed: Res<GlobalSeed>,
     chunkgrid: Res<ChunkGrid>,
 ) {
@@ -16,8 +14,7 @@ pub fn save_chunk(
             let map = chunk.map.clone();
             let seed_value = global_seed.value;
             let mut structures_in_chunk: Vec<StructureSpawnData> = Vec::new();
-            //looking for structures here
-            for (entity, struct_id, transform, parent_chunk, hp) in structures.iter() {
+            for (struct_id, transform, parent_chunk, hp) in structures.iter() {
                 if parent_chunk.position == chunk_pos {
                     let structure = StructureSpawnData {
                         id: struct_id.id.clone(),
@@ -59,7 +56,6 @@ pub fn save_chunk(
                 };
                 if let Ok(serialized) = bincode::serialize(&saved_chunk) {
                     let path = chunk_path_from_pos(chunk_pos);
-                
                     if let Err(e) = std::fs::write(&path, serialized) {
                         println!("FAILED WRITE {:?}: {:?}", path, e);
                     }
@@ -81,23 +77,18 @@ pub fn save_chunk(
 pub fn chunk_loader(
     mut commands: Commands,
     mut reader: MessageReader<LoadChunk>,
-    saved: Res<SavedChunks>,
     mut chunkgrid: ResMut<ChunkGrid>,
 ) {
     for msg in reader.read() {
         let chunk_pos = msg.position;
-        
         let task_pool = AsyncComputeTaskPool::get();
-        
         let task = task_pool.spawn(async move {
             let path = chunk_path_from_pos(chunk_pos);
-        
             if let Ok(bytes) = std::fs::read(path) {
                 if let Ok(chunk) = bincode::deserialize::<ChunkSpawnData>(&bytes) {
                     return Some(chunk);
                 }
             }
-        
             None
         });
         commands.spawn(

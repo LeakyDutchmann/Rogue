@@ -8,7 +8,6 @@ use crate::components::{Facing, ActorState, ActorStateType, FacingDirection};
 use std::collections::HashMap;
 use crate::items::{AnimationStyle, HeldItem, ItemRegistry};
 use crate::combat::{AttackAnimation, damage_execution_system};
-use crate::map_setup::MAX_Y;
 
 use bevy::prelude::*;
 
