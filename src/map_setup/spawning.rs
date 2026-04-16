@@ -102,12 +102,19 @@ pub fn despawn_chunk(
     mut commands: Commands,
     mut reader: MessageReader<DisableChunk>,
     mut chunkgrid: ResMut<ChunkGrid>,
-    query: Query<(Entity, &ParrentChunk)>,
+    query: Query<(Entity, &ParrentChunk, &Transform)>,
+    mut worldgrid: ResMut<WorldGrid>,
 ) {
     for msg in reader.read() {
-        for (entity, parrent_chunk) in query.iter() {
+        for (entity, parrent_chunk, transform) in query.iter() {
+            let pos = transform.translation;
+            let cell_x = (pos.x / CELL_SIZE).round() as i32;
+            let cell_y = (pos.y / CELL_SIZE).round() as i32;
             if msg.position == parrent_chunk.position {
-                commands.entity(entity).despawn();
+                if let Some(entities) = worldgrid.cells.get_mut(&(cell_x, cell_y)) {
+                    entities.retain(|&e| e != entity);
+                }
+                commands.entity(entity).despawn();          
             }
         }
         chunkgrid.chunks.remove(&msg.position);
