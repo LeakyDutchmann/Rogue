@@ -3,7 +3,7 @@ use super::*;
 pub fn update_map(
     mut reader: MessageReader<MapChanged>,
     mut query: Query<(&Transform, &MapTile, &mut Sprite), Without<Floor>>,
-    tile_identifier: Query<Entity, With<Wall>>,
+    tile_identifier: Query<(Entity, &MapTile), With<Wall>>,
     mut chunkgrid: ResMut<ChunkGrid>,
     worldgrid: Res<WorldGrid>,
 ) {
