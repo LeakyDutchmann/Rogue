@@ -36,7 +36,7 @@ use futures_lite::future;
 use bevy::math::USizeVec2;
 
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk};
+use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk, UpdateTile};
 use crate::player::PlayerTransform;
 use crate::building::{StructureRegistry, StructureId};
 use crate::world::{CELL_SIZE, get_cells_3x3, get_entities_in_cells, WorldGrid};
@@ -62,12 +62,13 @@ impl Plugin for MapSetupPlugin {
         });
         app.insert_resource( SavedChunks {
             chunks: HashSet::new(),
+            saving_chunks: HashSet::new(),
         });
         app.add_systems(Startup, (setup_atlas, setup_world_dir).chain());
         app.add_systems(Update, (track_chunks, chunk_handler, 
             prepare_chunk, chunk_loader, poll_pending_chunks, poll_chunk_loading,
-            spawn_chunk, despawn_chunk, save_chunk, poll_saving_chunks));
-        app.add_systems(Update, (update_map, track_of_saved_chunks));
+            spawn_chunk, update_map, update_tiles, save_chunk, poll_saving_chunks, despawn_chunk).chain());
+        app.add_systems(Update, track_of_saved_chunks);
     }
 }
 
@@ -108,6 +109,7 @@ pub struct ChunkGrid {
 #[derive(Resource)]
 pub struct SavedChunks {
     pub chunks: HashSet<IVec2>,
+    pub saving_chunks: HashSet<IVec2>,
 }
 
 
@@ -124,6 +126,6 @@ pub struct MapAtlases {
 }
 
 
-pub const CHUNK_HEIGHT: usize = 16;
-pub const CHUNK_WIDTH: usize = 16;
+pub const CHUNK_HEIGHT: usize = 2;
+pub const CHUNK_WIDTH: usize = 2;
 pub const TILE_SIZE: f32 = 32.0;

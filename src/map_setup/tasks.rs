@@ -24,6 +24,7 @@ pub fn poll_saving_chunks(
     for (entity, pending) in chunks.iter_mut() {
         if pending.task.is_finished() {
             saved.chunks.insert(pending.pos);
+            saved.saving_chunks.remove(&pending.pos);
             println!("chunk saveed {:?}", pending.pos);
             disable_writer.write(DisableChunk { position: pending.pos });
             commands.entity(entity).despawn();

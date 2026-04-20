@@ -24,9 +24,18 @@ impl Plugin for MessagesPlugin {
             .add_message::<DisableChunk>()
             .add_message::<SaveChunk>()
             .add_message::<LoadChunk>()
-            .add_message::<SpawnChunk>();
+            .add_message::<SpawnChunk>()
+            .add_message::<UpdateTile>();
     }
 }
+
+
+#[derive(Message)]
+pub struct UpdateTile {
+    pub tile_position: Vec2,
+    pub tile_type: TileType,
+}
+
 
 #[derive(Message)]
 pub struct SpawnChunk {
@@ -174,8 +183,7 @@ pub struct FindPath {
 
 #[derive(Message)]
 pub struct MapChanged {
-    pub local_pos: IVec2,
-    pub chunk_pos: IVec2,
+    pub pos: Vec2,
 }
 
 

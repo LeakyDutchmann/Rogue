@@ -118,5 +118,6 @@ pub fn despawn_chunk(
             }
         }
         chunkgrid.chunks.remove(&msg.position);
+        println!("chunk despawned {:?}", msg.position);
     }
 }

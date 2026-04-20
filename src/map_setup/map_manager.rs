@@ -12,9 +12,9 @@ pub fn track_chunks(
 }
 
 pub fn chunk_handler(
-    chunkgrid: Res<ChunkGrid>,
+    mut chunkgrid: ResMut<ChunkGrid>,
     player_chunk: Res<PlayerChunk>,
-    saved: Res<SavedChunks>,
+    mut saved: ResMut<SavedChunks>,
     mut writer: MessageWriter<PrepareChunk>,
     mut disable_writer: MessageWriter<DisableChunk>,
     mut save_writer: MessageWriter<SaveChunk>,
@@ -41,10 +41,15 @@ pub fn chunk_handler(
             
         }
     }
-    for (pos, chunk) in chunkgrid.chunks.iter() {
+    for (pos, chunk) in chunkgrid.chunks.iter_mut() {
         if !active_chunks.contains(pos) {
             if chunk.changed {
                 save_writer.write(SaveChunk { position: pos.clone() });
+                saved.saving_chunks.insert(pos.clone());
+                chunk.changed = false;
+                continue;
+            }
+            if saved.saving_chunks.contains(pos) {
                 continue;
             }
             disable_writer.write(DisableChunk { position: pos.clone() });

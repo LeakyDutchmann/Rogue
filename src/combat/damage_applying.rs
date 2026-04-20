@@ -41,8 +41,7 @@ pub fn damage_execution_system(
                 if destruction.damage_type == DamageType::ToTileDamage {
                     let chunk_pos = get_chunk_pos(destruction.position);
                     writer.write(MapChanged {
-                        local_pos: world_pos_to_tile_pos(destruction.position, chunk_pos),
-                        chunk_pos: chunk_pos,
+                        pos: destruction.position,
                     });
                     if let Ok(map_tile) = tile_type.get(destruction.entity) {
                         if let Some(ore_id) = map_tile.material.get_ore_id() {

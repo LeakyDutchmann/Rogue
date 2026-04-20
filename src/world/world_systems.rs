@@ -47,8 +47,7 @@ pub fn update_empty_cells(
     mut empty_cells: ResMut<EmptyCellsWorldPos>,
 ) {
     for msg in reader.read() {
-        let cell_pos = tile_pos_to_world_pos(msg.local_pos, msg.chunk_pos);
-        empty_cells.cells.push(cell_pos);
+        empty_cells.cells.push(msg.pos);
     } 
 }
 
