@@ -28,7 +28,11 @@ pub fn update_map(
             Vec2::new(pos.x, pos.y + TILE_SIZE),
             Vec2::new(pos.x, pos.y - TILE_SIZE, ),
             Vec2::new(pos.x + TILE_SIZE, pos.y),
-            Vec2::new(pos.x - TILE_SIZE, pos.y),  
+            Vec2::new(pos.x - TILE_SIZE, pos.y),
+            Vec2::new(pos.x + TILE_SIZE, pos.y + TILE_SIZE),
+            Vec2::new(pos.x - TILE_SIZE, pos.y - TILE_SIZE),
+            Vec2::new(pos.x + TILE_SIZE, pos.y - TILE_SIZE),
+            Vec2::new(pos.x - TILE_SIZE, pos.y + TILE_SIZE),
         ];
         let mut to_update: Vec<(IVec2, IVec2, TileType, Vec2)> = Vec::new();
         for (i, tile_pos) in tiles_to_update.iter().enumerate() {
