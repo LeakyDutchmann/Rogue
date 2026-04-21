@@ -29,7 +29,6 @@ pub fn toggle_building_mode(
 pub fn set_building_ui_visibility(
     building_mode: Res<BuildingMode>,
     mut ui_node: Query<&mut Visibility, With<BuildingRootUiNode>>,
-    mut inventory_open: ResMut<InventoryOpen>,
 ) {
     for mut visibility in ui_node.iter_mut() {
         *visibility = if building_mode.state == BuildingState::On {
@@ -48,7 +47,7 @@ pub fn cursor_structure_carrier_update(
     image_node: Query<&ImageNode>,
 ) {
     if let Some(position) = window.cursor_position() {
-        for (entity, mut carrier, mut node) in cursor.iter_mut() {
+        for (entity, carrier, mut node) in cursor.iter_mut() {
             node.left = Val::Px(position.x);
             node.top = Val::Px(position.y);
             if let Some(structure) = &carrier.structure {
@@ -58,7 +57,6 @@ pub fn cursor_structure_carrier_update(
                             image: def.icon.clone(),
                             ..Default::default()
                         });
-                        println!("got crsr");
                     }
                 }
             } else {
@@ -69,11 +67,9 @@ pub fn cursor_structure_carrier_update(
 }
 
 pub fn build_structure(
-    mut commands: Commands,
-    mut cursor: Query<(&mut CursorStructureCarrier)>,
+    mut cursor: Query<&mut CursorStructureCarrier>,
     mut reader: MessageReader<MouseClickEvent>,
     mut writer: MessageWriter<SpawnStructureRequest>,
-    structure_reg: Res<StructureRegistry>,
     mut building_mode: ResMut<BuildingMode>,
     ui_click: Res<UiClickTrack>,
     time: Res<Time>,
@@ -140,7 +136,6 @@ pub fn build_structure(
 pub fn spawn_structure(
     mut commands: Commands,
     mut reader: MessageReader<SpawnStructureRequest>,
-    mut writer: MessageWriter<MapChanged>,
     structure_reg: Res<StructureRegistry>,
     mut chunkgrid: ResMut<ChunkGrid>,
 ) {
@@ -168,12 +163,11 @@ pub fn check_colision_static(pos1: Vec2, pos2: Vec2, size1: (f32, f32), size2: (
     let top_2 = pos2.y + size2.1 / 2.0;
     let bottom_2 = pos2.y - size2.1 / 2.0;
     
-    let mut intersects = false;
-    if right_1 < left_2 || left_1 > right_2 || top_1 < bottom_2 || bottom_1 > top_2 {
-        intersects = false;
+    let intersects = if right_1 < left_2 || left_1 > right_2 || top_1 < bottom_2 || bottom_1 > top_2 {
+        false
     } else {
-        intersects = true;
-    }
+        true
+    };
     intersects
 }
 
@@ -181,7 +175,7 @@ pub fn can_place_structure(
     cursor: Query<&CursorStructureCarrier>,
     building_mode: Res<BuildingMode>,
     structure_reg: Res<StructureRegistry>,
-    mut cursor_pos: Res<CursorWorldPos>,
+    cursor_pos: Res<CursorWorldPos>,
     coliders: Query<(&Colider, &Transform)>,
     worldgrid: Res<WorldGrid>,
     mut can_place: ResMut<CanPlaceStruct>,
@@ -214,7 +208,7 @@ pub fn can_place_structure(
                                             break;
                                         }
                                     },
-                                    ColiderShape::Circle { radius } => {
+                                    ColiderShape::Circle { radius: _radius } => {
                                         continue;
                                     },
                                 }

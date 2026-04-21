@@ -4,7 +4,7 @@ pub fn setup_building_mode_ui(
     mut commands: Commands,
 ) {
     let mut slots = Vec::new();
-    for i in 0..40 {
+    for _i in 0..40 {
         slots.push(commands.spawn((
             Node {
                 border: UiRect::all(Val::Px(2.0)),
@@ -28,9 +28,9 @@ pub fn setup_building_mode_ui(
     let root =commands.spawn((
         Node {
             position_type: PositionType::Absolute,
-            width: Val::Px((256.0)),
-            height: Val::Percent((100.0)),
-            left: Val::Px((32.0)),
+            width: Val::Px(256.0),
+            height: Val::Percent(100.0),
+            left: Val::Px(32.0),
             // top: Val::Percent((50.0)),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
@@ -43,8 +43,8 @@ pub fn setup_building_mode_ui(
         Node {
             border: UiRect::all(Val::Px(2.0)),
             position_type: PositionType::Absolute,
-            width: Val::Px((296.0)),
-            height: Val::Percent((80.0)),
+            width: Val::Px(296.0),
+            height: Val::Percent(80.0),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             display: Display::Grid,

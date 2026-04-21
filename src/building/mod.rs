@@ -10,7 +10,7 @@ use setup::*;
 use input::*;
 use functions::*;
 
-use crate::inventory::{InventoryOpen, UiClickTrack, check_if_inventory_has_item};
+use crate::inventory::{UiClickTrack, check_if_inventory_has_item};
 use crate::components::*;
 use std::collections::HashMap;
 use bevy::ui::FocusPolicy;
