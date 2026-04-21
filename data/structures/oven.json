@@ -1,5 +1,12 @@
 {
-  "name": "WorkBench",
-  "icon_path": "structures/workbench.png",
-  "sprite_path": "structures/workbench.png"
+  "name": "Basic_Oven",
+  "icon_path": "structures/oven.png",
+  "sprite_path": "structures/oven.png",
+  "width": 20.0,
+  "height": 20.0,
+  "recipe": {
+    "ingredients": {
+      "Structurix": 10
+    }
+  }
 }

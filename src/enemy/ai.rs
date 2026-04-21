@@ -93,7 +93,7 @@ pub fn ai_steering(
                 let distance_weight = 1.0 / distance;   
                 let angle_weight = dot.clamp(0.0, 1.0);
                 let weight = distance_weight * angle_weight;
-                avoidance += -to_colider * weight;
+                avoidance += -to_colider * weight * 1.5;
             }
         }
         if avoidance != Vec2::ZERO {

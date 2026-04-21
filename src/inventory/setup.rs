@@ -15,9 +15,9 @@ pub fn setup_inventory(
                 height: Val::Px(48.0),
                 ..default()
             },
-            BorderColor::all(Color::srgb(0.5, 0.5, 0.5)),
+            BorderColor::all(Color::srgb(1.0, 0.4, 0.0)),
             Interaction::None,
-            ZIndex(3),
+            ZIndex(4),
             FocusPolicy::Block,
         )).with_children(|parent| {
             parent.spawn((
@@ -39,15 +39,19 @@ pub fn setup_inventory(
     let hotbar = commands.spawn((
             Node {
                 border: UiRect::all(Val::Px(2.0)),
-                width: Val::Px(432.0),
-                height: Val::Px(50.0),
+                width: Val::Px(472.0),
+                height: Val::Px(61.0),
                 position_type: PositionType::Absolute,
                 bottom: Val::Px(10.0),
                 left: Val::Percent(50.0),
-                margin: UiRect::left(Val::Px(-216.0)),
-                flex_direction: FlexDirection::Row,
+                margin: UiRect::left(Val::Px(-234.0)),
                 justify_content: JustifyContent::Center,
                 padding: UiRect::all(Val::Px(4.0)),
+                display: Display::Grid,
+                grid_template_columns: vec![RepeatedGridTrack::px(9, 48.0)],
+                grid_template_rows: vec![RepeatedGridTrack::px(1, 48.0)], 
+                column_gap: Val::Px(4.0),
+                row_gap: Val::Px(4.0),
                 ..default()
             },
             BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
@@ -65,7 +69,7 @@ pub fn setup_inventory(
             width: Val::Px(472.0),
             height: Val::Px(164.0),
             position_type: PositionType::Absolute,
-            bottom: Val::Px(60.0),
+            bottom: Val::Px(71.0),
             left: Val::Percent(50.0),
             margin: UiRect::left(Val::Px(-234.0)),
             justify_content: JustifyContent::Center,
@@ -86,6 +90,27 @@ pub fn setup_inventory(
     for slot in slice_for_inv_grid {
         commands.entity(inventory_grid).add_child(*slot);
     }
+    let root = commands.spawn((
+        Node {
+            border: UiRect::all(Val::Px(2.0)),
+            width: Val::Px(500.0),
+            height: Val::Px(283.0),
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(0.0),
+            left: Val::Percent(50.0),
+            margin: UiRect::left(Val::Px(-250.0)),
+            justify_content: JustifyContent::Center,
+            padding: UiRect::all(Val::Px(4.0)),
+            ..default()
+        },
+        // BackgroundColor(Color::srgb(0.5, 0.5, 0.5)),
+        // BorderColor::all(Color::srgb(0.8, 0.8, 0.8)),
+        ZIndex(1)
+    )).id();
+    commands.entity(root).add_child(hotbar);
+    commands.entity(root).add_child(inventory_grid);
+    
+    //below is cursor, maybe shall make separated system to initialize it
     commands.spawn((
         Node {
             width: Val::Px(32.0),
@@ -142,7 +167,7 @@ pub fn insert_item_in_inventory(
                 continue;
             }
             if i <= 5 {
-                let structurix = "Structurix_ore".to_string();
+                let structurix = "Structurix".to_string();
                 if let Some(def) = item_registry.items.get(&structurix) {
                      item_stack.quantity = def.max_stack as i32;
                      item_stack.item_stored = Some(structurix);

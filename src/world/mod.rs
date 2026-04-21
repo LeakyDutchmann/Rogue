@@ -1,19 +1,17 @@
 mod world_systems;
+mod functions;
 
 
 pub use world_systems::*;
 use bevy::prelude::*;
+pub use functions::*;
 use crate::messages::MapChanged;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use crate::map_setup::{TILE_SIZE, Wall};
-use crate::map_setup::{map_setup, tile_pos_to_world_pos};
+use crate::map_setup::{tile_pos_to_world_pos};
 use crate::enemy::Position;
 use std::collections::HashSet;
-
-
-
-
 
 
 pub struct WorldPlugin;
@@ -27,13 +25,13 @@ impl Plugin for WorldPlugin {
             cells: Vec::new(),
         });
         app.insert_resource(SharedBounds(Arc::new(RwLock::new(HashSet::new()))));
-        app.add_systems(Startup, insert_entities.after(map_setup));
-        app.add_systems(Startup, find_empty_cells.after(insert_entities));
-        app.add_systems(Startup, setup_bounds.after(find_empty_cells));
-        app.add_systems(Update, update_empty_cells);
+        // app.add_systems(Startup, insert_entities.after(map_setup));
+        // app.add_systems(Startup, find_empty_cells.after(insert_entities));
+        // app.add_systems(Startup, setup_bounds.after(find_empty_cells));
+        // app.add_systems(Update, modify_grid);
+        app.add_systems(Update, (update_empty_cells, update_worldgird));
         app.add_systems(Update, update_bounds.after(update_empty_cells));
-        // app.add_systems(Startup, modify_empty.after(find_empty_cells));
-        // app.add_systems(Update, check_grid.after(apply_movement));
+
         
     }
 }

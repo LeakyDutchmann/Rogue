@@ -1,4 +1,4 @@
-use crate::world::*;
+use crate::{map_setup::CHUNK_WIDTH, world::*};
 
 pub fn insert_entities(
     mut entities: Query<(Entity, &Transform)>,
@@ -12,41 +12,16 @@ pub fn insert_entities(
     }
 }
 
-fn radius_to_cells(radius: f32) -> i32 {
-    (radius / CELL_SIZE).floor() as i32
-}
-
-pub fn get_cells_in_radius(central: (i32, i32), radius: f32) -> Vec<(i32, i32)> {
-    let mut neighbour_cells = Vec::new();
-    let delta = radius_to_cells(radius);
-    for dx in -delta..=delta {
-        for dy in -delta..=delta {
-            neighbour_cells.push((central.0 + dx, central.1 + dy));
-        }
+pub fn update_worldgird(
+    mut entities: Query<(Entity, &Transform), Added<Transform>>,
+    mut world: ResMut<WorldGrid>,
+) {
+    for (entity, transform) in entities.iter_mut() {
+        let pos = transform.translation.truncate();
+        let cell_x = (pos.x / CELL_SIZE).round() as i32;
+        let cell_y = (pos.y / CELL_SIZE).round() as i32;
+        world.cells.entry((cell_x, cell_y)).or_default().push(entity);
     }
-    neighbour_cells
-}
-
-pub fn get_cells_3x3(central: (i32, i32)) -> Vec<(i32, i32)> {
-    let mut neighbour_cells = Vec::new();
-    for dx in -1..=1 {
-        for dy in -1..=1 {
-            neighbour_cells.push((central.0 + dx, central.1 + dy));
-        }
-    }
-    neighbour_cells
-}
-
-pub fn get_entities_in_cells(cells: Vec<(i32, i32)>, world: &WorldGrid) -> Vec<Entity> {
-    let mut entities = Vec::new();
-    for cell in cells {
-        if let Some(entities_in_cell) = world.cells.get(&cell) {
-            for &e in entities_in_cell {
-                entities.push(e);
-            }
-        }
-    }
-    entities
 }
 
 pub fn find_empty_cells(
@@ -72,8 +47,7 @@ pub fn update_empty_cells(
     mut empty_cells: ResMut<EmptyCellsWorldPos>,
 ) {
     for msg in reader.read() {
-        let cell_pos = tile_pos_to_world_pos(msg.position);
-        empty_cells.cells.push(cell_pos);
+        empty_cells.cells.push(msg.pos);
     } 
 }
 
@@ -120,3 +94,34 @@ pub fn update_bounds(
 //     }
 // }
 
+pub fn track_of_cells(
+    cells: Res<WorldGrid>,
+) {
+    if !cells.is_changed() {
+        return;
+    }
+    let mut count = 0;
+    for (_, _) in cells.cells.iter() {
+        count += 1;
+    }
+    println!("Number of cells: {}", count);
+}
+
+pub fn modify_grid(
+    mut commands: Commands,
+    mut cells: ResMut<WorldGrid>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for (grid_pos, entities) in cells.cells.iter_mut() {
+        let x = grid_pos.0 as f32 * CELL_SIZE;
+        let y = grid_pos.1 as f32 * CELL_SIZE;
+        let translation = Vec3::new(x, y, 20.0);
+        commands.spawn((
+            Mesh2d(meshes.add(Rectangle::new(16.0, 16.0))),
+            MeshMaterial2d(materials.add(Color::srgb(0.1, 0.4, 0.1))),
+            Transform::from_translation(translation)
+        ));
+        println!("spawning at ({}, {})", grid_pos.0, grid_pos.1);
+    }
+}

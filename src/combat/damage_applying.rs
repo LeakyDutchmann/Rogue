@@ -14,6 +14,7 @@ pub fn damage_execution_system(
     mut actor_qr: Query<&mut ActorState>,
     deathtimer: Query<&DeathTimer>,
     tile_type: Query<&MapTile>,
+    mut chunkgrid: ResMut<ChunkGrid>,
 ) {
     for destruction in reader.read() {
         if let Ok(mut hp) = health.get_mut(destruction.entity) {
@@ -30,10 +31,17 @@ pub fn damage_execution_system(
                     });
                 }   
             }
+            if destruction.damage_type == DamageType::ToStructureDamage {
+                let chunk_pos = get_chunk_pos(destruction.position);
+                if let Some(chunk) = chunkgrid.chunks.get_mut(&chunk_pos) {
+                    chunk.changed = true;
+                }
+            }
             if hp.0 <= 0 {
                 if destruction.damage_type == DamageType::ToTileDamage {
+                    let chunk_pos = get_chunk_pos(destruction.position);
                     writer.write(MapChanged {
-                        position: world_pos_to_tile_pos(destruction.position),
+                        pos: destruction.position,
                     });
                     if let Ok(map_tile) = tile_type.get(destruction.entity) {
                         if let Some(ore_id) = map_tile.material.get_ore_id() {
@@ -41,7 +49,6 @@ pub fn damage_execution_system(
                                 position: destruction.position,
                                 item_id: ore_id.clone(),
                             });
-                            println!("Spawned item: {}", ore_id.clone());
                             commands.entity(destruction.entity).despawn();
                         }
                     }
@@ -55,6 +62,8 @@ pub fn damage_execution_system(
                                 });
                             }
                         }  
+                    } else {
+                        commands.entity(destruction.entity).despawn();
                     }
                 }
             }

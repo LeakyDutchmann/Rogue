@@ -64,10 +64,27 @@ pub fn setup_building_mode_ui(
         commands.entity(actual).add_child(slot);
     }
     commands.entity(root).add_child(actual);
+    
+    //below is cursor, maybe shall make separated system to initialize it
+    commands.spawn((
+        Node {
+            width: Val::Px(32.0),
+            height: Val::Px(32.0),
+            position_type: PositionType::Absolute,
+            ..default()
+        },
+        CursorStructureCarrier {
+            structure: None,
+        },
+        Text::new(""),
+        // BackgroundColor(Color::WHITE),
+        ZIndex(10000),
+    ));
 }
 
 pub fn load_structures(
     mut struct_registry: ResMut<StructureRegistry>,
+    mut recipe_registry: ResMut<RecipeRegistry>,
     assest_server: Res<AssetServer>,
 ) { 
     let path = "./data/structures";
@@ -76,9 +93,15 @@ pub fn load_structures(
         for structure in structures {
             let sprite = assest_server.load(&structure.sprite_path);
             let icon = assest_server.load(&structure.icon_path);
+            if let Some(recipe) = structure.recipe {
+                recipe_registry.recipes.insert(structure.name.clone(), recipe);
+            }
             let definition = StructureDefinition {
                 sprite,
                 icon,
+                width: structure.width,
+                height: structure.height,
+                radius: structure.radius,
             };
             struct_registry.structures.insert(structure.name.clone(), definition);
             count += 1;

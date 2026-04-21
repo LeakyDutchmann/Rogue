@@ -1,4 +1,5 @@
 use super::*;
+use crate::map_setup::ChunkSpawnData;
 
 pub struct MessagesPlugin;
 
@@ -16,8 +17,67 @@ impl Plugin for MessagesPlugin {
             .add_message::<InsertToInventory>()
             .add_message::<GetFromInventory>()
             .add_message::<DropFromCursor>()
-            .add_message::<DoubleClicked>();
+            .add_message::<DoubleClicked>()
+            .add_message::<SpawnStructureRequest>()
+            .add_message::<RemoveFromInventory>()
+            .add_message::<PrepareChunk>()
+            .add_message::<DisableChunk>()
+            .add_message::<SaveChunk>()
+            .add_message::<LoadChunk>()
+            .add_message::<SpawnChunk>()
+            .add_message::<UpdateTile>();
     }
+}
+
+
+#[derive(Message)]
+pub struct UpdateTile {
+    pub tile_position: Vec2,
+    pub tile_type: TileType,
+}
+
+
+#[derive(Message)]
+pub struct SpawnChunk {
+    pub data: ChunkSpawnData,
+}
+
+#[derive(Message)]
+pub struct LoadChunk {
+    pub position: IVec2,
+}
+
+
+#[derive(Message)]
+pub struct PrepareChunk {
+    pub position: IVec2,
+}
+
+
+#[derive(Message)]
+pub struct DisableChunk {
+    pub position: IVec2,
+}
+
+
+#[derive(Message)]
+pub struct SaveChunk {
+    pub position: IVec2,
+}
+
+
+#[derive(Message)]
+pub struct RemoveFromInventory {
+    pub quantity: i32,
+    pub item: String
+}
+
+
+#[derive(Message)]
+pub struct SpawnStructureRequest {
+    pub position: Vec2,
+    pub item_id: String,
+    pub chunk_position: IVec2,
 }
 
 
@@ -103,7 +163,7 @@ pub enum ScrollDir {
 #[derive(Message, Clone)]
 pub enum MouseClickEvent {
     LeftClick(Vec2),
-    _RightClick(Vec2),
+    RightClick(Vec2),
 }
 
 
@@ -123,7 +183,7 @@ pub struct FindPath {
 
 #[derive(Message)]
 pub struct MapChanged {
-    pub position: IVec2,
+    pub pos: Vec2,
 }
 
 
@@ -140,6 +200,7 @@ pub struct ApplyDamage {
 pub enum DamageType {
     ToTileDamage,
     ToEnemyDamage,
+    ToStructureDamage,
 }
 
 
