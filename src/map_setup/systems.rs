@@ -104,8 +104,8 @@ pub fn update_tiles(
 ) {
     for msg in reader.read() {
         let index = TileType::tile_type_to_index(msg.tile_type);
-        let cell_x = (msg.tile_position.x / CELL_SIZE).round() as i32;
-        let cell_y = (msg.tile_position.y / CELL_SIZE).round() as i32;
+        let cell_x = (msg.tile_position.x / CELL_SIZE).floor() as i32;
+        let cell_y = (msg.tile_position.y / CELL_SIZE).floor() as i32;
         if let Some(entities) = worldgrid.cells.get(&(cell_x, cell_y)) {
             for entity in entities {
                 if let Ok((mut map_tile, mut sprite)) = query.get_mut(*entity) {

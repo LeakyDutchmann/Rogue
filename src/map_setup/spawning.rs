@@ -108,8 +108,8 @@ pub fn despawn_chunk(
     for msg in reader.read() {
         for (entity, parrent_chunk, transform) in query.iter() {
             let pos = transform.translation;
-            let cell_x = (pos.x / CELL_SIZE).round() as i32;
-            let cell_y = (pos.y / CELL_SIZE).round() as i32;
+            let cell_x = (pos.x / CELL_SIZE).floor() as i32;
+            let cell_y = (pos.y / CELL_SIZE).floor() as i32;
             if msg.position == parrent_chunk.position {
                 if let Some(entities) = worldgrid.cells.get_mut(&(cell_x, cell_y)) {
                     entities.retain(|&e| e != entity);
