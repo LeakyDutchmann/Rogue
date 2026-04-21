@@ -16,6 +16,7 @@ use std::collections::HashMap;
 use bevy::ui::FocusPolicy;
 use crate::crafting::{RecipeRegistry, RecipeDefinition};
 use crate::map_setup::ParrentChunk;
+use crate::interaction::Interactable;
 
 pub struct BuildingPlugin;
 
@@ -96,6 +97,7 @@ pub struct StructureDefinitionRaw {
     pub name: String,
     pub sprite_path: String,
     pub icon_path: String,
+    pub interactable: bool,
     pub width: Option<f32>,
     pub height: Option<f32>,
     pub radius: Option<f32>,
@@ -110,6 +112,7 @@ pub struct StructureDefinition {
     pub width: Option<f32>,
     pub height: Option<f32>,
     pub radius: Option<f32>,
+    pub interactable: bool,
 }
 
 

@@ -4,6 +4,7 @@
   "sprite_path": "structures/oven.png",
   "width": 20.0,
   "height": 20.0,
+  "interactable": true,
   "recipe": {
     "ingredients": {
       "Structurix": 10

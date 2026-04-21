@@ -10,3 +10,7 @@ impl Plugin for InteractionsPlugin {
         
     }
 }
+
+
+#[derive(Component)]
+pub struct Interactable;

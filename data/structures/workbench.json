@@ -4,6 +4,7 @@
   "sprite_path": "structures/workbench.png",
   "width": 32.0,
   "height": 14.0,
+  "interactable": true,
   "recipe": {
     "ingredients": {
       "Structurix": 5

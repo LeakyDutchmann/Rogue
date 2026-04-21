@@ -102,6 +102,7 @@ pub fn load_structures(
                 width: structure.width,
                 height: structure.height,
                 radius: structure.radius,
+                interactable: structure.interactable,
             };
             struct_registry.structures.insert(structure.name.clone(), definition);
             count += 1;
