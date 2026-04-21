@@ -42,7 +42,7 @@ pub fn tool_tip_follow_cursor(
 }
 
 pub fn update_tool_tip(
-    mut query: Query<(&mut Node, &mut Text, &mut Visibility), With<ToolTip>>,
+    mut query: Query<(&mut Text, &mut Visibility), With<ToolTip>>,
     children: Query<&Children>,
     hovering_state: Res<UiHoveringState>,
     item_identificator: Query<&SlotIcon>,
@@ -51,7 +51,7 @@ pub fn update_tool_tip(
     recipe_registry: Res<RecipeRegistry>,
     time: Res<Time>,
 ) {
-    if let Ok((mut node, mut text, mut visibility)) = query.single_mut() {
+    if let Ok((mut text, mut visibility)) = query.single_mut() {
         if let Ok(inventory) = player_inventory.single() {
             if let Some(entity) = hovering_state.entity {
                 if let Ok(children) = children.get(entity) {

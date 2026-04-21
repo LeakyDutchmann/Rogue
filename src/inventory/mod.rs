@@ -16,13 +16,12 @@ use ui::*;
 use setup::*;
 pub use functions::*;
 
-use crate::items::{HeldItem, ItemRegistry, ItemId};
+use crate::items::{HeldItem, ItemRegistry};
 use crate::messages::{GetFromInventory, KeyPressed,
     SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory,
     DropFromCursor, ClickType, ItemQuantity, DoubleClicked, RemoveFromInventory};
 use bevy::ui::FocusPolicy;
 use crate::player::player_setup::player_setup;
-use crate::building::{BuildingMode, BuildingState};
 
 pub struct InventoryPlugin;
 

@@ -288,7 +288,6 @@ pub fn item_put_handler(
 }
 
 pub fn remove_from_inventory(
-    mut commands: Commands,
     mut reader: MessageReader<RemoveFromInventory>, 
     mut inventory: Query<&mut Inventory, With<Player>>,
 ) {

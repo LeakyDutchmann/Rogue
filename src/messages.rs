@@ -1,5 +1,4 @@
 use super::*;
-use crate::map_setup::ChunkSpawnData;
 
 pub struct MessagesPlugin;
 
@@ -24,7 +23,6 @@ impl Plugin for MessagesPlugin {
             .add_message::<DisableChunk>()
             .add_message::<SaveChunk>()
             .add_message::<LoadChunk>()
-            .add_message::<SpawnChunk>()
             .add_message::<UpdateTile>();
     }
 }
@@ -36,11 +34,6 @@ pub struct UpdateTile {
     pub tile_type: TileType,
 }
 
-
-#[derive(Message)]
-pub struct SpawnChunk {
-    pub data: ChunkSpawnData,
-}
 
 #[derive(Message)]
 pub struct LoadChunk {

@@ -39,7 +39,6 @@ pub fn damage_execution_system(
             }
             if hp.0 <= 0 {
                 if destruction.damage_type == DamageType::ToTileDamage {
-                    let chunk_pos = get_chunk_pos(destruction.position);
                     writer.write(MapChanged {
                         pos: destruction.position,
                     });
