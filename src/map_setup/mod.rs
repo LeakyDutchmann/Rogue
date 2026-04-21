@@ -39,7 +39,7 @@ use crate::colision_manager::{Colider, ColiderShape};
 use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk, UpdateTile};
 use crate::player::PlayerTransform;
 use crate::building::{StructureRegistry, StructureId};
-use crate::world::{CELL_SIZE, get_cells_3x3, get_entities_in_cells, WorldGrid};
+use crate::world::{CELL_SIZE, WorldGrid};
 use crate::components::Health;
 
 
@@ -126,6 +126,6 @@ pub struct MapAtlases {
 }
 
 
-pub const CHUNK_HEIGHT: usize = 2;
-pub const CHUNK_WIDTH: usize = 2;
+pub const CHUNK_HEIGHT: usize = 16;
+pub const CHUNK_WIDTH: usize = 16;
 pub const TILE_SIZE: f32 = 32.0;
