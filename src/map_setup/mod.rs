@@ -36,7 +36,7 @@ use futures_lite::future;
 use bevy::math::USizeVec2;
 
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk, UpdateTile};
+use crate::messages::{MapChanged, PrepareChunk, DisableChunk, SaveChunk, LoadChunk, UpdateTile, SpawnStructureRequest};
 use crate::player::PlayerTransform;
 use crate::building::{StructureRegistry, StructureId};
 use crate::world::{CELL_SIZE, WorldGrid};

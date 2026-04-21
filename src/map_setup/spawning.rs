@@ -6,6 +6,7 @@ pub fn spawn_chunk(
     mut commands: Commands,
     mut query: Query<(Entity, &mut PendingChunk)>,
     struct_reg: Res<StructureRegistry>,
+    mut writer: MessageWriter<SpawnStructureRequest>,
 ) {
     for (entity, mut pending_chunk) in query.iter_mut() {
         let tiles = std::mem::take(&mut pending_chunk.chunk.tiles);
@@ -63,28 +64,11 @@ pub fn spawn_chunk(
             }
         } 
         for structure in structures {
-           if let Some(def) = struct_reg.structures.get(&structure.id) {
-               if let Some(width) = def.width {
-                   if let Some(height) = def.height {
-                       commands.spawn((
-                           StructureId { id: structure.id.clone() },
-                           Sprite::from_image(def.sprite.clone()),
-                           Transform::from_xyz(structure.pos.x, structure.pos.y, -structure.pos.y * 0.001),
-                           Wall,
-                           Colider {
-                               shape: ColiderShape::Rectangle {
-                                   width: width,
-                                   height: height,
-                               },
-                               _offsety: 0.0,
-                               _sensor: true,
-                           },
-                           Health(structure.hp),
-                           ParrentChunk { position: pending_chunk.chunk.position },
-                       )); 
-                   }
-               }
-           }
+            writer.write(SpawnStructureRequest {
+                position: structure.pos,
+                item_id: structure.id,
+                chunk_position: pending_chunk.chunk.position,
+            });
         }
         chunkgrid.chunks.insert(
             pending_chunk.chunk.position,
