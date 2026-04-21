@@ -41,7 +41,7 @@ impl Plugin for BuildingPlugin {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct StructureId {
     pub id: String,
 }

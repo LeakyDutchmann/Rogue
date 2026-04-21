@@ -5,6 +5,7 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
     entity.insert(Sprite::from_image(definition.sprite.clone()));
     entity.insert(StructureId{
         id: item_id.clone(),
+        
     });
     let width = match definition.width {
         Some(w) => w,
@@ -30,6 +31,9 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
             _offsety: 0.0,
             _sensor: true,
         });
+    }
+    if definition.interactable {
+        entity.insert(Interactable);
     }
     entity.insert(Health(100));
     entity.insert(Wall);
