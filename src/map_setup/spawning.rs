@@ -5,7 +5,6 @@ pub fn spawn_chunk(
     atlases: Res<MapAtlases>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut PendingChunk)>,
-    struct_reg: Res<StructureRegistry>,
     mut writer: MessageWriter<SpawnStructureRequest>,
 ) {
     for (entity, mut pending_chunk) in query.iter_mut() {

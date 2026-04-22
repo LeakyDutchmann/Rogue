@@ -65,20 +65,17 @@ pub fn pick_active_slot_scroll(
 ) {
     if let Ok(mut slot) = active_slot.single_mut() {
         for msg in reader.read() {
-            match msg.event {
-                ScrollDir::ScrollUp => {
-                    if slot.index != 8 {
-                        slot.index += 1;
-                    } else {
-                        slot.index = 0;
-                    }
-                }
-                ScrollDir::ScrollDown => {
-                    if slot.index != 0 {
-                        slot.index -= 1;
-                    } else {
-                        slot.index = 8;
-                    }
+            if msg.delta.y < 0.0 {
+                if slot.index != 0 {
+                    slot.index -= 1; 
+                } else {
+                    slot.index = 8;
+                }       
+            } else {
+                if slot.index != 8 {
+                    slot.index += 1;
+                } else {
+                    slot.index = 0;
                 }
             }
 

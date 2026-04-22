@@ -162,7 +162,7 @@ pub enum MouseClickEvent {
 
 #[derive(Message)]
 pub struct ScrollMessage {
-    pub event: ScrollDir,
+    pub delta: Vec2,
 }
 
 
