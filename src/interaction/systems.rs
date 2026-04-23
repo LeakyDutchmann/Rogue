@@ -6,6 +6,7 @@ pub fn interact_with_structure(
     player_transform: Res<PlayerTransform>,
     worldgrid: Res<WorldGrid>,
     mut interaction_state: ResMut<InteractionState>,
+    mut console: ResMut<Console>,
 ) {
     if keys.just_pressed(KeyCode::KeyF) {
         let player_pos = player_transform.0.translation.truncate();
@@ -18,7 +19,6 @@ pub fn interact_with_structure(
             if let Ok((entity, structure_id, tf)) = structure_identifier.get(entity) {
                 let pos = tf.translation.truncate();
                 near_structs.push((structure_id.id.clone(), pos, entity));
-                println!("Found interactable structure: {:?} at position: {:?}", structure_id.id, pos);
             }
         }
         let mut nearest_struct: Option<(String, Vec2, Entity)> = None;
@@ -34,9 +34,9 @@ pub fn interact_with_structure(
         if let Some((structure_id, position, entity)) = &nearest_struct {
             interaction_state.interacting = true;
             interaction_state.object = Some(*entity);
-            println!("Interacting with structure: {:?} at position: {:?}", structure_id, position);        
+            console.log(format!("Interacting with structure: {:?}", structure_id));        
         } else {
-            println!("No interactable structure found near the player.");
+            console.log(format!("No interactable structure found near the player."));
         }
     }
 }

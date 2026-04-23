@@ -54,7 +54,8 @@ impl Plugin for DevPlugin {
             lines: Vec::new(),
         });
         app.add_systems(Startup, (setup_console, start_chat));
-        app.add_systems(Update, (toggle_console, set_console_visibility, console_scroll, console_add_output));
+        app.add_systems(Update, (toggle_console, set_console_visibility,
+            console_scroll, console_add_output, console_snap_to_bottom));
     }
 }
 
@@ -72,7 +73,6 @@ impl Console {
         self.lines.push(line);
     }
 }
-
 
 #[derive(Component)]
 pub struct UiConsoleMarker;
