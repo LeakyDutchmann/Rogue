@@ -32,8 +32,14 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
             _sensor: true,
         });
     }
-    if definition.interactable {
-        entity.insert(Interactable);
+    match definition.interaction {
+        InteractionType::Oven => {
+            entity.insert(Interactable);
+        }
+        InteractionType::WorkBench => {
+            entity.insert(Interactable);
+        }
+        InteractionType::None => {}
     }
     entity.insert(Health(100));
     entity.insert(Wall);

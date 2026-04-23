@@ -40,3 +40,4 @@ pub fn interact_with_structure(
         }
     }
 }
+
