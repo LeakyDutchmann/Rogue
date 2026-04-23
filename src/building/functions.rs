@@ -33,7 +33,7 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
         });
     }
     match definition.interaction {
-        InteractionType::Oven => {
+        InteractionType::BasicOven => {
             entity.insert(Interactable);
         }
         InteractionType::WorkBench => {

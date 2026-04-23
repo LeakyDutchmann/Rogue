@@ -19,7 +19,9 @@ pub fn setup_interfaces(
         BackgroundColor(Color::srgb(0.25, 0.25, 0.25)),
         BorderColor::all(Color::srgb(1.0, 1.0, 1.0)),
         ZIndex(2),
+        BasicOvenWindow,
         Visibility::Hidden,
+        UiStructureMenu,
     )).with_children(|parrent| {
         parrent.spawn((
             Node {

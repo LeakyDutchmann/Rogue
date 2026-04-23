@@ -7,37 +7,84 @@ pub fn interact_with_structure(
     worldgrid: Res<WorldGrid>,
     mut interaction_state: ResMut<InteractionState>,
     mut console: ResMut<Console>,
+    struct_reg: Res<StructureRegistry>,
 ) {
-    if keys.just_pressed(KeyCode::KeyF) {
-        let player_pos = player_transform.0.translation.truncate();
-        let cell_x = (player_pos.x / CELL_SIZE).floor() as i32;
-        let cell_y = (player_pos.y / CELL_SIZE).floor() as i32;
-        let cells = get_cells_3x3((cell_x, cell_y));
-        let entities = get_entities_in_cells(cells, &worldgrid);
-        let mut near_structs: Vec<(String, Vec2, Entity)> = Vec::new();
-        for entity in entities {
-            if let Ok((entity, structure_id, tf)) = structure_identifier.get(entity) {
-                let pos = tf.translation.truncate();
-                near_structs.push((structure_id.id.clone(), pos, entity));
+    if interaction_state.interacting == InteractionStage::Idle {
+        if keys.just_pressed(KeyCode::KeyF) {
+            let player_pos = player_transform.0.translation.truncate();
+            let cell_x = (player_pos.x / CELL_SIZE).floor() as i32;
+            let cell_y = (player_pos.y / CELL_SIZE).floor() as i32;
+            let cells = get_cells_3x3((cell_x, cell_y));
+            let entities = get_entities_in_cells(cells, &worldgrid);
+            let mut near_structs: Vec<(String, Vec2, Entity)> = Vec::new();
+            for entity in entities {
+                if let Ok((entity, structure_id, tf)) = structure_identifier.get(entity) {
+                    let pos = tf.translation.truncate();
+                    near_structs.push((structure_id.id.clone(), pos, entity));
+                }
             }
-        }
-        let mut nearest_struct: Option<(String, Vec2, Entity)> = None;
-        for (structure_id, pos, entity) in near_structs {
-            if let Some((_struct_id, position, nearest_entity)) = &nearest_struct {
-                if player_pos.distance(pos) < player_pos.distance(position.clone()) {
+            let mut nearest_struct: Option<(String, Vec2, Entity)> = None;
+            for (structure_id, pos, entity) in near_structs {
+                if let Some((_struct_id, position, nearest_entity)) = &nearest_struct {
+                    if player_pos.distance(pos) < player_pos.distance(position.clone()) {
+                        nearest_struct = Some((structure_id, pos, entity));
+                    }
+                } else {
                     nearest_struct = Some((structure_id, pos, entity));
                 }
+            }
+            if let Some((structure_id, position, entity)) = &nearest_struct {
+                if let Some(definition) = struct_reg.structures.get(structure_id) {
+                    interaction_state.interaction_type = definition.interaction.clone();
+                }
+                interaction_state.interacting = InteractionStage::Intializing;
+                interaction_state.entity = Some(*entity);
+                console.log(format!("Interacting with structure: {:?}", structure_id));        
             } else {
-                nearest_struct = Some((structure_id, pos, entity));
+                console.log(format!("No interactable structure found near the player."));
+            }
+        } 
+    } else {
+        if keys.just_pressed(KeyCode::Escape) || keys.just_pressed(KeyCode::KeyF) {
+            interaction_state.interacting = InteractionStage::Idle;
+            interaction_state.entity = None;
+            interaction_state.interaction_type = InteractionType::None;
+        }
+    }
+    
+    
+}
+
+pub fn show_structure_window(
+    mut commands: Commands,
+    mut interaction_state: ResMut<InteractionState>,
+    mut set: ParamSet<(
+        Query<&mut Visibility, With<BasicOvenWindow>>,
+        Query<&mut Visibility, With<UiStructureMenu>>,
+    )>,
+    mut console: ResMut<Console>,
+) {
+    if interaction_state.interacting == InteractionStage::Intializing {
+        console.log(format!("Interacting on {:?}", interaction_state.interaction_type));
+        match interaction_state.interaction_type {
+            InteractionType::None => {}
+            InteractionType::WorkBench => {
+                console.log(format!("Work bench is not implemented"));
+            }
+            InteractionType::BasicOven => {
+                for (mut visibility) in set.p0().iter_mut() {
+                    *visibility = Visibility::Visible;
+                    console.log(format!("Oven window is visible"));
+                    interaction_state.interacting = InteractionStage::Syncing;
+                    
+                }
             }
         }
-        if let Some((structure_id, position, entity)) = &nearest_struct {
-            interaction_state.interacting = true;
-            interaction_state.object = Some(*entity);
-            console.log(format!("Interacting with structure: {:?}", structure_id));        
-        } else {
-            console.log(format!("No interactable structure found near the player."));
+    } else if interaction_state.interacting == InteractionStage::Idle {
+        for mut visibility in set.p1().iter_mut() {
+            if *visibility != Visibility::Hidden {
+                *visibility = Visibility::Hidden;
+            }
         }
     }
 }
-
