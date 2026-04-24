@@ -16,7 +16,7 @@ pub fn setup_console(
             align_self: AlignSelf::Stretch,
             ..default()
         },
-        BackgroundColor(Color::srgb(0.3, 0.3, 0.3)),
+        BackgroundColor(Color::srgba(0.3, 0.3, 0.3, 0.3)),
         BorderColor::all(Color::srgb(0.2, 0.2, 0.2)),
         UiConsoleMarker,
         

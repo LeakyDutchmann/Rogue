@@ -49,7 +49,7 @@ impl Plugin for DevPlugin {
                         },
                     },
                 ));
-        app.insert_resource(ConsoleOpen(false));
+        app.insert_resource(ConsoleOpen(true));
         app.insert_resource(Console {
             lines: Vec::new(),
         });
