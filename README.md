@@ -17,3 +17,4 @@ Small simple game in development.
 - LMB -- Select, take stack
 - Shift + LMB -- Take half-stack
 - Ctrl + LMB -- Take one
+- Backquote -- turn console
