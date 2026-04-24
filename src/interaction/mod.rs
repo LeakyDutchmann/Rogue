@@ -50,5 +50,19 @@ pub enum InteractionStage {
    Intializing,
 }
 
+
 #[derive(Component)]
 pub struct UiStructureWindow;
+
+
+#[derive(Component)]
+pub struct OvenInputSlot {
+    pub item: Option<ItemStack>,
+}
+
+
+#[derive(Component)]
+pub struct OvenOutputSlot {
+    pub item: Option<ItemStack>,
+}
+

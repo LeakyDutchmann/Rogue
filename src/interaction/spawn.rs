@@ -1,3 +1,5 @@
+use bevy::ui::FocusPolicy;
+
 use super::*;
 
 
@@ -32,7 +34,7 @@ pub fn spawn_basic_oven_window(
                     ..Default::default()
                 },
                 Text(String::from("Basic_Oven")),
-                ZIndex(3)
+                ZIndex(3),
             ));
             parrent.spawn((
                 Node {
@@ -46,8 +48,17 @@ pub fn spawn_basic_oven_window(
                 },
                 BorderColor::all(Color::srgb(1.0, 0.4, 0.0)),
                 Interaction::None,
-                ZIndex(4),
-            ));
+                FocusPolicy::Block,
+                ZIndex(3),
+                
+            )).with_children(|parent_2| {
+                parent_2.spawn((
+                    OvenInputSlot {
+                        item: None,
+                    }, 
+                    ZIndex(4),
+                ));
+            });
             parrent.spawn((
                 Node {
                     border: UiRect::all(Val::Px(2.0)),
@@ -60,8 +71,16 @@ pub fn spawn_basic_oven_window(
                 },
                 BorderColor::all(Color::srgb(1.0, 0.4, 0.0)),
                 Interaction::None,
-                ZIndex(4),
-            ));
+                ZIndex(3),
+                FocusPolicy::Block,
+            )).with_children(|parent_2| {
+                parent_2.spawn((
+                    OvenOutputSlot {
+                        item: None,
+                    },
+                    ZIndex(4),
+                ));
+            });;
         });
     }
 }
