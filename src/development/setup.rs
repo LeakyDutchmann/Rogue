@@ -11,7 +11,7 @@ pub fn setup_console(
             width: Val::Px(400.0),
             height: Val::Px(400.0),
             top: Val::Px(40.0),
-            left: Val::Px(15.0),
+            left: Val::Percent(70.0),
             flex_direction: FlexDirection::Column,
             align_self: AlignSelf::Stretch,
             ..default()
