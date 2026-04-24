@@ -1,10 +1,11 @@
 mod systems;
-mod setup;
+mod spawn;
 
 use systems::*;
-use setup::*;
+use spawn::*;
 use super::*;
 use serde::Deserialize;
+use crate::messages::{SpawnWindowRequest, CloseWindowRequest};
 
 pub struct InteractionsPlugin;
 
@@ -15,8 +16,9 @@ impl Plugin for InteractionsPlugin {
             entity: None,
             interaction_type: InteractionType::None,
         });
-        app.add_systems(Startup, setup_interfaces);
+        app.add_systems(Update, (spawn_basic_oven_window));
         app.add_systems(Update, (interact_with_structure, show_structure_window));
+        app.add_systems(Update, (close_window));
     }
 }
 
@@ -44,15 +46,9 @@ pub enum InteractionType {
 #[derive(Clone, Deserialize, Debug, PartialEq)]
 pub enum InteractionStage {
    Idle,
-   Syncing,
    Interacting,
    Intializing,
 }
 
-
 #[derive(Component)]
-pub struct BasicOvenWindow;
-
-
-#[derive(Component)]
-pub struct UiStructureMenu;
+pub struct UiStructureWindow;

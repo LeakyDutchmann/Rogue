@@ -58,11 +58,9 @@ pub fn interact_with_structure(
 pub fn show_structure_window(
     mut commands: Commands,
     mut interaction_state: ResMut<InteractionState>,
-    mut set: ParamSet<(
-        Query<&mut Visibility, With<BasicOvenWindow>>,
-        Query<&mut Visibility, With<UiStructureMenu>>,
-    )>,
     mut console: ResMut<Console>,
+    mut writer: MessageWriter<SpawnWindowRequest>,
+    mut close_writer: MessageWriter<CloseWindowRequest>,
 ) {
     if interaction_state.interacting == InteractionStage::Intializing {
         console.log(format!("Interacting on {:?}", interaction_state.interaction_type));
@@ -72,19 +70,25 @@ pub fn show_structure_window(
                 console.log(format!("Work bench is not implemented"));
             }
             InteractionType::BasicOven => {
-                for (mut visibility) in set.p0().iter_mut() {
-                    *visibility = Visibility::Visible;
-                    console.log(format!("Oven window is visible"));
-                    interaction_state.interacting = InteractionStage::Syncing;
-                    
-                }
+                writer.write(SpawnWindowRequest {
+                    window_type: WindowType::BasicOven,
+                });
+                interaction_state.interacting = InteractionStage::Interacting;
             }
         }
     } else if interaction_state.interacting == InteractionStage::Idle {
-        for mut visibility in set.p1().iter_mut() {
-            if *visibility != Visibility::Hidden {
-                *visibility = Visibility::Hidden;
-            }
+        close_writer.write(CloseWindowRequest);
+    }
+}
+
+pub fn close_window(
+    mut commands: Commands,
+    mut window: Query<Entity, With<UiStructureWindow>>,
+    mut reader: MessageReader<CloseWindowRequest>,
+) {
+    for msg in reader.read() {
+        for entity in window.iter_mut() {
+            commands.entity(entity).despawn();
         }
     }
 }

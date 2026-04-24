@@ -6,6 +6,7 @@ mod inventory;
 mod pathfinding;
 mod world;
 mod map;
+mod ui_messages;
 
 pub use map::*;
 pub use combat::*;
@@ -13,6 +14,7 @@ pub use input::*;
 pub use inventory::*;
 pub use pathfinding::*;
 pub use world::*;
+pub use ui_messages::*;
 
 pub struct MessagesPlugin;
 
@@ -37,6 +39,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<DisableChunk>()
             .add_message::<SaveChunk>()
             .add_message::<LoadChunk>()
-            .add_message::<UpdateTile>();
+            .add_message::<UpdateTile>()
+            .add_message::<SpawnWindowRequest>()
+            .add_message::<CloseWindowRequest>();
     }
 }
