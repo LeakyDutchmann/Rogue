@@ -2,7 +2,7 @@ use super::*;
 
 pub fn handle_input(
     keys: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(Entity, &Interaction), Changed<Interaction>>,
+    mut query: Query<(Entity, &Interaction), (Changed<Interaction>, Without<UiBackground>)>,
     time: Res<Time>,
     mut ui_click_track: ResMut<UiClickTrack>,
     mut writer: MessageWriter<UiClick>,
@@ -26,6 +26,7 @@ pub fn handle_input(
                     shift_pressed,
                     ctrl_pressed,
                 });
+                ui_click_track.last = now;
                 console.log(format!("logged single"));
             } else {
                 writer.write( UiClick {
@@ -34,9 +35,10 @@ pub fn handle_input(
                     shift_pressed,
                     ctrl_pressed,
                 });
+                ui_click_track.last = now;
                 console.log(format!("logged double"));
             }
-            ui_click_track.last = now;
+            
         }
     }
 }

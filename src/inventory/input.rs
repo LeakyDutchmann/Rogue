@@ -26,42 +26,6 @@ pub fn pick_active_slot(
     }
 }
 
-pub fn inventory_interactions(
-    keys: Res<ButtonInput<KeyCode>>,
-    mut slots: Query<(&Children, &Interaction), Changed<Interaction>>,
-    mut slot: Query<&SlotIcon>,
-    mut writer: MessageWriter<SlotClicked>,
-    mut writer_double: MessageWriter<DoubleClicked>,
-    mut ui_click_track: ResMut<UiClickTrack>,
-    time: Res<Time>,
-) {
-    for (children, interaction) in slots.iter_mut() {
-        if *interaction == Interaction::Pressed {
-            let now = time.elapsed_secs_f64();
-            for child in children.iter() {
-                if let Ok(slot) = slot.get_mut(child) {
-                    if now - ui_click_track.last >= 0.2 {
-                        if keys.pressed(KeyCode::ShiftLeft) {
-                            println!("clicked single");
-                            break;
-                        } else if keys.pressed(KeyCode::ControlLeft) {
-                            println!("clicked single");
-                            break;
-                        } else {
-                            println!("clicked single");
-                            break;
-                        }
-                        
-                    } else  {
-                        println!("clicked double");
-                        break;
-                    }    
-                }
-            }
-        }
-    }
-} 
-
 pub fn background_interactions(
     mut query: Query<&Interaction, (Changed<Interaction>, With<UiBackground>)>,
     mut writer: MessageWriter<DropFromCursor>,

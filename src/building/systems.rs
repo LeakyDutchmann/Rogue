@@ -81,7 +81,9 @@ pub fn build_structure(
     if building_mode.state == BuildingState::Placing {
         for msg in reader.read() {
             let now = time.elapsed_secs_f64();
+            println!("result: {}", ui_click.last);
             if now - ui_click.last < 0.5 {
+                println!("too soon");
                 continue;
             }
             if let Ok(mut cursor) = cursor.single_mut() {
