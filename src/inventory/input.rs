@@ -47,6 +47,7 @@ pub fn inventory_interactions(
                                 slot_index: slot.index,
                             });
                             ui_click_track.last = now;
+                            println!("clicked");
                             break;
                         } else if keys.pressed(KeyCode::ControlLeft) {
                             writer.write(SlotClicked {
@@ -54,6 +55,7 @@ pub fn inventory_interactions(
                                 slot_index: slot.index,
                             });
                             ui_click_track.last = now;
+                            println!("clicked");
                             break;
                         } else {
                             writer.write(SlotClicked {
@@ -61,6 +63,7 @@ pub fn inventory_interactions(
                                 slot_index: slot.index,
                             });
                             ui_click_track.last = now;
+                            println!("clicked");
                             break;
                         }
                         
@@ -69,6 +72,7 @@ pub fn inventory_interactions(
                             slot_index: slot.index,
                         });
                         ui_click_track.last = now;
+                        println!("clicked");
                         break;
                     }    
                 }

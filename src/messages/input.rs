@@ -2,6 +2,15 @@ use super::*;
 
 
 #[derive(Message)]
+pub struct UiClick {
+    pub entity: Entity,
+    pub double: bool,
+    pub shift_pressed: bool,
+    pub ctrl_pressed: bool,
+}
+
+
+#[derive(Message)]
 pub struct DoubleClicked {
     pub slot_index: usize,
 }
