@@ -26,7 +26,7 @@ pub fn handle_input(
                     shift_pressed,
                     ctrl_pressed,
                 });
-                console.log(format!("logged single with shift: {:?}, ctrl: {:?}", shift_pressed, ctrl_pressed));
+                console.log(format!("logged single"));
             } else {
                 writer.write( UiClick {
                     entity: entity,
@@ -34,7 +34,7 @@ pub fn handle_input(
                     shift_pressed,
                     ctrl_pressed,
                 });
-                console.log(format!("logged double with shift: {:?}, ctrl: {:?}", shift_pressed, ctrl_pressed));
+                console.log(format!("logged double"));
             }
             ui_click_track.last = now;
         }

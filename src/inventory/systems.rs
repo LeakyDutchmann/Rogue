@@ -84,56 +84,82 @@ pub fn pick_active_slot_scroll(
 }
 
 pub fn item_click_handler(
-    mut reader: MessageReader<SlotClicked>,
+    mut reader: MessageReader<UiClick>,
     cursor: Query<&mut CursorCarrier>,
     mut writer: MessageWriter<InsertToInventory>,
     mut writer_get: MessageWriter<GetFromInventory>,
+    slot: Query<&SlotIcon>,
+    children: Query<&Children>,
 ) {
     for msg in reader.read() {
-        if let Ok(cursor) = cursor.single() {
-            if let Some(_item) = &cursor.item {
-                writer.write(InsertToInventory {
-                    quantity: cursor.quantity,
-                    slot: Some(msg.slot_index),
-                });
-            } else if cursor.item.is_none() {
-                let quantity = match msg.click_type {
-                    ClickType::CtrlLeftSingle => ItemQuantity::One,
-                    ClickType::LeftSingle => ItemQuantity::MaxFromOne,
-                    ClickType::ShiftLeftSingle => ItemQuantity::HalfStack,
-                };
-                writer_get.write(GetFromInventory {
-                    quantity: quantity,
-                    slot: msg.slot_index,
-                });
+        if let Ok(children) = children.get(msg.entity) {
+            for child in children.iter() {
+                if let Ok(slot) = slot.get(child) {
+                    if let Ok(cursor) = cursor.single() {
+                        if !msg.double {
+                            if let Some(_item) = &cursor.item {
+                                writer.write(InsertToInventory {
+                                    quantity: cursor.quantity,
+                                    slot: Some(slot.index),
+                                });
+                            } else if cursor.item.is_none() {
+                                let mut quantity: Option<ItemQuantity> = None;
+                                if msg.ctrl_pressed {
+                                    quantity = Some(ItemQuantity::One);
+                                } else if msg.shift_pressed {
+                                    quantity = Some(ItemQuantity::HalfStack);
+                                } else {
+                                    quantity = Some(ItemQuantity::MaxFromOne);
+                                }
+                                if let Some(quantity) = quantity {
+                                    writer_get.write(GetFromInventory {
+                                        quantity: quantity,
+                                        slot: slot.index,
+                                    });
+                                }
+                            }
+                        }
+                        
+                    }
+                }
             }
         }
     }
 }
 
 pub fn double_click_handler(
-    mut reader: MessageReader<DoubleClicked>,
+    mut reader: MessageReader<UiClick>,
+    slot: Query<&SlotIcon>,
+    children: Query<&Children>,
     mut inventory: Query<&mut Inventory, With<Player>>,
     mut cursor: Query<&mut CursorCarrier>,
     registry: Res<ItemRegistry>,
-    
 ) {
     for msg in reader.read() {
+        if !msg.double {
+            continue;
+        }
+        let mut opt_slot_index: Option<usize> = None;
+        if let Ok(children) = children.get(msg.entity) {
+            for child in children.iter() {
+                if let Ok(slot) = slot.get(child) {
+                    opt_slot_index = Some(slot.index);
+                }
+            }
+        }
+        if opt_slot_index.is_none() {
+            continue;
+        }
+        let slot_index = opt_slot_index.unwrap();
         if let Ok(mut cursor) = cursor.single_mut() {
             if let Ok(mut inventory) = inventory.single_mut() {
-                let item_id = match inventory.items.get(msg.slot_index).and_then(|s| s.item_stored.as_ref()) {
-                    Some(id) => id.clone(),
-                    None => if cursor.item.is_none() { return } else { cursor.item.clone().unwrap() },
+                let item_id = match inventory.items.get(slot_index).and_then(|s| s.item_stored.as_ref()) {
+                    Some(id) => if cursor.item.is_none() {id.clone()} else {cursor.item.clone().unwrap()},
+                    None => if cursor.item.is_none() { continue } else { cursor.item.clone().unwrap() },
                 };
                 if let Some(def) = registry.items.get(&item_id) {
-                    if cursor.item.is_none() {
-                        cursor.item = Some(item_id.clone());
-                    }
-                    if cursor.item.as_ref() != Some(&item_id) {
-                        return;
-                    }
                     let mut remaining = def.max_stack as i32 - cursor.quantity;
-                    if let Some(stack) = inventory.items.get_mut(msg.slot_index) {
+                    if let Some(stack) = inventory.items.get_mut(slot_index) {
                         if stack.item_stored.as_ref() == Some(&item_id) {
                             let take = remaining.min(stack.quantity);
                             cursor.quantity += take;
@@ -145,7 +171,7 @@ pub fn double_click_handler(
                         }
                     }
                     for (i, stack) in inventory.items.iter_mut().enumerate() {
-                        if i == msg.slot_index {
+                        if i == slot_index {
                             continue; 
                         }
                         if remaining <= 0 {
@@ -222,6 +248,12 @@ pub fn item_put_handler(
                                             quantity_to_put -= free;
                                             cursor.quantity = quantity_to_put;
                                         }
+                                    } else {
+                                        cursor.item = item_stack.item_stored.clone();
+                                        cursor.quantity = item_stack.quantity;
+                                        item_stack.item_stored = Some(item_id.clone());
+                                        item_stack.quantity = quantity_to_put;
+                                        break;
                                     }
                                 } else if item_stack.item_stored.is_none() {
                                     item_stack.item_stored = Some(item_id.clone());

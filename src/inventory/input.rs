@@ -42,37 +42,18 @@ pub fn inventory_interactions(
                 if let Ok(slot) = slot.get_mut(child) {
                     if now - ui_click_track.last >= 0.2 {
                         if keys.pressed(KeyCode::ShiftLeft) {
-                            writer.write(SlotClicked {
-                                click_type: ClickType::ShiftLeftSingle,
-                                slot_index: slot.index,
-                            });
-                            ui_click_track.last = now;
-                            println!("clicked");
+                            println!("clicked single");
                             break;
                         } else if keys.pressed(KeyCode::ControlLeft) {
-                            writer.write(SlotClicked {
-                                click_type: ClickType::CtrlLeftSingle,
-                                slot_index: slot.index,
-                            });
-                            ui_click_track.last = now;
-                            println!("clicked");
+                            println!("clicked single");
                             break;
                         } else {
-                            writer.write(SlotClicked {
-                                click_type: ClickType::LeftSingle,
-                                slot_index: slot.index,
-                            });
-                            ui_click_track.last = now;
-                            println!("clicked");
+                            println!("clicked single");
                             break;
                         }
                         
                     } else  {
-                        writer_double.write(DoubleClicked {
-                            slot_index: slot.index,
-                        });
-                        ui_click_track.last = now;
-                        println!("clicked");
+                        println!("clicked double");
                         break;
                     }    
                 }

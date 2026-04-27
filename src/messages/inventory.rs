@@ -13,7 +13,7 @@ pub struct DropFromCursor {
     pub direction: Vec2,
 }
 
-
+#[derive(Debug, Clone, Copy)]
 pub enum ItemQuantity {
     One,
     MaxFromOne,
