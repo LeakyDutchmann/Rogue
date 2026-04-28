@@ -4,26 +4,32 @@ pub fn setup_items(
     asset_server: Res<AssetServer>,
     mut item_registry: ResMut<ItemRegistry>,
 ) {
-    let path = "./data/items";
-    if let Ok(items) = load_definitions_for::<ItemDefinitionRaw>(path) {
-        let mut item_count = 0;
-        for item in items {
-            let icon_texture = asset_server.load(item.icon.clone());
-            let sprite_texture = asset_server.load(item.sprite.clone());
-            item_registry.items.insert(item.name.clone(), ItemDefinition {
-                icon: icon_texture,
-                sprite: sprite_texture,
-                durability: item.durability,
-                usable: item.usable,
-                animation_style: item.animation_style,
-                combat_stats: item.combat_stats,
-                weapon_stats: item.weapon_stats,
-                tool_stats: item.tool_stats,
-                max_stack: item.max_stack,
-            });
-            item_count += 1;
-        }
-        println!("Loaded {} items", item_count);
+    let path_ores = "./data/items/ores";
+    let path_ingots = "./data/items/ingots";
+    let path_items = "./data/items";
+    let path_materials = "./data/items/materials";
+    let paths = vec![path_ores, path_ingots, path_items, path_materials];
+    for path in paths {
+        if let Ok(items) = load_definitions_for::<ItemDefinitionRaw>(path) {
+            let mut item_count = 0;
+            for item in items {
+                let icon_texture = asset_server.load(item.icon.clone());
+                let sprite_texture = asset_server.load(item.sprite.clone());
+                item_registry.items.insert(item.name.clone(), ItemDefinition {
+                    icon: icon_texture,
+                    sprite: sprite_texture,
+                    durability: item.durability,
+                    usable: item.usable,
+                    animation_style: item.animation_style,
+                    combat_stats: item.combat_stats,
+                    weapon_stats: item.weapon_stats,
+                    tool_stats: item.tool_stats,
+                    max_stack: item.max_stack,
+                });
+                item_count += 1;
+            }
+            println!("Loaded {} items", item_count);
+        } 
     }
 }
 

@@ -179,11 +179,7 @@ pub fn insert_item_in_inventory(
                      item_stack.item_stored = Some(secturix);
                 }
             } else {
-                let mechanae = "Mechanae_ore".to_string();
-                if let Some(def) = item_registry.items.get(&mechanae) {
-                     item_stack.quantity = def.max_stack as i32;
-                     item_stack.item_stored = Some(mechanae);
-                }
+                break;
             }
         }
     }

@@ -18,8 +18,8 @@ pub use functions::*;
 
 use crate::items::{HeldItem, ItemRegistry};
 use crate::messages::{GetFromInventory, KeyPressed,
-    SpawnItemRequest, ScrollMessage, ScrollDir, SlotClicked, InsertToInventory,
-    DropFromCursor, ClickType, ItemQuantity, DoubleClicked, RemoveFromInventory};
+    SpawnItemRequest, ScrollMessage, InsertToInventory,
+    DropFromCursor, ItemQuantity, RemoveFromInventory};
 use bevy::ui::FocusPolicy;
 use crate::player::player_setup::player_setup;
 
