@@ -1,0 +1,7 @@
+{
+  "name": "Mechanae_ingot",
+  "icon": "ingots/Mechanae_ingot.png",
+  "sprite": "ingots/Mechanae_ingot.png",
+  "usable": false,
+  "max_stack": 16
+}

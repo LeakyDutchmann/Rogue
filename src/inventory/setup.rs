@@ -173,7 +173,7 @@ pub fn insert_item_in_inventory(
                      item_stack.item_stored = Some(structurix);
                 }
             } else if i <= 6 {
-                let secturix = "Secturix_ore".to_string();
+                let secturix = "Secturix_ingot".to_string();
                 if let Some(def) = item_registry.items.get(&secturix) {
                      item_stack.quantity = def.max_stack as i32;
                      item_stack.item_stored = Some(secturix);
