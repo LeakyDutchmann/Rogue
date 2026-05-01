@@ -7,19 +7,19 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
         RawNodeKind::Container => {
             
         },
-        RawNodeKind::Slot{kind} => {
+        RawNodeKind::Slot{kind, index} => {
             match kind {
                 SlotKind::Output => {
                     commands.entity(window).insert(
                         OvenOutputSlot { 
-                            item: None,
+                            index: index.clone(),
                         }
                     );
                 },
                 SlotKind::Input => {
                     commands.entity(window).insert(
                         OvenInputSlot { 
-                            item: None,
+                            index: index.clone(),
                         }
                     );
                 },
@@ -185,6 +185,11 @@ pub fn assemble_node(
             RawMarker::UiStructureWindow => {
                 commands.entity(window).insert(
                     UiStructureWindow
+                );
+            }
+            RawMarker::SlotCounter => {
+                commands.entity(window).insert(
+                    SlotCounter
                 );
             }
         }

@@ -36,8 +36,8 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
         InteractionType::BasicOven => {
             entity.insert(Interactable);
             entity.insert(Processing {
-                input: Vec::new(),
-                output: Vec::new(),
+                input: vec![ItemStack { item_stored: None, quantity: 0 }],
+                output: vec![ItemStack { item_stored: None, quantity: 0 }],
                 timer: Timer::from_seconds(10.0, TimerMode::Repeating),
             });
         }

@@ -5,7 +5,7 @@ pub use systems::*;
 use spawn::*;
 use super::*;
 use serde::Deserialize;
-use crate::messages::{SpawnWindowRequest, CloseWindowRequest};
+use crate::messages::{SpawnWindowRequest, CloseWindowRequest, UiSlotUpdate};
 use crate::ui::handle_input;
 
 pub struct InteractionsPlugin;
@@ -18,9 +18,8 @@ impl Plugin for InteractionsPlugin {
             interaction_type: InteractionType::None,
             ui_window_id: None,
         });
-        app.add_systems(Update, (spawn_basic_oven_window));
         app.add_systems(Update, (interact_with_structure));
-        app.add_systems(Update, (interact_with_oven_window, sync_oven_window));
+        app.add_systems(Update, (interact_with_oven_window, ui_slot_update_system).chain());
     }
 }
 
@@ -60,12 +59,12 @@ pub struct UiStructureWindow;
 
 #[derive(Component)]
 pub struct OvenInputSlot {
-    pub item: Option<String>,
+    pub index: usize,
 }
 
 
 #[derive(Component)]
 pub struct OvenOutputSlot {
-    pub item: Option<String>,
+    pub index: usize,
 }
 

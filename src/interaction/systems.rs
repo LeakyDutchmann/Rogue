@@ -1,5 +1,7 @@
 use std::process::Output;
 
+use bevy::transform::commands;
+
 use super::*;
 
 pub fn interact_with_structure(
@@ -63,48 +65,41 @@ pub fn interact_with_structure(
     
 }
 
-pub fn sync_oven_window(
-    mut commands: Commands,
-    interaction_state: Res<InteractionState>,
-    mut window: Query<Entity, With<UiStructureWindow>>,
-    mut input: Query<(Entity, &mut OvenInputSlot)>,
-    mut output: Query<(Entity, &mut OvenOutputSlot)>,
-    processing: Query<&Processing>,
-    item_reg: Res<ItemRegistry>,
-    mut console: ResMut<Console>,
-) {
-    if interaction_state.interacting == InteractionStage::Interacting {
-        if let Some(entity) = interaction_state.entity {
-            if let Ok(processing) = processing.get(entity) {
-                for item_stack in &processing.input {
-                    if let Some(item) = &item_stack.item_stored {
-                        if let Some(item_def) = item_reg.items.get(item) {
-                            for (input_e, mut slot) in input.iter_mut() {
-                                if slot.item.as_ref() != Some(item) {
-                                    commands.entity(input_e).remove::<ImageNode>();
-                                    commands.entity(input_e).insert(ImageNode::new(item_def.icon.clone()));
-                                    console.log(format!("Inserted icon for input item: {}", item));
-                                    slot.item = Some(item.clone());
-                                } else {
-                                }
-                                
-                            }
-                        }
-                    } 
+
+pub fn handle_slot_interaction(cursor_carrier: &mut CursorCarrier, item_stack: &mut ItemStack, item_reg: &ItemRegistry) {
+    if let Some(cr_item) = &cursor_carrier.item {
+        if let Some(item) = &item_stack.item_stored {
+            if cr_item == item {
+                if let Some(def) = item_reg.items.get(item) {
+                    let can_put = def.max_stack.wrapping_sub(item_stack.quantity as usize);
+                    if can_put >= cursor_carrier.quantity as usize {
+                        item_stack.quantity += cursor_carrier.quantity as i32;
+                        cursor_carrier.clear();
+                    }
+                    if can_put < cursor_carrier.quantity as usize {
+                        item_stack.quantity += can_put as i32;
+                        cursor_carrier.quantity -= can_put as i32;
+                    }
                 }
-                for item_stack in &processing.output {
-                    if let Some(item) = &item_stack.item_stored {
-                        if let Some(item_def) = item_reg.items.get(item) {
-                            for (entity, slot) in output.iter() {
-                                commands.entity(entity).insert(ImageNode::new(item_def.icon.clone()));
-                            }
-                        }
-                    } 
-                }
-                
+            } else {
+                let item_s_quan = item_stack.quantity;
+                let item_s_stored = item_stack.item_stored.clone();
+                item_stack.quantity = cursor_carrier.quantity;
+                item_stack.item_stored = cursor_carrier.item.clone();
+                cursor_carrier.quantity = item_s_quan;
+                cursor_carrier.item = item_s_stored;
             }
-            
-            
+        } else {
+            item_stack.quantity = cursor_carrier.quantity;
+            item_stack.item_stored = cursor_carrier.item.clone();
+            cursor_carrier.clear();
+        }
+    } else {
+        if let Some(item) = &item_stack.item_stored {
+            cursor_carrier.item = Some(item.clone());
+            cursor_carrier.quantity = item_stack.quantity;
+            item_stack.quantity = 0;
+            item_stack.item_stored = None;
         }
     }
 }
@@ -117,52 +112,78 @@ pub fn interact_with_oven_window(
     children: Query<&Children>,
     input: Query<&OvenInputSlot>,
     output: Query<&OvenOutputSlot>,
-    mut console: ResMut<Console>,
+    item_reg: ResMut<ItemRegistry>,
+    mut writer: MessageWriter<UiSlotUpdate>,
 ) {
     if interaction_state.interacting == InteractionStage::Interacting {
-        if let Ok((entity, mut processing)) = oven_entity.get_mut(interaction_state.entity.unwrap()) {
+        let entity = interaction_state.entity.unwrap();
+        if let Ok((entity, mut processing)) = oven_entity.get_mut(entity) {
             for msg in reader.read() {
-                if let Ok(mut cursor_carrier) = cursor_car.single_mut() {
-                    if let Ok(children) = children.get(msg.entity) {
-                        for child in children.iter() {
-                            if let Ok(input) = input.get(child) {
-                                if processing.input.is_empty() {
-                                    if let Some(item) = &cursor_carrier.item {
-                                        let item_stack = ItemStack {
-                                            item_stored: Some(item.clone()),
-                                            quantity: cursor_carrier.quantity,
-                                        };
-                                        processing.input.push(item_stack);                                
-                                        cursor_carrier.clear();
-                                        console.log(format!("Inserted new item to oven input"));
-                                        break;
-                                    }
-                                } else {
-                                    if let Some(item) = &cursor_carrier.item {
-                                        let to_take = processing.input.remove(0);
-                                        let item_stack = ItemStack {
-                                            item_stored: Some(item.clone()),
-                                            quantity: cursor_carrier.quantity,
-                                        };
-                                        processing.output.push(item_stack);
-                                        cursor_carrier.clear();
-                                        cursor_carrier.item = to_take.item_stored;
-                                        cursor_carrier.quantity = to_take.quantity;
-                                        console.log(format!("swapped from oven input"));
-                                        break;
-                                    } else {
-                                        let to_take = processing.input.remove(0);
-                                        cursor_carrier.item = to_take.item_stored;
-                                        cursor_carrier.quantity = to_take.quantity;
-                                        console.log(format!("took from input"));
-                                        break;
-                                    }
+                if let Ok(children) = children.get(msg.entity) {
+                    for child in children.iter() {
+                        if let Ok(mut cursor_carrier) = cursor_car.single_mut() {
+                            if let Ok(input_slot) = input.get(child) {
+                                if let Some(item_stack) = processing.input.get_mut(input_slot.index) {
+                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg);
+                                    writer.write(UiSlotUpdate {
+                                        entity: msg.entity,
+                                        to_quantity: item_stack.quantity as usize,
+                                        to_item: item_stack.item_stored.clone().unwrap_or_default(),
+                                    });
                                 }
-                            } else if let Ok(output) = output.get(msg.entity) {
+                            } else if let Ok(output_slot) = output.get(child) {
+                                if let Some(item_stack) = processing.output.get_mut(output_slot.index) {
+                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg);
+                                    writer.write(UiSlotUpdate {
+                                        entity: msg.entity,
+                                        to_quantity: item_stack.quantity as usize,
+                                        to_item: item_stack.item_stored.clone().unwrap_or_default(),
+                                    });
+                                }
                             }
-                        }
+                        }  
                     }
-                } 
+                }
+            }
+        }
+    }
+}
+
+pub fn ui_slot_update_system(
+    mut commands: Commands,
+    mut reader: MessageReader<UiSlotUpdate>,
+    children: Query<&Children>,
+    input: Query<&OvenInputSlot>,
+    output: Query<&OvenOutputSlot>,
+    mut text: Query<&mut Text>,
+    item_reg: ResMut<ItemRegistry>,
+) {
+    for msg in reader.read() {
+        if let Some(def) = item_reg.items.get(&msg.to_item) {
+            if let Ok(children) = children.get(msg.entity) {
+                for child in children.iter() {
+                    if let Ok(_input_slot) = input.get(child) {
+                        commands.entity(child).insert(ImageNode::new(def.icon.clone()));
+                    } else if let Ok(_output_slot) = output.get(child) {
+                        commands.entity(child).insert(ImageNode::new(def.icon.clone()));
+                    }
+                    if let Ok(mut text_counter) = text.get_mut(child) {
+                        text_counter.0 = msg.to_quantity.to_string();
+                    }
+                }
+            }
+        } else {
+            if let Ok(children) = children.get(msg.entity) {
+                for child in children.iter() {
+                    if let Ok(_input_slot) = input.get(child) {
+                        commands.entity(child).remove::<ImageNode>();
+                    } else if let Ok(_output_slot) = output.get(child) {
+                        commands.entity(child).remove::<ImageNode>();
+                    }
+                    if let Ok(mut text_counter) = text.get_mut(child) {
+                        text_counter.0 = "".to_string();
+                    }
+                }
             }
         }
     }

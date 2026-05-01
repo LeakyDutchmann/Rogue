@@ -65,8 +65,10 @@
           "children": [
             {
               "name": "InputSlotText",
+              "marker": "SlotCounter",
+              "zindex": 4,
               "kind": {
-                "Text": { "content": "0" }
+                "Text": { "content": "" }
               },
               "style": {
                 "position_type": "Absolute",
@@ -117,8 +119,10 @@
             {
               "name": "OutputSlotText",
               "kind": {
-                "Text": { "content": "0" }
+                "Text": { "content": "" }
               },
+              "marker": "SlotCounter",
+              "zindex": 4,
               "style": {
                 "position_type": "Absolute",
                 "top": { "Percent": 50.0 }

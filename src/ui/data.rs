@@ -24,6 +24,7 @@ pub enum RawPolicy {
 #[derive(Deserialize)]
 pub enum RawMarker {
     UiStructureWindow,
+    SlotCounter,
 }
 
 
@@ -51,7 +52,7 @@ pub enum SlotKind {
 #[derive(Deserialize)]
 pub enum RawNodeKind {
     Container,
-    Slot { kind: SlotKind},
+    Slot { kind: SlotKind, index: usize},
     Image { path: String },
     Text { content: String },
 }
