@@ -189,6 +189,20 @@ pub fn assemble_node(
             }
         }
     }
+    if let Some(focus_policy) = &ui_window.focus_policy {
+        match focus_policy {
+            RawPolicy::Block => {
+                commands.entity(window).insert(
+                    FocusPolicy::Block
+                );
+            }
+            RawPolicy::Pass => {
+                commands.entity(window).insert(
+                    FocusPolicy::Pass
+                );
+            }
+        }
+    }
     if let Some(child_vec) = &ui_window.children {
         for child_raw in child_vec {
             let child = assemble_node(commands, child_raw, asset_server);

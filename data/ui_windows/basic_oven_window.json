@@ -50,12 +50,7 @@
       "children": [
         {
           "name": "InputSlot",
-          "kind": {
-            "Slot": {
-              "kind": "Input",
-              "index": 0
-            }
-          },
+          "kind": "Container",
           "style": {
             "width": { "Px": 48.0 },
             "height": { "Px": 48.0 },
@@ -64,6 +59,7 @@
             "border": { "Px": 2.0 }
           },
           "interactive": true,
+          "focus_policy": "Block",
           "border_color": { "srgb": [1.0, 0.4, 0.0] },
           "zindex": 3,
           "children": [
@@ -75,6 +71,18 @@
               "style": {
                 "position_type": "Absolute",
                 "top": { "Percent": 50.0 }
+              }
+            },
+            {
+              "name": "InputSlotMarker",
+              "kind": {
+                "Slot": {
+                  "kind": "Input",
+                  "index": 0
+                }
+              },
+              "style": {
+                
               }
             }
           ]
@@ -93,12 +101,7 @@
       "children": [
         {
           "name": "OutputSlot",
-          "kind": {
-            "Slot": {
-              "kind": "Output",
-              "index": 0
-            }
-          },
+          "kind": "Container",
           "style": {
             "width": { "Px": 48.0 },
             "height": { "Px": 48.0 },
@@ -107,6 +110,7 @@
             "border": { "Px": 2.0 }
           },
           "interactive": true,
+          "focus_policy": "Block",
           "border_color": { "srgb": [1.0, 0.4, 0.0] },
           "zindex": 3,
           "children": [
@@ -118,6 +122,18 @@
               "style": {
                 "position_type": "Absolute",
                 "top": { "Percent": 50.0 }
+              }
+            },
+            {
+              "name": "OutputSlotMarker",
+              "kind": {
+                "Slot": {
+                  "kind": "Output",
+                  "index": 0
+                }
+              },
+              "style": {
+                
               }
             }
           ]

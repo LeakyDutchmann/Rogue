@@ -15,6 +15,7 @@ pub use functions::*;
 pub use ui_windows::*;
 use serde::Deserialize;
 use std::collections::HashMap;
+use bevy::ui::FocusPolicy;
 use crate::inventory::UiBackground;
 
 pub struct UiPlugin;

@@ -10,7 +10,14 @@ pub struct RawNode {
     pub background_color: Option<RawColor>,
     pub zindex: Option<i32>,
     pub interactive: Option<bool>,
+    pub focus_policy: Option<RawPolicy>,
     pub marker: Option<RawMarker>,
+}
+
+#[derive(Deserialize)]
+pub enum RawPolicy {
+    Block,
+    Pass,
 }
 
 
