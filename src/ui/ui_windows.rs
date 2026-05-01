@@ -4,7 +4,6 @@ pub fn show_structure_window(
     mut commands: Commands,
     mut interaction_state: ResMut<InteractionState>,
     mut console: ResMut<Console>,
-    mut close_writer: MessageWriter<CloseWindowRequest>,
     ui_reg: Res<UiWindowRegistry>,
     asset_server: Res<AssetServer>,
 ) {
