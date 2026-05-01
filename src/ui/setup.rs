@@ -17,3 +17,19 @@ pub fn spawn_tool_tip(
         Text::new("_")
     ));
 }
+
+pub fn load_ui_winows(
+    mut ui_reg: ResMut<UiWindowRegistry>,
+    mut console: ResMut<Console>,
+) {
+    let path = String::from("./data/ui_windows");
+    let result = load_definitions_for::<RawNode>(&path);
+    let mut count = 0;
+    if let Ok(defs) = result {
+        for def in defs {
+            ui_reg.windows.insert(def.name.clone(), def);
+            count += 1;
+        }
+        console.log(format!("loaded {} ui windows", count))
+    }
+}

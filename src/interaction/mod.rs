@@ -1,11 +1,12 @@
 mod systems;
 mod spawn;
 
-use systems::*;
+pub use systems::*;
 use spawn::*;
 use super::*;
 use serde::Deserialize;
 use crate::messages::{SpawnWindowRequest, CloseWindowRequest};
+use crate::ui::handle_input;
 
 pub struct InteractionsPlugin;
 
@@ -15,10 +16,11 @@ impl Plugin for InteractionsPlugin {
             interacting: InteractionStage::Idle,
             entity: None,
             interaction_type: InteractionType::None,
+            ui_window_id: None,
         });
         app.add_systems(Update, (spawn_basic_oven_window));
-        app.add_systems(Update, (interact_with_structure, show_structure_window));
-        app.add_systems(Update, (close_window));
+        app.add_systems(Update, (interact_with_structure));
+        app.add_systems(Update, (interact_with_oven_window, sync_oven_window));
     }
 }
 
@@ -28,6 +30,7 @@ pub struct InteractionState {
     pub interacting: InteractionStage,
     pub entity: Option<Entity>,
     pub interaction_type: InteractionType,
+    pub ui_window_id: Option<String>,
 } 
 
 
@@ -57,12 +60,12 @@ pub struct UiStructureWindow;
 
 #[derive(Component)]
 pub struct OvenInputSlot {
-    pub item: Option<ItemStack>,
+    pub item: Option<String>,
 }
 
 
 #[derive(Component)]
 pub struct OvenOutputSlot {
-    pub item: Option<ItemStack>,
+    pub item: Option<String>,
 }
 

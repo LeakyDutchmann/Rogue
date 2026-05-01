@@ -35,6 +35,11 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
     match definition.interaction {
         InteractionType::BasicOven => {
             entity.insert(Interactable);
+            entity.insert(Processing {
+                input: Vec::new(),
+                output: Vec::new(),
+                timer: Timer::from_seconds(10.0, TimerMode::Repeating),
+            });
         }
         InteractionType::WorkBench => {
             entity.insert(Interactable);

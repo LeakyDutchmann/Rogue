@@ -5,6 +5,7 @@
   "width": 20.0,
   "height": 20.0,
   "interaction": "BasicOven",
+  "ui_window_id": "Basic_Oven_Ui_Window",
   "recipe": {
     "ingredients": {
       "Structurix": 10

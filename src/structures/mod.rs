@@ -3,10 +3,12 @@ use super::*;
 mod systems;
 mod functions;
 mod setup;
+mod components;
 
 use functions::*;
 use systems::*;
 pub use setup::*;
+pub use components::*;
 
 use crate::components::Health;
 use std::collections::HashMap;
@@ -48,6 +50,7 @@ pub struct StructureDefinitionRaw {
     pub height: Option<f32>,
     pub radius: Option<f32>,
     pub recipe: Option<RecipeDefinition>,
+    pub ui_window_id: Option<String>,
 }
 
 
@@ -59,4 +62,5 @@ pub struct StructureDefinition {
     pub height: Option<f32>,
     pub radius: Option<f32>,
     pub interaction: InteractionType,
+    pub ui_window_id: Option<String>,
 }

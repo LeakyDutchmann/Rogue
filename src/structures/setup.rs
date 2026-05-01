@@ -21,6 +21,7 @@ pub fn load_structures(
                 height: structure.height,
                 radius: structure.radius,
                 interaction: structure.interaction,
+                ui_window_id: structure.ui_window_id,
             };
             struct_registry.structures.insert(structure.name.clone(), definition);
             count += 1;

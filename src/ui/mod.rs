@@ -1,12 +1,20 @@
 mod systems;
 mod setup;
 mod input;
+mod data;
+mod functions;
+mod ui_windows;
 
 use super::*;
 
 use systems::*;
 use setup::*;
-use input::*;
+pub use input::*;
+use data::*;
+pub use functions::*;
+pub use ui_windows::*;
+use serde::Deserialize;
+use std::collections::HashMap;
 use crate::inventory::UiBackground;
 
 pub struct UiPlugin;
@@ -17,12 +25,23 @@ impl Plugin for UiPlugin {
             entity: None,
             last_time: 0.0,
         });
-        app.add_systems(Startup, spawn_tool_tip);
+        app.insert_resource(UiWindowRegistry {
+            windows: HashMap::new(),
+        });
+        app.add_systems(Startup, (load_ui_winows, spawn_tool_tip));
         app.add_systems(Update, hover_system);
         app.add_systems(Update, (tool_tip_follow_cursor, update_tool_tip).chain().after(hover_system));
         app.add_systems(Update, handle_input);
+        app.add_systems(Update, (show_structure_window, close_window));
     }
 }
+
+
+#[derive(Resource)] 
+pub struct UiWindowRegistry {
+    pub windows: HashMap<String,RawNode>, 
+}
+
 
 #[derive(Resource)]
 pub struct UiHoveringState {
