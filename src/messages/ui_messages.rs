@@ -23,3 +23,8 @@ pub struct UiSlotUpdate {
     pub to_quantity: usize,
     pub to_item: String,
 }
+
+#[derive(Message)]
+pub struct UiForceSync{
+    pub oven_entity: Entity,
+}

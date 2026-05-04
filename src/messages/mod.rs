@@ -43,6 +43,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<SpawnWindowRequest>()
             .add_message::<CloseWindowRequest>()
             .add_message::<UiClick>()
-            .add_message::<UiSlotUpdate>();
+            .add_message::<UiSlotUpdate>()
+            .add_message::<UiForceSync>();
+        
     }
 }

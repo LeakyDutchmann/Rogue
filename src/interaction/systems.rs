@@ -1,6 +1,6 @@
 use std::process::Output;
 
-use bevy::transform::commands;
+use bevy::{render::texture, transform::commands};
 
 use super::*;
 
@@ -182,6 +182,47 @@ pub fn ui_slot_update_system(
                     }
                     if let Ok(mut text_counter) = text.get_mut(child) {
                         text_counter.0 = "".to_string();
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn sync_oven_ui(
+    mut reader: MessageReader<UiForceSync>,
+    mut processing: Query<&Processing>,
+    input: Query<(&OvenInputSlot, &ChildOf)>,
+    output: Query<(&OvenOutputSlot, &ChildOf)>,
+    text: Query<&mut SlotCounter>,
+    entity: Query<Entity>,
+    mut writer: MessageWriter<UiSlotUpdate>,
+) {
+    for msg in reader.read() {
+        if let Ok(processing) = processing.get(msg.oven_entity) {
+            for (slot, child_of) in input.iter() {
+                if let Some(item_stack) = processing.input.get(slot.index) {
+                    if let Ok(entity) = entity.get(child_of.0) {
+                        if let Some(item) = &item_stack.item_stored {
+                            writer.write(UiSlotUpdate {
+                                entity,
+                                to_quantity: item_stack.quantity as usize,
+                                to_item: item.clone()
+                            });
+                        }
+                    }
+                }
+            }
+            for (slot, child_of) in output.iter() {
+                if let Some(item_stack) = processing.output.get(slot.index) {
+                    if let Ok(entity) = entity.get(child_of.0) {
+                        if let Some(item) = &item_stack.item_stored {
+                            writer.write(UiSlotUpdate {
+                                entity,
+                                to_quantity: item_stack.quantity as usize,
+                                to_item: item.clone()
+                            });
+                        }
                     }
                 }
             }
