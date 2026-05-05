@@ -17,7 +17,6 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use bevy::ui::FocusPolicy;
 use crate::inventory::UiBackground;
-use crate::messages::UiForceSync;
 
 pub struct UiPlugin;
 

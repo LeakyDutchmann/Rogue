@@ -61,11 +61,13 @@ pub struct UiStructureWindow;
 #[derive(Component)]
 pub struct OvenInputSlot {
     pub index: usize,
+    pub item: Option<String>,
 }
 
 
 #[derive(Component)]
 pub struct OvenOutputSlot {
     pub index: usize,
+    pub item: Option<String>,
 }
 

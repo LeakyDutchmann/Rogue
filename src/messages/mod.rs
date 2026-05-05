@@ -7,6 +7,7 @@ mod pathfinding;
 mod world;
 mod map;
 mod ui_messages;
+mod processing;
 
 pub use map::*;
 pub use combat::*;
@@ -15,6 +16,7 @@ pub use inventory::*;
 pub use pathfinding::*;
 pub use world::*;
 pub use ui_messages::*;
+pub use processing::*;
 
 pub struct MessagesPlugin;
 
@@ -44,7 +46,7 @@ impl Plugin for MessagesPlugin {
             .add_message::<CloseWindowRequest>()
             .add_message::<UiClick>()
             .add_message::<UiSlotUpdate>()
-            .add_message::<UiForceSync>();
-        
+            .add_message::<UiForceSync>()
+            .add_message::<UpdateProcessing>();
     }
 }

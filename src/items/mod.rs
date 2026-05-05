@@ -9,6 +9,7 @@ use rand::Rng;
 use crate::player::{Player};
 use crate::messages::SpawnItemRequest;
 use serde::{Deserialize};
+use crate::structures::{OvenRecipeRegistry, OvenRecipe};
 use std::collections::HashMap;
 use crate::utils::load_definitions_for;
 use crate::inventory::Inventory;
@@ -73,6 +74,7 @@ pub struct ItemDefinitionRaw {
     pub weapon_stats: Option<WeaponStatsRaw>,
     pub tool_stats: Option<ToolStatsRaw>,
     pub max_stack: usize,
+    pub recipe: Option<OvenRecipe>,
 }
 
 

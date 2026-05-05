@@ -3,6 +3,7 @@ use super::*;
 pub fn setup_items(
     asset_server: Res<AssetServer>,
     mut item_registry: ResMut<ItemRegistry>,
+    mut oven_recipe_reg: ResMut<OvenRecipeRegistry>,
 ) {
     let path_ores = "./data/items/ores";
     let path_ingots = "./data/items/ingots";
@@ -26,6 +27,10 @@ pub fn setup_items(
                     tool_stats: item.tool_stats,
                     max_stack: item.max_stack,
                 });
+                if let Some(recipe) = item.recipe {
+                    oven_recipe_reg.recipes.insert(item.name.clone(), recipe);
+                    println!("recipe added");
+                }
                 item_count += 1;
             }
             println!("Loaded {} items", item_count);

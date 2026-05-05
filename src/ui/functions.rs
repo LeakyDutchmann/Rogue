@@ -12,6 +12,7 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
                 SlotKind::Output => {
                     commands.entity(window).insert(
                         OvenOutputSlot { 
+                            item: None,
                             index: index.clone(),
                         }
                     );
@@ -19,6 +20,7 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
                 SlotKind::Input => {
                     commands.entity(window).insert(
                         OvenInputSlot { 
+                            item: None,
                             index: index.clone(),
                         }
                     );

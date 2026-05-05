@@ -4,15 +4,18 @@ mod systems;
 mod functions;
 mod setup;
 mod components;
+mod processing;
 
 use functions::*;
 use systems::*;
 pub use setup::*;
 pub use components::*;
+pub use processing::*;
 
 use crate::components::Health;
 use std::collections::HashMap;
 use crate::building::builder_ui_interactions;
+use crate::messages::UpdateProcessing;
 use serde::Deserialize;
 
 pub struct StructurePlugin;
@@ -22,9 +25,27 @@ impl Plugin for StructurePlugin {
         app.insert_resource( StructureRegistry {
             structures: HashMap::new()
         });
+        app.insert_resource(OvenRecipeRegistry {
+            recipes: HashMap::new(),
+        });
         app.add_systems(Startup, load_structures);
+        app.add_systems(Update, (tick_oven_timers, update_processing).chain());
         app.add_systems(Update, spawn_structure.after(builder_ui_interactions));
     }
+}
+
+
+#[derive(Debug, Deserialize)]
+pub struct OvenRecipe {
+    pub input: String,
+    pub output: String,
+    pub process_time: f32,
+}
+
+
+#[derive(Resource)]
+pub struct OvenRecipeRegistry {
+    pub recipes: HashMap<String, OvenRecipe>
 }
 
 

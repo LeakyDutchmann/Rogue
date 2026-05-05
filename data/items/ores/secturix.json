@@ -2,6 +2,11 @@
   "name": "Secturix_ore",
   "icon": "ores/Secturix_ore.png",
   "sprite": "ores/Secturix_ore.png",
+  "recipe": {
+    "input": "Secturix_ore",
+    "output": "Secturix_ingot",
+    "process_time": 10.0
+  },
   "usable": false,
   "max_stack": 64
 }
