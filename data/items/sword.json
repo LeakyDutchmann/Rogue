@@ -13,6 +13,11 @@
   },
   "weapon_stats": {
     "enemy_damage": 22
+  },
+  "recipe": {
+    "ingredients": {
+      "Structurix": 10 
+    }
   }
 }
 

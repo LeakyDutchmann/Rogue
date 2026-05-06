@@ -2,7 +2,7 @@
   "name": "Mechanae_ore",
   "icon": "ores/Mechanae_ore.png",
   "sprite": "ores/Mechanae_ore.png",
-  "recipe": {
+  "oven_recipe": {
     "input": "Mechanae_ore",
     "output": "Mechanae_ingot",
     "process_time": 10.0

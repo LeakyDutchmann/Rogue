@@ -4,6 +4,7 @@ pub fn setup_items(
     asset_server: Res<AssetServer>,
     mut item_registry: ResMut<ItemRegistry>,
     mut oven_recipe_reg: ResMut<OvenRecipeRegistry>,
+    mut crafting_recipe_reg: ResMut<RecipeRegistry>,
 ) {
     let path_ores = "./data/items/ores";
     let path_ingots = "./data/items/ingots";
@@ -27,9 +28,13 @@ pub fn setup_items(
                     tool_stats: item.tool_stats,
                     max_stack: item.max_stack,
                 });
-                if let Some(recipe) = item.recipe {
+                if let Some(recipe) = item.oven_recipe {
                     oven_recipe_reg.recipes.insert(item.name.clone(), recipe);
-                    println!("recipe added");
+                    println!("oven recipe added");
+                }
+                if let Some(crafting_recipe) = item.recipe {
+                    crafting_recipe_reg.recipes.insert(item.name.clone(), crafting_recipe);
+                    println!("crafting recipe added");
                 }
                 item_count += 1;
             }
