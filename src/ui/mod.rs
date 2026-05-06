@@ -4,10 +4,12 @@ mod input;
 mod data;
 mod functions;
 mod ui_windows;
+mod components;
 
 use super::*;
 
 use systems::*;
+use components::*;
 use setup::*;
 pub use input::*;
 use data::*;

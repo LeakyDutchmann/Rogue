@@ -25,6 +25,14 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
                         }
                     );
                 },
+                SlotKind::WorkBenchSlot => {
+                    commands.entity(window).insert(
+                        WorkBenchSlot {
+                            item: None,
+                            index: index.clone(),
+                        }
+                    );
+                },
             }
         },
         RawNodeKind::Image{path} => {

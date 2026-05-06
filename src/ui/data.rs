@@ -47,6 +47,7 @@ pub enum RawVal {
 pub enum SlotKind {
     Output,
     Input,
+    WorkBenchSlot,
 }
 
 #[derive(Deserialize)]
