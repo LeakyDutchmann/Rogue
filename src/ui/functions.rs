@@ -41,8 +41,28 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
     }
 }
 
+fn convert_grid_track(raw: &RawRepeatedGridTrack) -> RepeatedGridTrack {
+    match raw.size {
+        RawVal::Px(v) => RepeatedGridTrack::px(raw.repeat, v),
+        RawVal::Percent(v) => RepeatedGridTrack::percent(raw.repeat, v),
+        RawVal::Auto => RepeatedGridTrack::auto(raw.repeat),
+    }
+}
+
 pub fn apply_style(style: &RawStyle) -> Node {
     let mut node = Node::default();
+
+    if let Some(display) = &style.display {
+        node.display = match display {
+            RawDisplay::Block => Display::Block,
+            RawDisplay::None => Display::None,
+            RawDisplay::Flex => Display::Flex,
+            RawDisplay::Grid => Display::Grid,
+        };
+    }
+    if let Some(track) = &style.grid_template_columns {
+        node.grid_template_columns = vec![convert_grid_track(track)];
+    }
 
     if let Some(w) = &style.width {
         node.width = match w {
@@ -131,6 +151,14 @@ pub fn apply_style(style: &RawStyle) -> Node {
     if let Some(b) = &style.border {
         node.border = UiRect::all(to_val(b));
     }
+    if let Some(b) = &style.border_radius {
+        node.border_radius = BorderRadius {
+            top_left: to_val(&b.top_left),
+            top_right: to_val(&b.top_right),
+            bottom_left: to_val(&b.bottom_left),
+            bottom_right: to_val(&b.bottom_right),
+        };
+    }
 
     node
 }
@@ -216,6 +244,7 @@ pub fn assemble_node(
             commands.entity(window).add_child(child);
         }
     }
+    
     window
 }
 

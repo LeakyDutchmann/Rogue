@@ -102,15 +102,43 @@ pub enum RawPositionType {
     Absolute,
 }
 
+
+#[derive(Deserialize)]
+pub enum RawDisplay {
+    Flex,
+    Grid,
+    Block,
+    None,    
+}
+
+
+#[derive(Deserialize)]
+pub struct RawRepeatedGridTrack {
+    pub size: RawVal,
+    pub repeat: u16,
+}
+
+
+#[derive(Deserialize)]
+pub struct RawBorderRadius {
+    pub top_left: RawVal,
+    pub top_right: RawVal,
+    pub bottom_left: RawVal,
+    pub bottom_right: RawVal,
+}
+
  
 #[derive(Deserialize)]
 pub struct RawStyle {
+    pub display: Option<RawDisplay>,
     pub width: Option<RawVal>,
     pub height: Option<RawVal>,
     pub flex_direction: Option<RawFlexDirection>,
     pub justify_content: Option<RawJustifyContent>,
     pub align_items: Option<RawAlignItems>,
     pub gap: Option<RawVal>,
+    pub grid_template_columns: Option<RawRepeatedGridTrack>,
+    pub grid_template_rows: Option<RawRepeatedGridTrack>,
     pub margin: Option<RawRect>,
     pub position_type: Option<RawPositionType>,
     pub left: Option<RawVal>,
@@ -118,5 +146,6 @@ pub struct RawStyle {
     pub right: Option<RawVal>,
     pub bottom: Option<RawVal>,
     pub border: Option<RawVal>,
+    pub border_radius: Option<RawBorderRadius>,
     
 }

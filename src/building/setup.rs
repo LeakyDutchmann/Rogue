@@ -10,6 +10,7 @@ pub fn setup_building_mode_ui(
                 border: UiRect::all(Val::Px(2.0)),
                 width: Val::Px(48.0),
                 height: Val::Px(48.0),
+                border_radius: BorderRadius::all(Val::Px(4.0)),
                 ..default()
             },
             BorderColor::all(Color::srgb(0.5, 0.5, 0.5)),
