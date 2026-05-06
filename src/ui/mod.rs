@@ -5,6 +5,7 @@ mod data;
 mod functions;
 mod ui_windows;
 mod components;
+mod sync;
 
 use super::*;
 
@@ -19,6 +20,7 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use bevy::ui::FocusPolicy;
 use crate::inventory::UiBackground;
+use sync::*;
 
 pub struct UiPlugin;
 
@@ -33,6 +35,7 @@ impl Plugin for UiPlugin {
         });
         app.add_systems(Startup, (load_ui_winows, spawn_tool_tip));
         app.add_systems(Update, hover_system);
+        app.add_systems(Update, sync_oven_ui);
         app.add_systems(Update, (tool_tip_follow_cursor, update_tool_tip).chain().after(hover_system));
         app.add_systems(Update, handle_input);
         app.add_systems(Update, (show_structure_window, close_window));

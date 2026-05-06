@@ -19,8 +19,7 @@ impl Plugin for InteractionsPlugin {
             ui_window_id: None,
         });
         app.add_systems(Update, (interact_with_structure));
-        app.add_systems(Update, sync_oven_ui);
-        app.add_systems(Update, (interact_with_oven_window, ui_slot_update_system).chain());
+        app.add_systems(Update, (interact_with_oven_window,));
     }
 }
 
