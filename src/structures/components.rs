@@ -7,3 +7,7 @@ pub struct Processing {
     pub output: Vec<ItemStack>,
     pub timer: Timer,
 }
+
+
+#[derive(Component)]
+pub struct WorkBench;

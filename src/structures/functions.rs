@@ -42,6 +42,7 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
             });
         }
         InteractionType::WorkBench => {
+            entity.insert(WorkBench);
             entity.insert(Interactable);
         }
         InteractionType::None => {}

@@ -28,10 +28,19 @@ impl Plugin for StructurePlugin {
         app.insert_resource(OvenRecipeRegistry {
             recipes: HashMap::new(),
         });
+        app.insert_resource(StructRecipeRegistry {
+            recipes: HashMap::new(),
+        });
         app.add_systems(Startup, load_structures);
         app.add_systems(Update, (tick_oven_timers, update_processing).chain());
         app.add_systems(Update, spawn_structure.after(builder_ui_interactions));
     }
+}
+
+
+#[derive(Resource)]
+pub struct StructRecipeRegistry {
+    pub recipes: HashMap<String, RecipeDefinition>,
 }
 
 

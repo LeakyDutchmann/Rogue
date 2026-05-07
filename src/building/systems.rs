@@ -75,7 +75,7 @@ pub fn build_structure(
     time: Res<Time>,
     can_place: Res<CanPlaceStruct>,
     mut writer_remove_from_inv: MessageWriter<RemoveFromInventory>,
-    recipe_reg: Res<RecipeRegistry>,
+    struct_recipe_reg: Res<StructRecipeRegistry>,
     inventory: Query<&Inventory, With<Player>>,
 ) {
     if building_mode.state == BuildingState::Placing {
@@ -92,7 +92,7 @@ pub fn build_structure(
                         if let Some(structure) = &cursor.structure {
                             if can_place.state == true {
                                 if let Ok(inventory) = inventory.single() {
-                                    if let Some(recipe) = recipe_reg.recipes.get(structure) {
+                                    if let Some(recipe) = struct_recipe_reg.recipes.get(structure) {
                                         let mut ingredients: Vec<(String, i32)> = Vec::new();
                                         let mut missing_ingreients: Vec<(String, i32)> = Vec::new();
                                         for (item, quantity) in &recipe.ingredients {

@@ -25,6 +25,4 @@ pub struct UiSlotUpdate {
 }
 
 #[derive(Message)]
-pub struct UiForceSync{
-    pub oven_entity: Entity,
-}
+pub struct UiWindowSpawned;

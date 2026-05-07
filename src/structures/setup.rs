@@ -2,7 +2,7 @@ use super::*;
 
 pub fn load_structures(
     mut struct_registry: ResMut<StructureRegistry>,
-    mut recipe_registry: ResMut<RecipeRegistry>,
+    mut recipe_registry: ResMut<StructRecipeRegistry>,
     assest_server: Res<AssetServer>,
 ) { 
     let path = "./data/structures";
