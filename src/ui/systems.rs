@@ -49,7 +49,10 @@ pub fn update_tool_tip(
     structure_identificator: Query<&BuildingUiSlot>,
     player_inventory: Query<&Inventory, With<Player>>,
     recipe_registry: Res<RecipeRegistry>,
+    struct_recipes: Res<StructRecipeRegistry>,
+    work_bench_identificator: Query<&WorkBenchSlot>,
     time: Res<Time>,
+    mut console: ResMut<Console>
 ) {
     if let Ok((mut text, mut visibility)) = query.single_mut() {
         if let Ok(inventory) = player_inventory.single() {
@@ -57,6 +60,7 @@ pub fn update_tool_tip(
                 if let Ok(children) = children.get(entity) {
                     let mut structure_id: Option<String> = None;
                     let mut item_id_found: Option<String> = None;
+                    let mut work_bench_item_id: Option<String> = None;
                     for child in children.iter() {
                         if let Ok(structure_slot) = structure_identificator.get(child) {
                             if let Some(structure) = &structure_slot.structure {
@@ -73,11 +77,17 @@ pub fn update_tool_tip(
                             }
                         }
                     }
+                    if let Ok(work_bench_slot) = work_bench_identificator.get(entity) {
+                        if let Some(item_id) = &work_bench_slot.item {
+                            work_bench_item_id = Some(item_id.clone());
+                            
+                        }
+                    }
                     let now = time.elapsed_secs_f64();
                     if now - hovering_state.last_time > 0.15 {
                         if let Some(structure_id) = structure_id {
                             text.0 = structure_id.clone();
-                            if let Some(recipe) = recipe_registry.recipes.get(&structure_id) {
+                            if let Some(recipe) = struct_recipes.recipes.get(&structure_id) {
                                 for (item, amount) in &recipe.ingredients {
                                     text.0.push_str(&format!("\n{}: {}", item, amount));
                                 }
@@ -85,6 +95,16 @@ pub fn update_tool_tip(
                             *visibility = Visibility::Visible;
                         } else if let Some(item_id) = item_id_found {
                             text.0 = item_id;
+                            *visibility = Visibility::Visible;
+                        } else if let Some(work_bench_item_id) = work_bench_item_id {
+                            text.0 = work_bench_item_id.clone();
+                            if let Some(recipe) = recipe_registry.recipes.get(&work_bench_item_id) {
+                                console.log(format!("Looking for recipe"));
+                                for (item, amount) in &recipe.ingredients {
+                                    console.log(format!("{}: {}", item, amount));
+                                    text.0.push_str(&format!("\n{}: {}", item, amount));
+                                }
+                            }
                             *visibility = Visibility::Visible;
                         } else {
                             text.0 = "".to_string();

@@ -7,11 +7,11 @@ pub fn spawn_tool_tip(
         ToolTip,
         Node {
             border: UiRect::all(Val::Px(4.0)),
-            width: Val::Px(200.0),
-            height: Val::Px(100.0),
+            width: Val::Px(300.0),
+            height: Val::Px(150.0),
             ..Default::default()
         },
-        BackgroundColor(Color::BLACK),
+        // BackgroundColor(Color::BLACK),
         BorderColor::all(Color::WHITE),
         ZIndex(5),
         Text::new("_")
