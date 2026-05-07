@@ -19,7 +19,6 @@ impl Plugin for InteractionsPlugin {
             interaction_type: InteractionType::None,
             ui_window_id: None,
         });
-        app.add_systems(Update, check_inventory);
         app.add_systems(Update, interact_with_workbench);
         app.add_systems(Update, (interact_with_structure));
         app.add_systems(Update, (interact_with_oven_window,));
