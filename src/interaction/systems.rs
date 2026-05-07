@@ -148,3 +148,64 @@ pub fn interact_with_oven_window(
         }
     }
 }
+
+pub fn interact_with_workbench(
+    mut reader: MessageReader<UiClick>,
+    mut cursor_car: Query<&mut CursorCarrier>,
+    interaction_state: Res<InteractionState>,
+    recipe_reg: Res<RecipeRegistry>,
+    work_bench_slot: Query<&WorkBenchSlot>,
+    item_reg: ResMut<ItemRegistry>,
+    inventory: Query<&Inventory>,
+    mut writer_remove_from_inv: MessageWriter<RemoveFromInventory>,
+    mut console: ResMut<Console>
+) {
+    if interaction_state.interacting != InteractionStage::Interacting {
+        return;
+    }
+    for msg in reader.read() {
+        if let Ok(work_bench_slot) = work_bench_slot.get(msg.entity) {
+            console.log(format!("ok"));
+            if work_bench_slot.item.is_none() {
+                return;
+            }
+            let item = work_bench_slot.item.as_ref().unwrap();
+            let inventory = inventory.single().expect("no inventory found");
+            let mut cursor = cursor_car.single_mut().expect("no cursor carrier found");
+            if let Some(recipe) = recipe_reg.recipes.get(item) {
+                let mut ingredients = Vec::new();
+                let mut missing_ingredients = Vec::new();
+                for (item, quantity) in &recipe.ingredients {
+                    if check_if_inventory_has_item(inventory, item, quantity.clone()) {
+                        ingredients.push((item.clone(), quantity.clone()));
+                    } else {
+                        missing_ingredients.push((item.clone(), quantity.clone()));
+                        println!("missing ingredient: {} ({})", item, quantity);
+                    }
+                }
+    
+                if missing_ingredients.is_empty() {
+                    for (item, quantity) in ingredients {
+                        writer_remove_from_inv.write(RemoveFromInventory {
+                            quantity: quantity.clone(),
+                            item: item.clone(),
+                        });
+                    }
+                    cursor.item = Some(item.clone());
+                    cursor.quantity = 1;
+                } else {
+                    console.log(format!("missing ingredients: {:?}", missing_ingredients));
+                }
+            }
+        }
+    }
+}
+
+pub fn check_inventory(
+    inventory: Query<&Inventory>,
+) {
+    let inventory = inventory.single().expect("no inventory found");
+    for item in &inventory.items {
+        println!("item: {} ({})", item.item_stored.as_deref().unwrap_or(""), item.quantity);
+    }
+}

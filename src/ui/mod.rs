@@ -10,7 +10,7 @@ mod sync;
 use super::*;
 
 use systems::*;
-use components::*;
+pub use components::*;
 use setup::*;
 pub use input::*;
 use data::*;

@@ -52,7 +52,6 @@ pub fn update_tool_tip(
     struct_recipes: Res<StructRecipeRegistry>,
     work_bench_identificator: Query<&WorkBenchSlot>,
     time: Res<Time>,
-    mut console: ResMut<Console>
 ) {
     if let Ok((mut text, mut visibility)) = query.single_mut() {
         if let Ok(inventory) = player_inventory.single() {
@@ -99,9 +98,7 @@ pub fn update_tool_tip(
                         } else if let Some(work_bench_item_id) = work_bench_item_id {
                             text.0 = work_bench_item_id.clone();
                             if let Some(recipe) = recipe_registry.recipes.get(&work_bench_item_id) {
-                                console.log(format!("Looking for recipe"));
                                 for (item, amount) in &recipe.ingredients {
-                                    console.log(format!("{}: {}", item, amount));
                                     text.0.push_str(&format!("\n{}: {}", item, amount));
                                 }
                             }
