@@ -1,0 +1,23 @@
+{
+  "name": "Secturix_Mechanae_PickAxe",
+  "icon": "pickaxes/secturix_mechanae_pickaxe.png",
+  "sprite": "pickaxes/secturix_mechanae_pickaxe.png",
+  "durability": 100,
+  "usable": false,
+  "animation_style": "PickAxe",
+  "max_stack": 1,
+  "combat_stats": {
+    "attack_speed": 260,
+    "swing_angle": 50,
+    "radius": 32
+  },
+  "tool_stats": {
+    "structure_damage": 44
+  },
+  "recipe": {
+    "ingredients": {
+      "Secturix_PickAxe": 1,
+      "Mechanae_ingot": 10
+    }
+  }
+}

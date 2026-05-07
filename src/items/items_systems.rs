@@ -8,9 +8,11 @@ pub fn setup_items(
 ) {
     let path_ores = "./data/items/ores";
     let path_ingots = "./data/items/ingots";
+    let path_swords = "./data/items/swords";
+    let path_pickaxes = "./data/items/pickaxes";
     let path_items = "./data/items";
     let path_materials = "./data/items/materials";
-    let paths = vec![path_ores, path_ingots, path_items, path_materials];
+    let paths = vec![path_ores, path_ingots, path_items, path_materials, path_swords, path_pickaxes];
     for path in paths {
         if let Ok(items) = load_definitions_for::<ItemDefinitionRaw>(path) {
             let mut item_count = 0;

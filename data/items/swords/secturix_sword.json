@@ -1,7 +1,7 @@
 {
-  "name": "Sword",
-  "icon": "sword.png",
-  "sprite": "sword.png",
+  "name": "Secturix_Sword",
+  "icon": "swords/secturix_sword.png",
+  "sprite": "swords/secturix_sword.png",
   "durability": 100,
   "usable": false,
   "animation_style": "Sword",
@@ -12,12 +12,12 @@
     "radius": 44
   },
   "weapon_stats": {
-    "enemy_damage": 22
+    "enemy_damage": 30
   },
   "recipe": {
     "ingredients": {
-      "Structurix": 10 
+      "Structurix": 20,
+      "Secturix_ingot": 15
     }
   }
 }
-
