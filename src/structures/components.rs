@@ -11,3 +11,9 @@ pub struct Processing {
 
 #[derive(Component)]
 pub struct WorkBench;
+
+
+#[derive(Component)]
+pub struct Chest {
+    pub items: HashMap<usize, ItemStack>,
+}

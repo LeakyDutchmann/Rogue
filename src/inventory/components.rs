@@ -46,6 +46,15 @@ pub struct ItemStack {
     pub quantity: i32,
 }
 
+impl ItemStack {
+    pub fn new() -> Self {
+        Self {
+            item_stored: None,
+            quantity: 0,
+        }
+    }
+}
+
 
 #[derive(Component)]
 pub struct Inventory {

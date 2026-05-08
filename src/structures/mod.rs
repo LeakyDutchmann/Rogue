@@ -94,3 +94,4 @@ pub struct StructureDefinition {
     pub interaction: InteractionType,
     pub ui_window_id: Option<String>,
 }
+

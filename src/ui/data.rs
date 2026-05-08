@@ -48,6 +48,7 @@ pub enum SlotKind {
     Output,
     Input,
     WorkBenchSlot,
+    ChestSlot,
 }
 
 #[derive(Deserialize)]

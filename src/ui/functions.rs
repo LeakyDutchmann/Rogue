@@ -33,6 +33,15 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
                         }
                     );
                 },
+                SlotKind::ChestSlot => {
+                    commands.entity(window).insert(
+                        ChestSlot {
+                            item: None,
+                            quantity: 0,
+                            index: index.clone(),
+                        }
+                    );
+                },
             }
         },
         RawNodeKind::Image{path} => {

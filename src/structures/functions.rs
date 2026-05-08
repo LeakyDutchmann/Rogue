@@ -45,6 +45,17 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
             entity.insert(WorkBench);
             entity.insert(Interactable);
         }
+        InteractionType::Chest => {
+            let mut items_slots = HashMap::new();
+            for i in 0..=39 {
+                items_slots.insert(i, ItemStack::new());
+            }
+            entity.insert(Chest {
+                items: items_slots,
+            });
+            entity.insert(Interactable);
+        }
+        
         _ => {}
     }
     entity.insert(Health(100));

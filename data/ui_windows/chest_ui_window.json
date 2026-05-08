@@ -1,0 +1,1524 @@
+{
+  "name": "chest_ui_window",
+  "kind": "Container",
+  "marker": "UiStructureWindow",
+  "style": {
+    "width": { "Px": 472.0 },
+    "height": { "Percent": 100.0 },
+    "position_type": "Absolute",
+    "left": { "Percent": 50.0 },
+    "margin": {
+      "top": { "Px": 0.0 },
+      "bottom": { "Px": 0.0 },
+      "left": { "Px": -234.0 },
+      "right": { "Px": 0.0 }
+    },
+    "justify_content": "Center",
+    "align_items": "Center"
+  },
+  "children": [
+    {
+      "name": "actual",
+      "kind": "Container",
+      "style": {
+        "width": { "Px": 472.0 },
+        "height": { "Percent": 50.0 },
+        "bottom": { "Px": 240.0},
+        "display": "Grid",
+        "grid_template_columns": {
+          "repeat": 8,
+          "size": { "Px": 48.0 }
+        },
+        "position_type": "Absolute",
+        "border": { "Px": 2.0 },
+        "justify_content": "Center",
+        "align_items": "Center",
+        "gap": { "Px": 4.0 }
+      },
+      "background_color": { "srgba": [0.25, 0.25, 0.25, 0.1] },
+      "zindex": 1,
+      "children": [
+        {
+          "name": "slot_0",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 0
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_1",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 1
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_2",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 2
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_3",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 3
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_4",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 4
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_5",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 5
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_6",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 6
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_7",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 7
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_8",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 8
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_9",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 9
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_10",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 10
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_11",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 11
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_12",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 12
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_13",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 13
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_14",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 14
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_15",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 15
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_16",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 16
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_17",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 17
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_18",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 18
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_19",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 19
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_20",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 20
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_21",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 21
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_22",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 22
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_23",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 23
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_24",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 24
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_25",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 25
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_26",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 26
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_27",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 27
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_28",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 28
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_29",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 29
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_30",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 30
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_31",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 31
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_32",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 32
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_33",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 33
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_34",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 34
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_35",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 35
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_36",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 36
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_37",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 37
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_38",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 38
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        },
+        {
+          "name": "slot_39",
+          "kind": {
+            "Slot": {
+              "kind": "ChestSlot",
+              "index": 39
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "border": { "Px": 2.0 },
+            "border_radius": { 
+              "top_left": { "Px": 8.0 },
+              "top_right": { "Px": 8.0 },
+              "bottom_left": { "Px": 8.0 },
+              "bottom_right": { "Px": 8.0 }
+            }
+          },
+          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "zindex": 2,
+          "focus_policy": "Block",
+          "interactive": true,
+          "children": [
+            {
+              "name": "SlotCounet",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

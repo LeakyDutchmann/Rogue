@@ -209,3 +209,32 @@ pub fn check_inventory(
         println!("item: {} ({})", item.item_stored.as_deref().unwrap_or(""), item.quantity);
     }
 }
+
+pub fn interact_with_chest_slots(
+    mut reader: MessageReader<UiClick>,
+    mut cursor_car: Query<&mut CursorCarrier>,
+    interaction_state: Res<InteractionState>,
+    recipe_reg: Res<RecipeRegistry>,
+    mut chest_slot: Query<&mut ChestSlot>,
+    item_reg: Res<ItemRegistry>,
+    mut chest_id: Query<&mut Chest>,
+    inventory: Query<&Inventory>,
+    mut writer_remove_from_inv: MessageWriter<RemoveFromInventory>,
+    mut console: ResMut<Console>
+) {
+    for message in reader.read() {
+        if interaction_state.interacting != InteractionStage::Interacting {
+            continue;
+        }
+        let entity_interacting = interaction_state.entity.unwrap();
+        if let Ok(mut chest) = chest_id.get_mut(entity_interacting) {
+            let mut cursor_carrier = cursor_car.single_mut().expect("no cursor carrier found");
+            if let Ok(mut slot) = chest_slot.get_mut(message.entity) {
+                if let Some(item_stack) = chest.items.get_mut(&slot.index) {
+                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg);
+                }
+                
+            }
+        }
+    }
+}
