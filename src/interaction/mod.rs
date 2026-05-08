@@ -43,6 +43,7 @@ pub struct Interactable;
 pub enum InteractionType {
    BasicOven,
    WorkBench,
+   Chest,
    None,
 }
 
