@@ -1,15 +1,75 @@
 use super::*;
 
+pub fn sync_ui_slot(
+    slot: &mut UiSlot,
+    slot_e: Entity,
+    item_stack: &ItemStack,
+    children: &Children,
+    image_node: &Query<&ImageNode>,
+    text: &mut Query<&mut Text>,
+    item_reg: &ItemRegistry,
+    commands: &mut Commands,
+) {
+    if let Some(item) = &item_stack.item_stored {
+        if item_stack.item_stored != slot.item {
+            for child in children.iter() {
+                if let Ok(_) = image_node.get(child) {
+                    commands.entity(child).despawn();
+                }
+                if let Ok(mut text) = text.get_mut(child) {
+                    if item_stack.quantity == 0 {
+                        text.0 = "".to_string();
+                    } else {
+                         text.0 = item_stack.quantity.to_string();
+                    }
+                   
+                }
+            }
+            if let Some(item_def) = item_reg.items.get(item) {
+                let child = commands.spawn(
+                    ImageNode::new(item_def.icon.clone())
+                ).id();
+                commands.entity(slot_e).add_child(child);
+                slot.item = item_stack.item_stored.clone();
+                slot.quantity = item_stack.quantity as usize;
+            } 
+        } else {
+            for child in children.iter() {
+                if let Ok(mut text) = text.get_mut(child) {
+                    if item_stack.quantity == 0 {
+                        text.0 = "".to_string();
+                    } else {
+                         text.0 = item_stack.quantity.to_string();
+                    }
+                    slot.quantity = item_stack.quantity as usize;
+                }
+            }
+        }
+    } else {
+        for child in children.iter() {
+            if let Ok(_) = image_node.get(child) {
+                commands.entity(child).despawn();
+            }
+            if let Ok(mut text) = text.get_mut(child) {
+                text.0 = "".to_string();
+                slot.item = item_stack.item_stored.clone();
+                slot.quantity = item_stack.quantity as usize;
+            }
+        }
+    }
+}
+
 pub fn sync_oven_ui(
     mut commands: Commands,
     mut processing: Query<&Processing>,
     interact_state: Res<InteractionState>,
     item_reg: Res<ItemRegistry>,
-    mut input: Query<(Entity, &mut OvenInputSlot, &ChildOf)>,
-    mut output: Query<(Entity, &mut OvenOutputSlot, &ChildOf)>,
-    mut text: Query<&mut Text, With<SlotCounter>>,
+    mut slot: Query<(Entity, &mut UiSlot, &Children)>,
+    mut text: Query<&mut Text>,
     entity: Query<Entity>,
     children: Query<&Children>,
+    image_node: Query<&ImageNode>,
+    mut console: ResMut<Console>,
     mut writer: MessageWriter<UiSlotUpdate>,
 ) {
     if interact_state.interacting != InteractionStage::Interacting {
@@ -17,61 +77,39 @@ pub fn sync_oven_ui(
     }
     if let Some(oven_entity) = interact_state.entity {
         if let Ok(processing) = processing.get(oven_entity) {
-            for (slot_e, mut slot, child_of) in input.iter_mut() {
-                if let Some(item_stack) = processing.input.get(slot.index) {
-                    if let Some(item) = &item_stack.item_stored {
-                        if Some(item) != slot.item.as_ref() {
-                            if let Some(def) = item_reg.items.get(item) {
-                                commands.entity(slot_e).insert(ImageNode::new(def.icon.clone()));
-                                slot.item = Some(item.clone())
-                            }
-                        }
-                    } else {
-                        commands.entity(slot_e).remove::<ImageNode>();
-                        slot.item = None;
-                    }
-                }
-                if let Ok(entity) = entity.get(child_of.0) {
-                    if let Ok(children) = children.get(entity) {
-                        for child in children.iter() {
-                            if let Ok(mut text) = text.get_mut(child) {
-                                if processing.input[0].quantity > 0 {
-                                    text.0 = processing.input[0].quantity.to_string();
-                                } else {
-                                    text.0 = "".to_string();
-                                }
-                            }
+            for (slot_e, mut slot, children) in slot.iter_mut() {
+                match slot.kind {
+                    UiSlotKind::Output => {
+                        if let Some(item_stack) = processing.output.get(slot.index) {
+                            sync_ui_slot(
+                                &mut slot,
+                                slot_e,
+                                item_stack,
+                                children,
+                                &image_node,
+                                &mut text,
+                                &item_reg,
+                                &mut commands,
+                            );
                         }
                     }
-                }
-            }
-            for (slot_e, mut slot, child_of) in output.iter_mut() {
-                if let Some(item_stack) = processing.output.get(slot.index) {
-                    if let Some(item) = &item_stack.item_stored {
-                        if Some(item) != slot.item.as_ref() {
-                            if let Some(def) = item_reg.items.get(item) {
-                                commands.entity(slot_e).insert(ImageNode::new(def.icon.clone()));
-                                slot.item = Some(item.clone())
-                            }
-                        }
-                    } else {
-                        commands.entity(slot_e).remove::<ImageNode>();
-                        slot.item = None;
-                    }
-                }
-                if let Ok(entity) = entity.get(child_of.0) {
-                    if let Ok(children) = children.get(entity) {
-                        for child in children.iter() {
-                            if let Ok(mut text) = text.get_mut(child) {
-                                if processing.output[0].quantity > 0 {
-                                    text.0 = processing.output[0].quantity.to_string();
-                                } else {
-                                    text.0 = "".to_string();
-                                }
-                            }
+                    UiSlotKind::Input => {
+                        if let Some(item_stack) = processing.input.get(slot.index) {
+                            sync_ui_slot(
+                                &mut slot,
+                                slot_e,
+                                item_stack,
+                                children,
+                                &image_node,
+                                &mut text,
+                                &item_reg,
+                                &mut commands,
+                            );
                         }
                     }
+                    _ => {}
                 }
+                
             }
         }
     }
@@ -111,6 +149,7 @@ pub fn sync_work_bench_ui(
                     } else {
                         console.log(format!("no item found for recipe: {}", item_id));
                     }
+                } else {
                 }
             }
         } 

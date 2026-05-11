@@ -167,6 +167,7 @@ pub fn interact_with_workbench(
         if let Ok(work_bench_slot) = work_bench_slot.get(msg.entity) {
             console.log(format!("ok"));
             if work_bench_slot.item.is_none() {
+                console.log(format!("empty slot"));
                 return;
             }
             let item = work_bench_slot.item.as_ref().unwrap();

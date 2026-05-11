@@ -6,7 +6,10 @@ pub fn setup_inventory(
     let mut slots = Vec::new();
     for i in 0..36 {
         slots.push(commands.spawn((
-            Slot {
+            UiSlot {
+                kind: UiSlotKind::Inventory,
+                item: None,
+                quantity: 0,
                 index: i,
             },
             Node {

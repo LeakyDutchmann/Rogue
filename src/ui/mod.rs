@@ -35,7 +35,8 @@ impl Plugin for UiPlugin {
         });
         app.add_systems(Startup, (load_ui_winows, spawn_tool_tip));
         app.add_systems(Update, hover_system);
-        app.add_systems(Update, (sync_oven_ui, sync_work_bench_ui, sync_chest_ui));
+        app.add_systems(Update, sync_work_bench_ui.after(interact_with_workbench));
+        app.add_systems(Update, (sync_oven_ui, sync_chest_ui));
         app.add_systems(Update, (tool_tip_follow_cursor, update_tool_tip).chain().after(hover_system));
         app.add_systems(Update, handle_input);
         app.add_systems(Update, (show_structure_window, close_window));

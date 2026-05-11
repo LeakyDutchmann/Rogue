@@ -11,7 +11,9 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
             match kind {
                 SlotKind::Output => {
                     commands.entity(window).insert(
-                        OvenOutputSlot { 
+                        UiSlot { 
+                            kind: UiSlotKind::Output,
+                            quantity: 0,
                             item: None,
                             index: index.clone(),
                         }
@@ -19,7 +21,9 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
                 },
                 SlotKind::Input => {
                     commands.entity(window).insert(
-                        OvenInputSlot { 
+                        UiSlot { 
+                            kind: UiSlotKind::Input,
+                            quantity: 0,
                             item: None,
                             index: index.clone(),
                         }
@@ -35,9 +39,20 @@ pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, a
                 },
                 SlotKind::ChestSlot => {
                     commands.entity(window).insert(
-                        ChestSlot {
-                            item: None,
+                        UiSlot { 
+                            kind: UiSlotKind::Chest,
                             quantity: 0,
+                            item: None,
+                            index: index.clone(),
+                        }
+                    );
+                },
+                SlotKind::InventorySlot => {
+                    commands.entity(window).insert(
+                        UiSlot { 
+                            kind: UiSlotKind::Inventory,
+                            quantity: 0,
+                            item: None,
                             index: index.clone(),
                         }
                     );

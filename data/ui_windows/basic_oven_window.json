@@ -50,7 +50,12 @@
       "children": [
         {
           "name": "InputSlot",
-          "kind": "Container",
+          "kind": {
+            "Slot": {
+              "kind": "Input",
+              "index": 0
+            }
+          },
           "style": {
             "width": { "Px": 48.0 },
             "height": { "Px": 48.0 },
@@ -74,18 +79,6 @@
                 "position_type": "Absolute",
                 "top": { "Percent": 50.0 }
               }
-            },
-            {
-              "name": "InputSlotMarker",
-              "kind": {
-                "Slot": {
-                  "kind": "Input",
-                  "index": 0
-                }
-              },
-              "style": {
-                
-              }
             }
           ]
         }
@@ -103,7 +96,12 @@
       "children": [
         {
           "name": "OutputSlot",
-          "kind": "Container",
+          "kind": {
+            "Slot": {
+              "kind": "Output",
+              "index": 0
+            }
+          },
           "style": {
             "width": { "Px": 48.0 },
             "height": { "Px": 48.0 },
@@ -126,18 +124,6 @@
               "style": {
                 "position_type": "Absolute",
                 "top": { "Percent": 50.0 }
-              }
-            },
-            {
-              "name": "OutputSlotMarker",
-              "kind": {
-                "Slot": {
-                  "kind": "Output",
-                  "index": 0
-                }
-              },
-              "style": {
-                
               }
             }
           ]
