@@ -1,8 +1,10 @@
 mod systems;
 mod spawn;
+mod functions;
 
 pub use systems::*;
 use spawn::*;
+use functions::*;
 use super::*;
 use serde::Deserialize;
 use crate::messages::{SpawnWindowRequest, CloseWindowRequest, UiSlotUpdate};
@@ -21,6 +23,7 @@ impl Plugin for InteractionsPlugin {
         });
         app.add_systems(Update, interact_with_workbench);
         app.add_systems(Update, (interact_with_structure));
+        app.add_systems(Update, quick_move_from_container.after(ui_slot_click_handler));
     }
 }
 

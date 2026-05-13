@@ -52,3 +52,93 @@ pub fn handle_input(
         }
     }
 }
+
+pub fn ui_slot_click_handler(
+    mut commands: Commands,
+    mut reader: MessageReader<UiClick>,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    mut slot: Query<&mut UiSlot>,
+    mut cursor_carrier: Query<&mut CursorCarrier>,
+    item_reg: Res<ItemRegistry>,
+    interaction_state: Res<InteractionState>,
+    mut chest: Query<&mut Chest>,
+    mut processing: Query<&mut Processing>,
+    mut console: ResMut<Console>,
+    mut writer: MessageWriter<QuickMoveFromContainer>,
+) {
+    for msg in reader.read() {
+        if let Ok(mut uislot) = slot.get_mut(msg.entity) {
+            let mut cursor_c = cursor_carrier.single_mut().unwrap();
+            match uislot.kind {
+                UiSlotKind::Inventory => {
+                    if let Ok(mut player_inventory) = inventory.single_mut() {
+                        if let Some(item_stack) = player_inventory.items.get_mut(uislot.index) {
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Inventory,
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
+                            console.log(format!("Handling Inventory"));
+                        }
+                    }
+                }
+                UiSlotKind::Chest => {
+                    if let Ok(mut chest) = chest.get_mut(interaction_state.entity.unwrap()) {
+                        if let Some(item_stack) = chest.items.get_mut(uislot.index) {
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Chest { entity: interaction_state.entity.unwrap() },
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
+                            console.log(format!("Handling Chest"));
+                        }
+                    }
+                }
+                UiSlotKind::Output => {
+                    if let Ok(mut processing) = processing.get_mut(interaction_state.entity.unwrap()) {
+                        if let Some(item_stack) = processing.output.get_mut(uislot.index) {
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Output { entity: interaction_state.entity.unwrap() },
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
+                            console.log(format!("Handling Output"));
+                        }
+                    }
+                }
+                UiSlotKind::Input => {
+                    if let Ok(mut processing) = processing.get_mut(interaction_state.entity.unwrap()) {
+                        if let Some(item_stack) = processing.input.get_mut(uislot.index) {
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Input { entity: interaction_state.entity.unwrap() },
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
+                            console.log(format!("Handling Input"));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

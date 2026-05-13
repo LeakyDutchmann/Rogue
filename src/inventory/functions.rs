@@ -97,3 +97,42 @@ pub fn handle_slot_interaction(
         ClickKind::RMB => handle_rmb_slot_interaction(cursor_carrier, item_stack, item_reg),
     }
 }
+
+pub fn quick_move_to(from: &mut Vec<ItemStack>, to: &mut Vec<ItemStack>, index_from: usize, item_reg: &ItemRegistry) {
+    if let Some(item_stack) = from.get_mut(index_from) {
+        if let Some(item) = &item_stack.item_stored {
+            if let Some(def) = item_reg.items.get(item) {
+                for other_stack in to.iter_mut() {
+                    if other_stack.item_stored.as_ref() == Some(item) {
+                        if other_stack.quantity < def.max_stack as i32 {
+                            let free_space = def.max_stack as i32 - other_stack.quantity;
+                            if item_stack.quantity <= free_space {
+                                other_stack.quantity += item_stack.quantity;
+                                item_stack.quantity = 0;
+                                break;
+                            } else {
+                                other_stack.quantity = def.max_stack as i32;
+                                item_stack.quantity -= free_space;
+                                if item_stack.quantity == 0 {
+                                    break;
+                                }
+                            }
+                        }
+                    } 
+                }
+                if item_stack.quantity == 0 {
+                    item_stack.clear();
+                } else {
+                    for other_stack in to.iter_mut() {
+                        if other_stack.item_stored.as_ref() == None {
+                            other_stack.set(item_stack.item_stored.clone(), item_stack.quantity);
+                            item_stack.clear();
+                            break;
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+}

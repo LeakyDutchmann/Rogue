@@ -65,54 +65,6 @@ pub fn interact_with_structure(
     
 }
 
-
-
-
-pub fn interact_with_oven_window(
-    mut reader: MessageReader<UiClick>,
-    mut cursor_car: Query<&mut CursorCarrier>,
-    interaction_state: Res<InteractionState>,
-    mut oven_entity: Query<(Entity, &mut Processing)>,
-    children: Query<&Children>,
-    input: Query<&OvenInputSlot>,
-    output: Query<&OvenOutputSlot>,
-    item_reg: ResMut<ItemRegistry>,
-    mut writer: MessageWriter<UiSlotUpdate>,
-) {
-    if interaction_state.interacting == InteractionStage::Interacting {
-        let entity = interaction_state.entity.unwrap();
-        if let Ok((entity, mut processing)) = oven_entity.get_mut(entity) {
-            for msg in reader.read() {
-                if let Ok(children) = children.get(msg.entity) {
-                    for child in children.iter() {
-                        if let Ok(mut cursor_carrier) = cursor_car.single_mut() {
-                            if let Ok(input_slot) = input.get(child) {
-                                if let Some(item_stack) = processing.input.get_mut(input_slot.index) {
-                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg, msg);
-                                    writer.write(UiSlotUpdate {
-                                        entity: msg.entity,
-                                        to_quantity: item_stack.quantity as usize,
-                                        to_item: item_stack.item_stored.clone().unwrap_or_default(),
-                                    });
-                                }
-                            } else if let Ok(output_slot) = output.get(child) {
-                                if let Some(item_stack) = processing.output.get_mut(output_slot.index) {
-                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg, msg);
-                                    writer.write(UiSlotUpdate {
-                                        entity: msg.entity,
-                                        to_quantity: item_stack.quantity as usize,
-                                        to_item: item_stack.item_stored.clone().unwrap_or_default(),
-                                    });
-                                }
-                            }
-                        }  
-                    }
-                }
-            }
-        }
-    }
-}
-
 pub fn interact_with_workbench(
     mut reader: MessageReader<UiClick>,
     mut cursor_car: Query<&mut CursorCarrier>,
@@ -166,39 +118,56 @@ pub fn interact_with_workbench(
     }
 }
 
-pub fn check_inventory(
-    inventory: Query<&Inventory>,
-) {
-    let inventory = inventory.single().expect("no inventory found");
-    for item in &inventory.items {
-        println!("item: {} ({})", item.item_stored.as_deref().unwrap_or(""), item.quantity);
-    }
-}
-
-pub fn interact_with_chest_slots(
-    mut reader: MessageReader<UiClick>,
-    mut cursor_car: Query<&mut CursorCarrier>,
+pub fn quick_move_from_container(
     interaction_state: Res<InteractionState>,
-    recipe_reg: Res<RecipeRegistry>,
-    mut chest_slot: Query<&mut ChestSlot>,
     item_reg: Res<ItemRegistry>,
-    mut chest_id: Query<&mut Chest>,
-    inventory: Query<&Inventory>,
-    mut writer_remove_from_inv: MessageWriter<RemoveFromInventory>,
-    mut console: ResMut<Console>
+    mut reader: MessageReader<QuickMoveFromContainer>,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    mut chest: Query<&mut Chest>,
+    mut processing: Query<&mut Processing>,    
 ) {
-    for message in reader.read() {
-        if interaction_state.interacting != InteractionStage::Interacting {
-            continue;
-        }
-        let entity_interacting = interaction_state.entity.unwrap();
-        if let Ok(mut chest) = chest_id.get_mut(entity_interacting) {
-            let mut cursor_carrier = cursor_car.single_mut().expect("no cursor carrier found");
-            if let Ok(mut slot) = chest_slot.get_mut(message.entity) {
-                if let Some(item_stack) = chest.items.get_mut(slot.index) {
-                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg, message);
-                }
-                
+    for msg in reader.read() {
+        let target = determine_target_container(msg.container, &interaction_state);
+        match msg.container {
+            ContainerType::Inventory => {
+                if let Ok(mut inventory) = inventory.single_mut() {
+                    if let Some(target) = target {
+                        match target {
+                            ContainerType::Input { entity } => {
+                                if let Ok(mut processing) = processing.get_mut(entity) {
+                                    quick_move_to(&mut inventory.items, &mut processing.input, msg.index, &item_reg);
+                                }
+                            }
+                            ContainerType::Chest{entity} => {
+                                if let Ok(mut chest) = chest.get_mut(entity) {
+                                    quick_move_to(&mut inventory.items, &mut chest.items, msg.index, &item_reg);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                } 
+            }
+            ContainerType::Chest{entity} => {
+                if let Ok(mut chest) = chest.get_mut(entity) {
+                    if let Ok(mut inventory) = inventory.single_mut() {
+                        quick_move_to(&mut chest.items, &mut inventory.items , msg.index, &item_reg);
+                    }
+                } 
+            }
+            ContainerType::Input{entity} => {
+                if let Ok(mut processing) = processing.get_mut(entity) {
+                    if let Ok(mut inventory) = inventory.single_mut() {
+                        quick_move_to(&mut processing.input, &mut inventory.items , msg.index, &item_reg);
+                    }
+                } 
+            }
+            ContainerType::Output{entity} => {
+                if let Ok(mut processing) = processing.get_mut(entity) {
+                    if let Ok(mut inventory) = inventory.single_mut() {
+                        quick_move_to(&mut processing.output, &mut inventory.items , msg.index, &item_reg);
+                    }
+                } 
             }
         }
     }
