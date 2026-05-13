@@ -46,3 +46,18 @@ pub struct GetFromInventory {
     pub quantity: ItemQuantity,
     pub slot: usize
 }
+
+
+#[derive(Debug, Clone, Copy)]
+pub enum ContainerType {
+    Inventory,
+    Chest{entity: Entity},
+    Input{entity: Entity},
+    Output{entity: Entity}
+}
+
+#[derive(Message)]
+pub struct QuickMoveFromContainer {
+    pub container: ContainerType,
+    pub index: usize,
+}

@@ -195,7 +195,7 @@ pub fn interact_with_chest_slots(
         if let Ok(mut chest) = chest_id.get_mut(entity_interacting) {
             let mut cursor_carrier = cursor_car.single_mut().expect("no cursor carrier found");
             if let Ok(mut slot) = chest_slot.get_mut(message.entity) {
-                if let Some(item_stack) = chest.items.get_mut(&slot.index) {
+                if let Some(item_stack) = chest.items.get_mut(slot.index) {
                     handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg, message);
                 }
                 

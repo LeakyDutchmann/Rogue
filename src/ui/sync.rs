@@ -171,7 +171,7 @@ pub fn sync_chest_ui(
             if slot_data.kind != UiSlotKind::Chest {
                 continue;
             }
-            if let Some(item_stack) = chest.items.get(&slot_data.index) {
+            if let Some(item_stack) = chest.items.get(slot_data.index) {
                 sync_ui_slot(
                     &mut slot_data,
                     slot_e,

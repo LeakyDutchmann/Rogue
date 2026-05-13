@@ -237,7 +237,8 @@ pub fn ui_slot_click_handler(
     interaction_state: Res<InteractionState>,
     mut chest: Query<&mut Chest>,
     mut processing: Query<&mut Processing>,
-    mut console: ResMut<Console>
+    mut console: ResMut<Console>,
+    mut writer: MessageWriter<QuickMoveFromContainer>,
 ) {
     for msg in reader.read() {
         if let Ok(mut uislot) = slot.get_mut(msg.entity) {
@@ -246,15 +247,33 @@ pub fn ui_slot_click_handler(
                 UiSlotKind::Inventory => {
                     if let Ok(mut player_inventory) = inventory.single_mut() {
                         if let Some(item_stack) = player_inventory.items.get_mut(uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Inventory,
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
                             console.log(format!("Handling Inventory"));
                         }
                     }
                 }
                 UiSlotKind::Chest => {
                     if let Ok(mut chest) = chest.get_mut(interaction_state.entity.unwrap()) {
-                        if let Some(item_stack) = chest.items.get_mut(&uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                        if let Some(item_stack) = chest.items.get_mut(uislot.index) {
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Chest { entity: interaction_state.entity.unwrap() },
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
                             console.log(format!("Handling Chest"));
                         }
                     }
@@ -262,7 +281,16 @@ pub fn ui_slot_click_handler(
                 UiSlotKind::Output => {
                     if let Ok(mut processing) = processing.get_mut(interaction_state.entity.unwrap()) {
                         if let Some(item_stack) = processing.output.get_mut(uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Output { entity: interaction_state.entity.unwrap() },
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
                             console.log(format!("Handling Output"));
                         }
                     }
@@ -270,11 +298,141 @@ pub fn ui_slot_click_handler(
                 UiSlotKind::Input => {
                     if let Ok(mut processing) = processing.get_mut(interaction_state.entity.unwrap()) {
                         if let Some(item_stack) = processing.input.get_mut(uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            if msg.shift_pressed {
+                                writer.write({
+                                    QuickMoveFromContainer {
+                                        container: ContainerType::Input { entity: interaction_state.entity.unwrap() },
+                                        index: uislot.index,
+                                    }
+                                });
+                            } else {
+                                 handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
+                            }
                             console.log(format!("Handling Input"));
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+pub fn quick_move_to(from: &mut Vec<ItemStack>, to: &mut Vec<ItemStack>, index_from: usize, item_reg: &ItemRegistry) {
+    if let Some(item_stack) = from.get_mut(index_from) {
+        if let Some(item) = &item_stack.item_stored {
+            if let Some(def) = item_reg.items.get(item) {
+                for other_stack in to.iter_mut() {
+                    if other_stack.item_stored.as_ref() == Some(item) {
+                        if other_stack.quantity < def.max_stack as i32 {
+                            let free_space = def.max_stack as i32 - other_stack.quantity;
+                            if item_stack.quantity <= free_space {
+                                other_stack.quantity += item_stack.quantity;
+                                item_stack.quantity = 0;
+                                break;
+                            } else {
+                                other_stack.quantity = def.max_stack as i32;
+                                item_stack.quantity -= free_space;
+                                if item_stack.quantity == 0 {
+                                    break;
+                                }
+                            }
+                        }
+                    } 
+                }
+                if item_stack.quantity == 0 {
+                    item_stack.clear();
+                } else {
+                    for other_stack in to.iter_mut() {
+                        if other_stack.item_stored.as_ref() == None {
+                            other_stack.set(item_stack.item_stored.clone(), item_stack.quantity);
+                            item_stack.clear();
+                            break;
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+}
+
+pub fn determine_target_container(from: ContainerType, interaction_state: &InteractionState) -> Option<ContainerType> {
+    match from {
+        ContainerType::Inventory => {
+            match interaction_state.interaction_type {
+                InteractionType::BasicOven => {
+                    Some(ContainerType::Input { entity: interaction_state.entity.unwrap() })
+                }
+                InteractionType::Chest => {
+                    Some(ContainerType::Chest { entity: interaction_state.entity.unwrap() })
+                }
+                _ => {
+                    None
+                }
+            }
+        }
+        ContainerType::Chest { .. } => {
+            Some(ContainerType::Inventory)
+        }
+        ContainerType::Input { .. } => {
+            Some(ContainerType::Inventory)
+        }
+        ContainerType::Output { .. } => {
+            Some(ContainerType::Inventory)
+        }
+    }
+}
+
+pub fn quick_move_from_container(
+    interaction_state: Res<InteractionState>,
+    item_reg: Res<ItemRegistry>,
+    mut reader: MessageReader<QuickMoveFromContainer>,
+    mut inventory: Query<&mut Inventory, With<Player>>,
+    mut chest: Query<&mut Chest>,
+    mut processing: Query<&mut Processing>,    
+) {
+    for msg in reader.read() {
+        let target = determine_target_container(msg.container, &interaction_state);
+        match msg.container {
+            ContainerType::Inventory => {
+                if let Ok(mut inventory) = inventory.single_mut() {
+                    if let Some(target) = target {
+                        match target {
+                            ContainerType::Input { entity } => {
+                                if let Ok(mut processing) = processing.get_mut(entity) {
+                                    quick_move_to(&mut inventory.items, &mut processing.input, msg.index, &item_reg);
+                                }
+                            }
+                            ContainerType::Chest{entity} => {
+                                if let Ok(mut chest) = chest.get_mut(entity) {
+                                    quick_move_to(&mut inventory.items, &mut chest.items, msg.index, &item_reg);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                } 
+            }
+            ContainerType::Chest{entity} => {
+                if let Ok(mut chest) = chest.get_mut(entity) {
+                    if let Ok(mut inventory) = inventory.single_mut() {
+                        quick_move_to(&mut chest.items, &mut inventory.items , msg.index, &item_reg);
+                    }
+                } 
+            }
+            ContainerType::Input{entity} => {
+                if let Ok(mut processing) = processing.get_mut(entity) {
+                    if let Ok(mut inventory) = inventory.single_mut() {
+                        quick_move_to(&mut processing.input, &mut inventory.items , msg.index, &item_reg);
+                    }
+                } 
+            }
+            ContainerType::Output{entity} => {
+                if let Ok(mut processing) = processing.get_mut(entity) {
+                    if let Ok(mut inventory) = inventory.single_mut() {
+                        quick_move_to(&mut processing.output, &mut inventory.items , msg.index, &item_reg);
+                    }
+                } 
             }
         }
     }

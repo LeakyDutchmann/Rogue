@@ -47,6 +47,7 @@ impl Plugin for MessagesPlugin {
             .add_message::<UiClick>()
             .add_message::<UiSlotUpdate>()
             .add_message::<UiWindowSpawned>()
-            .add_message::<UpdateProcessing>();
+            .add_message::<UpdateProcessing>()
+            .add_message::<QuickMoveFromContainer>();
     }
 }

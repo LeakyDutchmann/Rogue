@@ -15,5 +15,5 @@ pub struct WorkBench;
 
 #[derive(Component)]
 pub struct Chest {
-    pub items: HashMap<usize, ItemStack>,
+    pub items: Vec<ItemStack>,
 }

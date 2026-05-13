@@ -57,6 +57,10 @@ impl ItemStack {
             quantity: 0,
         }
     }
+    pub fn clear(&mut self) {
+        self.item_stored = None;
+        self.quantity = 0;
+    }
     pub fn set(&mut self, item: Option<String>, quantity: i32) {
         self.item_stored = item;
         self.quantity = quantity;
