@@ -25,6 +25,10 @@ impl CursorCarrier {
         self.item = None;
         self.quantity = 0;
     }
+    pub fn set(&mut self, item: Option<String>, quantity: i32) {
+        self.item = item;
+        self.quantity = quantity;
+    }
 }
 
 
@@ -52,6 +56,10 @@ impl ItemStack {
             item_stored: None,
             quantity: 0,
         }
+    }
+    pub fn set(&mut self, item: Option<String>, quantity: i32) {
+        self.item_stored = item;
+        self.quantity = quantity;
     }
 }
 

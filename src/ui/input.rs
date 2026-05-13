@@ -2,7 +2,8 @@ use super::*;
 
 pub fn handle_input(
     keys: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(Entity, &Interaction), (Changed<Interaction>, Without<UiBackground>)>,
+    mouse: Res<ButtonInput<MouseButton>>,
+    mut query: Query<(Entity, &Interaction), (Without<UiBackground>)>,
     time: Res<Time>,
     mut ui_click_track: ResMut<UiClickTrack>,
     mut writer: MessageWriter<UiClick>,
@@ -17,19 +18,28 @@ pub fn handle_input(
         shift_pressed = true;
     }
     for (entity, interaction) in query.iter_mut() {
-        if *interaction == Interaction::Pressed {
+        if *interaction == Interaction::Hovered || *interaction == Interaction::Pressed  {
+            let kind = if mouse.just_pressed(MouseButton::Left) {
+                ClickKind::LMB
+            } else if mouse.just_pressed(MouseButton::Right) {
+                ClickKind::RMB
+            } else {
+                continue;
+            };
             let now = time.elapsed_secs_f64();
             if now - ui_click_track.last >= 0.2   {
                 writer.write( UiClick {
+                    kind: kind.clone(),
                     entity: entity,
                     double: false,
                     shift_pressed,
                     ctrl_pressed,
                 });
                 ui_click_track.last = now;
-                console.log(format!("logged single"));
+                console.log(format!("logged single, kind: {:?}", kind.clone()));
             } else {
                 writer.write( UiClick {
+                    kind,
                     entity: entity,
                     double: true,
                     shift_pressed,

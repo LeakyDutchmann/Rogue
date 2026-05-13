@@ -194,128 +194,6 @@ pub fn double_click_handler(
     }
 }
 
-pub fn item_take_handler(
-    mut reader: MessageReader<GetFromInventory>,
-    mut inventory: Query<&mut Inventory, With<Player>>,
-    mut cursor: Query<&mut CursorCarrier>,
-    registry: Res<ItemRegistry>,
-) {
-    for msg in reader.read() {
-        if let Ok(mut inventory) = inventory.single_mut() {
-            if let Ok(mut cursor) = cursor.single_mut() {
-                if let Some(item_stack) = inventory.items.get_mut(msg.slot) {
-                    if let Some(item_id) = item_stack.item_stored.as_ref() {
-                        cursor.item = Some(item_id.clone());
-                        if let Some(def) = registry.items.get(item_id) {
-                            if let Ok(quantity) = msg.quantity.match_quantity(def.max_stack as i32, item_stack.quantity) {
-                                cursor.quantity += quantity;
-                                item_stack.quantity -= quantity;
-                                if item_stack.quantity == 0 {
-                                    item_stack.item_stored = None;
-                                }
-                            } 
-                        }       
-                    }
-                }
-            }
-        }
-    }
-}
-
-pub fn item_put_handler(
-    mut reader: MessageReader<InsertToInventory>,
-    mut inventory: Query<&mut Inventory, With<Player>>,
-    mut cursor: Query<&mut CursorCarrier>,
-    registry: Res<ItemRegistry>,
-) {
-    for msg in reader.read() {
-        let mut quantity_to_put = msg.quantity;
-        if let Ok(mut inventory) = inventory.single_mut() {
-            if let Ok(mut cursor) = cursor.single_mut() {
-                if let Some(item_id) = cursor.item.clone() {
-                    if let Some(def) = registry.items.get(&item_id) {
-                        if let Some(slot) = msg.slot {
-                            if let Some(item_stack) = inventory.items.get_mut(slot) {
-                                if item_stack.item_stored.as_ref() == Some(&item_id) {
-                                    if item_stack.quantity < def.max_stack as i32 {
-                                        let free = def.max_stack as i32 - item_stack.quantity;
-                                        if quantity_to_put <= free {
-                                            item_stack.quantity += quantity_to_put;
-                                            cursor.clear();
-                                            break;
-                                        } else {
-                                            item_stack.quantity = def.max_stack as i32;
-                                            quantity_to_put -= free;
-                                            cursor.quantity = quantity_to_put;
-                                        }
-                                    } else {
-                                        cursor.item = item_stack.item_stored.clone();
-                                        cursor.quantity = item_stack.quantity;
-                                        item_stack.item_stored = Some(item_id.clone());
-                                        item_stack.quantity = quantity_to_put;
-                                        break;
-                                    }
-                                } else if item_stack.item_stored.is_none() {
-                                    item_stack.item_stored = Some(item_id.clone());
-                                    item_stack.quantity = quantity_to_put;
-                                    cursor.clear();
-                                    break;
-                                } else if item_stack.item_stored.as_ref() != Some(&item_id) && item_stack.item_stored.is_some() {
-                                    cursor.item = item_stack.item_stored.clone();
-                                    cursor.quantity = item_stack.quantity;
-                                    item_stack.item_stored = Some(item_id.clone());
-                                    item_stack.quantity = quantity_to_put;
-                                    break;
-                                }
-                            }
-                        } else {
-                            let mut pushed = false;
-                            for slot in inventory.items.iter_mut() {
-                                if let Some(stored_id) = slot.item_stored.clone() {
-                                    if stored_id == *item_id {
-                                        if slot.quantity < def.max_stack as i32 {
-                                            let free = def.max_stack as i32 - slot.quantity;
-                                            if free >= quantity_to_put {
-                                                slot.quantity += quantity_to_put;
-                                                quantity_to_put = 0;
-                                                pushed = true;
-                                                cursor.clear();
-                                                break;
-                                            } else if free < quantity_to_put {
-                                                let remaining = quantity_to_put - free;
-                                                slot.quantity = def.max_stack as i32;
-                                                quantity_to_put = remaining;
-                                                cursor.quantity = quantity_to_put;
-                                            }     
-                                        }
-                                    }
-                                }
-                            }
-                            if !pushed {
-                                for slot in inventory.items.iter_mut() {
-                                    if slot.item_stored.is_none() {
-                                        if quantity_to_put <= def.max_stack as i32 {
-                                            slot.item_stored = Some(item_id.clone());
-                                            slot.quantity += quantity_to_put;
-                                            cursor.clear();
-                                            break;
-                                        } else if quantity_to_put > def.max_stack as i32 {
-                                            slot.item_stored = Some(item_id.clone());
-                                            slot.quantity = def.max_stack as i32;
-                                            quantity_to_put -= def.max_stack as i32;
-                                            cursor.quantity = quantity_to_put;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 pub fn remove_from_inventory(
     mut reader: MessageReader<RemoveFromInventory>, 
     mut inventory: Query<&mut Inventory, With<Player>>,
@@ -368,7 +246,7 @@ pub fn ui_slot_click_handler(
                 UiSlotKind::Inventory => {
                     if let Ok(mut player_inventory) = inventory.single_mut() {
                         if let Some(item_stack) = player_inventory.items.get_mut(uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg);
+                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             console.log(format!("Handling Inventory"));
                         }
                     }
@@ -376,7 +254,7 @@ pub fn ui_slot_click_handler(
                 UiSlotKind::Chest => {
                     if let Ok(mut chest) = chest.get_mut(interaction_state.entity.unwrap()) {
                         if let Some(item_stack) = chest.items.get_mut(&uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg);
+                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             console.log(format!("Handling Chest"));
                         }
                     }
@@ -384,7 +262,7 @@ pub fn ui_slot_click_handler(
                 UiSlotKind::Output => {
                     if let Ok(mut processing) = processing.get_mut(interaction_state.entity.unwrap()) {
                         if let Some(item_stack) = processing.output.get_mut(uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg);
+                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             console.log(format!("Handling Output"));
                         }
                     }
@@ -392,7 +270,7 @@ pub fn ui_slot_click_handler(
                 UiSlotKind::Input => {
                     if let Ok(mut processing) = processing.get_mut(interaction_state.entity.unwrap()) {
                         if let Some(item_stack) = processing.input.get_mut(uislot.index) {
-                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg);
+                            handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             console.log(format!("Handling Input"));
                         }
                     }

@@ -1,9 +1,16 @@
 use super::*;
 
+#[derive(PartialEq, Clone, Debug)]
+pub enum ClickKind {
+    LMB,
+    RMB,
+}
+
 
 #[derive(Message)]
 pub struct UiClick {
     pub entity: Entity,
+    pub kind: ClickKind,
     pub double: bool,
     pub shift_pressed: bool,
     pub ctrl_pressed: bool,

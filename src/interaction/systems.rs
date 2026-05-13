@@ -66,43 +66,7 @@ pub fn interact_with_structure(
 }
 
 
-pub fn handle_slot_interaction(cursor_carrier: &mut CursorCarrier, item_stack: &mut ItemStack, item_reg: &ItemRegistry) {
-    if let Some(cr_item) = &cursor_carrier.item {
-        if let Some(item) = &item_stack.item_stored {
-            if cr_item == item {
-                if let Some(def) = item_reg.items.get(item) {
-                    let can_put = def.max_stack.wrapping_sub(item_stack.quantity as usize);
-                    if can_put >= cursor_carrier.quantity as usize {
-                        item_stack.quantity += cursor_carrier.quantity as i32;
-                        cursor_carrier.clear();
-                    }
-                    if can_put < cursor_carrier.quantity as usize {
-                        item_stack.quantity += can_put as i32;
-                        cursor_carrier.quantity -= can_put as i32;
-                    }
-                }
-            } else {
-                let item_s_quan = item_stack.quantity;
-                let item_s_stored = item_stack.item_stored.clone();
-                item_stack.quantity = cursor_carrier.quantity;
-                item_stack.item_stored = cursor_carrier.item.clone();
-                cursor_carrier.quantity = item_s_quan;
-                cursor_carrier.item = item_s_stored;
-            }
-        } else {
-            item_stack.quantity = cursor_carrier.quantity;
-            item_stack.item_stored = cursor_carrier.item.clone();
-            cursor_carrier.clear();
-        }
-    } else {
-        if let Some(item) = &item_stack.item_stored {
-            cursor_carrier.item = Some(item.clone());
-            cursor_carrier.quantity = item_stack.quantity;
-            item_stack.quantity = 0;
-            item_stack.item_stored = None;
-        }
-    }
-}
+
 
 pub fn interact_with_oven_window(
     mut reader: MessageReader<UiClick>,
@@ -124,7 +88,7 @@ pub fn interact_with_oven_window(
                         if let Ok(mut cursor_carrier) = cursor_car.single_mut() {
                             if let Ok(input_slot) = input.get(child) {
                                 if let Some(item_stack) = processing.input.get_mut(input_slot.index) {
-                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg);
+                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg, msg);
                                     writer.write(UiSlotUpdate {
                                         entity: msg.entity,
                                         to_quantity: item_stack.quantity as usize,
@@ -133,7 +97,7 @@ pub fn interact_with_oven_window(
                                 }
                             } else if let Ok(output_slot) = output.get(child) {
                                 if let Some(item_stack) = processing.output.get_mut(output_slot.index) {
-                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg);
+                                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg, msg);
                                     writer.write(UiSlotUpdate {
                                         entity: msg.entity,
                                         to_quantity: item_stack.quantity as usize,
@@ -232,7 +196,7 @@ pub fn interact_with_chest_slots(
             let mut cursor_carrier = cursor_car.single_mut().expect("no cursor carrier found");
             if let Ok(mut slot) = chest_slot.get_mut(message.entity) {
                 if let Some(item_stack) = chest.items.get_mut(&slot.index) {
-                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg);
+                    handle_slot_interaction(&mut cursor_carrier, item_stack, &item_reg, message);
                 }
                 
             }

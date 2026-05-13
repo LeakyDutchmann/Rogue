@@ -1,6 +1,7 @@
 use super::*;
 
 pub fn hover_system(
+    button: Res<ButtonInput<MouseButton>>,
     mut query: Query<(Entity, &mut BorderColor, &Interaction), Without<UiBackground>>,
     mut hovering_state: ResMut<UiHoveringState>,
     time: Res<Time>,
@@ -9,6 +10,9 @@ pub fn hover_system(
     for (entity, mut border_color, interaction) in query.iter_mut() {
         if *interaction == Interaction::Hovered {
             *border_color = BorderColor::all(Color::srgb(1.0, 1.0, 1.0));
+            if button.pressed(MouseButton::Right) {
+                 *border_color = BorderColor::all(Color::srgb(1.0, 0.4, 0.0));
+            }
             hovered = Some(entity);
         } else if *interaction == Interaction::Pressed {
             *border_color = BorderColor::all(Color::srgb(1.0, 0.4, 0.0));
