@@ -25,7 +25,7 @@ pub fn close_window(
     mut reader: MessageReader<CloseWindowRequest>,
     mut console: ResMut<Console>,
 ) {
-    for msg in reader.read() {
+    for _ in reader.read() {
         console.log(format!("despawning"));
         for entity in window.iter_mut() {
             commands.entity(entity).despawn();

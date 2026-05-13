@@ -1,5 +1,3 @@
-use bevy::asset;
-
 use super::*;
 
 pub fn match_kind(kind: &RawNodeKind, window: Entity, commands: &mut Commands, asset_server: &AssetServer) {
@@ -219,8 +217,8 @@ pub fn assemble_node(
     }
     if let Some(bg_color) = &ui_window.background_color {
         let color = match bg_color {
-            RawColor::srgb(r, g, b) => Color::srgb(*r, *g, *b),
-            RawColor::srgba(r, g, b, a) => Color::srgba(*r, *g, *b, *a),
+            RawColor::Srgb(r, g, b) => Color::srgb(*r, *g, *b),
+            RawColor::Srgba(r, g, b, a) => Color::srgba(*r, *g, *b, *a),
         };
         commands.entity(window).insert(        
             BackgroundColor(color),
@@ -228,8 +226,8 @@ pub fn assemble_node(
     }
     if let Some(border_color) = &ui_window.border_color {
         let color = match border_color {
-            RawColor::srgb(r, g, b) => Color::srgb(*r, *g, *b),
-            RawColor::srgba(r, g, b, a) => Color::srgba(*r, *g, *b, *a),
+            RawColor::Srgb(r, g, b) => Color::srgb(*r, *g, *b),
+            RawColor::Srgba(r, g, b, a) => Color::srgba(*r, *g, *b, *a),
         };
         commands.entity(window).insert(
             BorderColor::all(color),

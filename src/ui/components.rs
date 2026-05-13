@@ -7,14 +7,6 @@ pub struct WorkBenchSlot {
 }
 
 
-#[derive(Component)]
-pub struct ChestSlot {
-    pub item: Option<String>,
-    pub quantity: usize,
-    pub index: usize,
-}
-
-
 #[derive(PartialEq)]
 pub enum UiSlotKind {
     Chest,

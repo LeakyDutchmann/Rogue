@@ -17,11 +17,10 @@ use setup::*;
 pub use functions::*;
 
 use crate::items::{HeldItem, ItemRegistry};
-use crate::messages::{GetFromInventory, KeyPressed,
-    SpawnItemRequest, ScrollMessage, InsertToInventory,
-    DropFromCursor, ItemQuantity, RemoveFromInventory, QuickMoveFromContainer};
+use crate::messages::{KeyPressed,
+    SpawnItemRequest, ScrollMessage,
+    DropFromCursor, RemoveFromInventory};
 use bevy::ui::FocusPolicy;
-use crate::interaction::{InteractionState, InteractionType};
 use crate::player::player_setup::player_setup;
 
 pub struct InventoryPlugin;

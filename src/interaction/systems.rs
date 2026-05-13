@@ -1,6 +1,3 @@
-use std::process::Output;
-
-use bevy::{render::texture, transform::commands};
 
 use super::*;
 
@@ -10,7 +7,6 @@ pub fn interact_with_structure(
     player_transform: Res<PlayerTransform>,
     worldgrid: Res<WorldGrid>,
     mut interaction_state: ResMut<InteractionState>,
-    mut console: ResMut<Console>,
     mut close_writer: MessageWriter<CloseWindowRequest>,
     struct_reg: Res<StructureRegistry>,
 ) {
@@ -30,7 +26,7 @@ pub fn interact_with_structure(
             }
             let mut nearest_struct: Option<(String, Vec2, Entity)> = None;
             for (structure_id, pos, entity) in near_structs {
-                if let Some((_struct_id, position, nearest_entity)) = &nearest_struct {
+                if let Some((_, position, _)) = &nearest_struct {
                     if player_pos.distance(pos) < player_pos.distance(position.clone()) {
                         nearest_struct = Some((structure_id, pos, entity));
                     }
@@ -38,7 +34,7 @@ pub fn interact_with_structure(
                     nearest_struct = Some((structure_id, pos, entity));
                 }
             }
-            if let Some((structure_id, position, entity)) = &nearest_struct {
+            if let Some((structure_id, _, entity)) = &nearest_struct {
                 if let Some(definition) = struct_reg.structures.get(structure_id) {
                     interaction_state.interaction_type = definition.interaction.clone();
                     if let Some(ui_window) = &definition.ui_window_id {
@@ -47,9 +43,7 @@ pub fn interact_with_structure(
                 }
                 interaction_state.interacting = InteractionStage::Intializing;
                 interaction_state.entity = Some(*entity);
-                console.log(format!("Interacting with structure: {:?}", structure_id));        
             } else {
-                console.log(format!("No interactable structure found near the player."));
             }
         } 
     } else {
@@ -60,9 +54,7 @@ pub fn interact_with_structure(
             interaction_state.ui_window_id = None;
             close_writer.write(CloseWindowRequest);
         }
-    }
-    
-    
+    } 
 }
 
 pub fn interact_with_workbench(
@@ -71,7 +63,6 @@ pub fn interact_with_workbench(
     interaction_state: Res<InteractionState>,
     recipe_reg: Res<RecipeRegistry>,
     work_bench_slot: Query<&WorkBenchSlot>,
-    item_reg: ResMut<ItemRegistry>,
     inventory: Query<&Inventory>,
     mut writer_remove_from_inv: MessageWriter<RemoveFromInventory>,
     mut console: ResMut<Console>

@@ -3,7 +3,7 @@ use super::*;
 pub fn handle_input(
     keys: Res<ButtonInput<KeyCode>>,
     mouse: Res<ButtonInput<MouseButton>>,
-    mut query: Query<(Entity, &Interaction), (Without<UiBackground>)>,
+    mut query: Query<(Entity, &Interaction), Without<UiBackground>>,
     time: Res<Time>,
     mut ui_click_track: ResMut<UiClickTrack>,
     mut writer: MessageWriter<UiClick>,
@@ -54,20 +54,18 @@ pub fn handle_input(
 }
 
 pub fn ui_slot_click_handler(
-    mut commands: Commands,
     mut reader: MessageReader<UiClick>,
     mut inventory: Query<&mut Inventory, With<Player>>,
-    mut slot: Query<&mut UiSlot>,
+    slot: Query<&UiSlot>,
     mut cursor_carrier: Query<&mut CursorCarrier>,
     item_reg: Res<ItemRegistry>,
     interaction_state: Res<InteractionState>,
     mut chest: Query<&mut Chest>,
     mut processing: Query<&mut Processing>,
-    mut console: ResMut<Console>,
     mut writer: MessageWriter<QuickMoveFromContainer>,
 ) {
     for msg in reader.read() {
-        if let Ok(mut uislot) = slot.get_mut(msg.entity) {
+        if let Ok(uislot) = slot.get(msg.entity) {
             let mut cursor_c = cursor_carrier.single_mut().unwrap();
             match uislot.kind {
                 UiSlotKind::Inventory => {
@@ -83,7 +81,6 @@ pub fn ui_slot_click_handler(
                             } else {
                                  handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             }
-                            console.log(format!("Handling Inventory"));
                         }
                     }
                 }
@@ -100,7 +97,6 @@ pub fn ui_slot_click_handler(
                             } else {
                                  handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             }
-                            console.log(format!("Handling Chest"));
                         }
                     }
                 }
@@ -117,7 +113,6 @@ pub fn ui_slot_click_handler(
                             } else {
                                  handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             }
-                            console.log(format!("Handling Output"));
                         }
                     }
                 }
@@ -134,7 +129,6 @@ pub fn ui_slot_click_handler(
                             } else {
                                  handle_slot_interaction(&mut cursor_c, item_stack, &item_reg, msg);
                             }
-                            console.log(format!("Handling Input"));
                         }
                     }
                 }

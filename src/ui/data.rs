@@ -30,8 +30,8 @@ pub enum RawMarker {
 
 #[derive(Deserialize)]
 pub enum RawColor {
-    srgb(f32, f32, f32),
-    srgba(f32, f32, f32, f32),
+    Srgb(f32, f32, f32),
+    Srgba(f32, f32, f32, f32),
 }
 
 

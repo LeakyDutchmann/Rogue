@@ -33,7 +33,7 @@ pub fn console_scroll(
     for (interaction, mut scroll_position, computed) in query.iter_mut() {
         if *interaction == Interaction::Hovered {
             for msg in reader.read() {
-                let mut max_offset = (computed.content_size() - computed.size());
+                let mut max_offset = computed.content_size() - computed.size();
                 let pos = scroll_position.0.y.clone();
                 let scroll = pos + msg.delta.y;
                 if max_offset.y < 0.0 {
@@ -76,11 +76,10 @@ pub fn console_add_output(
 }
 
 pub fn console_snap_to_bottom(
-    mut console: ResMut<Console>,
-    mut query: Query<(Entity, &mut ScrollPosition, &ComputedNode), (With<ConsoleScrollZoneMarker>, Changed<Children>)>,
+    mut query: Query<(&mut ScrollPosition, &ComputedNode), (With<ConsoleScrollZoneMarker>, Changed<Children>)>,
 ) {
-    for (entity, mut scroll_position, computed) in query.iter_mut() {
-        let mut max_offset = (computed.content_size() - computed.size());
+    for (mut scroll_position, computed) in query.iter_mut() {
+        let mut max_offset = computed.content_size() - computed.size();
         if max_offset.y < 0.0 {
             max_offset.y = 0.0;
         }

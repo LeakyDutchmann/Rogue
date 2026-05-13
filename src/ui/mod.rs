@@ -59,11 +59,3 @@ pub struct UiHoveringState {
 
 #[derive(Component)]
 pub struct ToolTip;
-
-
-#[derive(Component)]
-pub struct InputUiSlot;
-
-
-#[derive(Component)]
-pub struct OutputUiSlot;

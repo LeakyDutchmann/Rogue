@@ -18,33 +18,6 @@ pub struct UiClick {
 
 
 #[derive(Message)]
-pub struct DoubleClicked {
-    pub slot_index: usize,
-}
-
-
-pub enum ClickType {
-    LeftSingle,
-    CtrlLeftSingle,
-    ShiftLeftSingle,
-}
-
-
-#[derive(Message)]
-pub struct SlotClicked {
-    pub click_type: ClickType,
-    pub slot_index: usize,
-}
-
-
-#[derive(PartialEq, Clone)]
-pub enum ScrollDir {
-    ScrollUp,
-    ScrollDown,
-}
-
-
-#[derive(Message)]
 pub struct KeyPressed {
     pub key: KeyCode,
 }

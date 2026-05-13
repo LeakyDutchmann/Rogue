@@ -2,7 +2,7 @@ mod mouse_input;
 
 pub use mouse_input::*;
 use bevy::prelude::*;
-use crate::messages::{MouseClickEvent, ScrollMessage, ScrollDir};
+use crate::messages::{MouseClickEvent, ScrollMessage};
 
 use bevy::camera::{Camera};
 use bevy::input::ButtonInput;
