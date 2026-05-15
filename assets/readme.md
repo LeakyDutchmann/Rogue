@@ -36,3 +36,5 @@ direction.
 - Strong silhouettes are preferred
 - Minimal visual noise
 - Consistent scale between objects
+
+## Please, store new art in <<New_Assets>> folder.

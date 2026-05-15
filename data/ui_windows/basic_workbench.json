@@ -35,7 +35,7 @@
         "align_items": "Center",
         "gap": { "Px": 4.0 }
       },
-      "background_color": { "srgba": [0.25, 0.25, 0.25, 0.1] },
+      "background_color": { "Srgba": [0.25, 0.25, 0.25, 0.1] },
       "zindex": 1,
       "children": [
         {
@@ -57,7 +57,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -81,7 +81,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -105,7 +105,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -129,7 +129,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -153,7 +153,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -177,7 +177,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -201,7 +201,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -225,7 +225,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -249,7 +249,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -273,7 +273,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -297,7 +297,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -321,7 +321,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -345,7 +345,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -369,7 +369,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -393,7 +393,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -417,7 +417,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -441,7 +441,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -465,7 +465,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -489,7 +489,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -513,7 +513,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -537,7 +537,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -561,7 +561,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -585,7 +585,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -609,7 +609,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -633,7 +633,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -657,7 +657,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -681,7 +681,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -705,7 +705,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -729,7 +729,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -753,7 +753,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -777,7 +777,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -801,7 +801,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -825,7 +825,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -849,7 +849,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -873,7 +873,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -897,7 +897,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -921,7 +921,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -945,7 +945,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -969,7 +969,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true
@@ -993,7 +993,7 @@
               "bottom_right": { "Px": 8.0 }
             }
           },
-          "border_color": { "srgb": [0.5, 0.5, 0.5] },
+          "border_color": { "Srgb": [0.5, 0.5, 0.5] },
           "zindex": 2,
           "focus_policy": "Block",
           "interactive": true

@@ -15,8 +15,8 @@
     "bottom": { "Px": -250.0 },
     "border": { "Px": 2.0 }
   },
-  "border_color": { "srgb": [1.0, 1.0, 1.0] },
-  "background_color": { "srgb": [0.25, 0.25, 0.25] },
+  "border_color": { "Srgb": [1.0, 1.0, 1.0] },
+  "background_color": { "Srgb": [0.25, 0.25, 0.25] },
   "zindex": 2,
   "marker": "UiStructureWindow",
   "children": [
@@ -65,7 +65,7 @@
           },
           "interactive": true,
           "focus_policy": "Block",
-          "border_color": { "srgb": [1.0, 0.4, 0.0] },
+          "border_color": { "Srgb": [1.0, 0.4, 0.0] },
           "zindex": 3,
           "children": [
             {
@@ -111,7 +111,7 @@
           },
           "interactive": true,
           "focus_policy": "Block",
-          "border_color": { "srgb": [1.0, 0.4, 0.0] },
+          "border_color": { "Srgb": [1.0, 0.4, 0.0] },
           "zindex": 3,
           "children": [
             {
