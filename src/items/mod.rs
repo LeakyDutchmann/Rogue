@@ -6,15 +6,18 @@ use items_systems::*;
 pub use item_functions::*;
 use rand::Rng;
 
+use crate::crafting::RecipeDefinition;
 use crate::player::{Player};
 use crate::messages::SpawnItemRequest;
 use serde::{Deserialize};
+use crate::structures::{OvenRecipeRegistry, OvenRecipe};
 use std::collections::HashMap;
 use crate::utils::load_definitions_for;
 use crate::inventory::Inventory;
 use crate::components::{Speed, MovementIntent};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::world::{WorldGrid, CELL_SIZE, get_cells_3x3, get_entities_in_cells};
+use crate::crafting::RecipeRegistry;
 
 pub struct ItemsPlugin;
 
@@ -61,7 +64,7 @@ pub struct ItemId {
 }
 
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct ItemDefinitionRaw {
     pub name: String,
     pub icon: String,
@@ -73,6 +76,8 @@ pub struct ItemDefinitionRaw {
     pub weapon_stats: Option<WeaponStatsRaw>,
     pub tool_stats: Option<ToolStatsRaw>,
     pub max_stack: usize,
+    pub oven_recipe: Option<OvenRecipe>,
+    pub recipe: Option<RecipeDefinition>,
 }
 
 

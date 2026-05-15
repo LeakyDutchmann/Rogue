@@ -4,6 +4,8 @@
   "sprite_path": "structures/workbench.png",
   "width": 32.0,
   "height": 14.0,
+  "ui_window_id": "basic_workbench_ui_window",
+  "interaction": "WorkBench",
   "recipe": {
     "ingredients": {
       "Structurix": 5

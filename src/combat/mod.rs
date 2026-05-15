@@ -16,7 +16,7 @@ use crate::player::{initialize_attack};
 use crate::animations::*;
 use crate::colision_manager::Colider;
 use crate::{components::MovementIntent, raycasting::EnemyAwareness};
-use crate::building::StructureId;
+use crate::structures::StructureId;
 
 
 pub struct CombatPlugin;

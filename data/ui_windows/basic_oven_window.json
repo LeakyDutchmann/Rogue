@@ -1,0 +1,134 @@
+{
+  "name": "Basic_Oven_Ui_Window",
+  "kind": "Container",
+  "style": {
+    "width": { "Px": 400.0 },
+    "height": { "Px": 200.0 },
+    "margin": {
+      "left": { "Px": -200.0 },
+      "right": { "Px": 0.0 },
+      "top": { "Px": 0.0 },
+      "bottom": { "Px": 0.0 }
+    },
+    "position_type": "Relative",
+    "left": { "Percent": 50.0 },
+    "bottom": { "Px": -250.0 },
+    "border": { "Px": 2.0 }
+  },
+  "border_color": { "Srgb": [1.0, 1.0, 1.0] },
+  "background_color": { "Srgb": [0.25, 0.25, 0.25] },
+  "zindex": 2,
+  "marker": "UiStructureWindow",
+  "children": [
+    {
+      "name": "Title",
+      "kind": {
+        "Text": { "content": "Basic_Oven" }
+      },
+      "style": {
+        "position_type": "Absolute",
+        "width": { "Px": 100.0 },
+        "left": { "Percent": 50.0 },
+        "margin": {
+          "left": { "Px": -50.0 },
+          "right": { "Px": 0.0 },
+          "top": { "Px": 0.0 },
+          "bottom": { "Px": 0.0 }
+        }
+      },
+      "zindex": 3
+    },
+
+    {
+      "name": "Container1",
+      "kind": "Container",
+      "style": {
+        "width": { "Px": 200.0 },
+        "height": { "Px": 200.0 },
+        "border": { "Px": 2.0 }
+      },
+      "children": [
+        {
+          "name": "InputSlot",
+          "kind": {
+            "Slot": {
+              "kind": "Input",
+              "index": 0
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "left": { "Px": 75.0 },
+            "top": { "Px": 75.0 },
+            "border": { "Px": 2.0 }
+          },
+          "interactive": true,
+          "focus_policy": "Block",
+          "border_color": { "Srgb": [1.0, 0.4, 0.0] },
+          "zindex": 3,
+          "children": [
+            {
+              "name": "InputSlotText",
+              "marker": "SlotCounter",
+              "zindex": 4,
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Container2",
+      "kind": "Container",
+      "style": {
+        "width": { "Px": 200.0 },
+        "height": { "Px": 200.0 },
+        "border": { "Px": 2.0 }
+      },
+      "children": [
+        {
+          "name": "OutputSlot",
+          "kind": {
+            "Slot": {
+              "kind": "Output",
+              "index": 0
+            }
+          },
+          "style": {
+            "width": { "Px": 48.0 },
+            "height": { "Px": 48.0 },
+            "left": { "Px": 75.0 },
+            "top": { "Px": 75.0 },
+            "border": { "Px": 2.0 }
+          },
+          "interactive": true,
+          "focus_policy": "Block",
+          "border_color": { "Srgb": [1.0, 0.4, 0.0] },
+          "zindex": 3,
+          "children": [
+            {
+              "name": "OutputSlotText",
+              "kind": {
+                "Text": { "content": "" }
+              },
+              "marker": "SlotCounter",
+              "zindex": 4,
+              "style": {
+                "position_type": "Absolute",
+                "top": { "Percent": 50.0 }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

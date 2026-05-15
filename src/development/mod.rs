@@ -1,3 +1,10 @@
+mod systems;
+mod setup;
+
+use systems::*;
+use setup::*;
+use super::*;
+
 use bevy::{
     dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig},
     prelude::*,
@@ -42,7 +49,36 @@ impl Plugin for DevPlugin {
                         },
                     },
                 ));
+        app.insert_resource(ConsoleOpen(true));
+        app.insert_resource(Console {
+            lines: Vec::new(),
+        });
+        app.add_systems(Startup, (setup_console, start_chat));
+        app.add_systems(Update, (toggle_console, set_console_visibility,
+            console_scroll, console_add_output, console_snap_to_bottom));
     }
 }
+
+
+#[derive(Resource)]
+pub struct ConsoleOpen(pub bool);
+
+#[derive(Resource)]
+pub struct Console {
+    pub lines: Vec<String>,
+}
+
+impl Console {
+    pub fn log(&mut self, line: String) {
+        self.lines.push(line);
+    }
+}
+
+#[derive(Component)]
+pub struct UiConsoleMarker;
+
+#[derive(Component)]
+pub struct ConsoleScrollZoneMarker;
+
 
 

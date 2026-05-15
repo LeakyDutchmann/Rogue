@@ -1,0 +1,14 @@
+{
+  "name": "Chest",
+  "icon_path": "structures/chest.png",
+  "sprite_path": "structures/chest.png",
+  "width": 20.0,
+  "height": 20.0,
+  "ui_window_id": "chest_ui_window",
+  "interaction": "Chest",
+  "recipe": {
+    "ingredients": {
+      "Structurix": 8
+    }
+  }
+}

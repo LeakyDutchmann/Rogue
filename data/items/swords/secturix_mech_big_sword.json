@@ -1,0 +1,23 @@
+{
+  "name": "Secturix_Mechanae_Big_Sword",
+  "icon": "swords/secturix_mechanae_big_sword.png",
+  "sprite": "swords/secturix_mechanae_big_sword.png",
+  "durability": 100,
+  "usable": false,
+  "animation_style": "Sword",
+  "max_stack": 1,
+  "combat_stats": {
+    "attack_speed": 130,
+    "swing_angle": 220,
+    "radius": 66
+  },
+  "weapon_stats": {
+    "enemy_damage": 44
+  },
+  "recipe": {
+    "ingredients": {
+      "Secturix_Big_Sword": 1,
+      "Mechanae_ingot": 15
+    }
+  }
+}

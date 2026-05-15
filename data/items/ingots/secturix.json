@@ -1,0 +1,7 @@
+{
+  "name": "Secturix_ingot",
+  "icon": "ingots/Secturix_ingot.png",
+  "sprite": "ingots/Secturix_ingot.png",
+  "usable": false,
+  "max_stack": 16
+}

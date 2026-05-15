@@ -3,27 +3,45 @@ use super::*;
 pub fn setup_items(
     asset_server: Res<AssetServer>,
     mut item_registry: ResMut<ItemRegistry>,
+    mut oven_recipe_reg: ResMut<OvenRecipeRegistry>,
+    mut crafting_recipe_reg: ResMut<RecipeRegistry>,
 ) {
-    let path = "./data/items";
-    if let Ok(items) = load_definitions_for::<ItemDefinitionRaw>(path) {
-        let mut item_count = 0;
-        for item in items {
-            let icon_texture = asset_server.load(item.icon.clone());
-            let sprite_texture = asset_server.load(item.sprite.clone());
-            item_registry.items.insert(item.name.clone(), ItemDefinition {
-                icon: icon_texture,
-                sprite: sprite_texture,
-                durability: item.durability,
-                usable: item.usable,
-                animation_style: item.animation_style,
-                combat_stats: item.combat_stats,
-                weapon_stats: item.weapon_stats,
-                tool_stats: item.tool_stats,
-                max_stack: item.max_stack,
-            });
-            item_count += 1;
-        }
-        println!("Loaded {} items", item_count);
+    let path_ores = "./data/items/ores";
+    let path_ingots = "./data/items/ingots";
+    let path_swords = "./data/items/swords";
+    let path_pickaxes = "./data/items/pickaxes";
+    let path_items = "./data/items";
+    let path_materials = "./data/items/materials";
+    let paths = vec![path_ores, path_ingots, path_items, path_materials, path_swords, path_pickaxes];
+    for path in paths {
+        if let Ok(items) = load_definitions_for::<ItemDefinitionRaw>(path) {
+            let mut item_count = 0;
+            for item in items {
+                let icon_texture = asset_server.load(item.icon.clone());
+                let sprite_texture = asset_server.load(item.sprite.clone());
+                item_registry.items.insert(item.name.clone(), ItemDefinition {
+                    icon: icon_texture,
+                    sprite: sprite_texture,
+                    durability: item.durability,
+                    usable: item.usable,
+                    animation_style: item.animation_style,
+                    combat_stats: item.combat_stats,
+                    weapon_stats: item.weapon_stats,
+                    tool_stats: item.tool_stats,
+                    max_stack: item.max_stack,
+                });
+                if let Some(recipe) = item.oven_recipe {
+                    oven_recipe_reg.recipes.insert(item.name.clone(), recipe);
+                    println!("oven recipe added");
+                }
+                if let Some(crafting_recipe) = item.recipe {
+                    crafting_recipe_reg.recipes.insert(item.name.clone(), crafting_recipe);
+                    println!("crafting recipe added");
+                }
+                item_count += 1;
+            }
+            println!("Loaded {} items", item_count);
+        } 
     }
 }
 

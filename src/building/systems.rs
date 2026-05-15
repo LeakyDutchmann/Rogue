@@ -75,13 +75,15 @@ pub fn build_structure(
     time: Res<Time>,
     can_place: Res<CanPlaceStruct>,
     mut writer_remove_from_inv: MessageWriter<RemoveFromInventory>,
-    recipe_reg: Res<RecipeRegistry>,
+    struct_recipe_reg: Res<StructRecipeRegistry>,
     inventory: Query<&Inventory, With<Player>>,
 ) {
     if building_mode.state == BuildingState::Placing {
         for msg in reader.read() {
             let now = time.elapsed_secs_f64();
+            println!("result: {}", ui_click.last);
             if now - ui_click.last < 0.5 {
+                println!("too soon");
                 continue;
             }
             if let Ok(mut cursor) = cursor.single_mut() {
@@ -90,7 +92,7 @@ pub fn build_structure(
                         if let Some(structure) = &cursor.structure {
                             if can_place.state == true {
                                 if let Ok(inventory) = inventory.single() {
-                                    if let Some(recipe) = recipe_reg.recipes.get(structure) {
+                                    if let Some(recipe) = struct_recipe_reg.recipes.get(structure) {
                                         let mut ingredients: Vec<(String, i32)> = Vec::new();
                                         let mut missing_ingreients: Vec<(String, i32)> = Vec::new();
                                         for (item, quantity) in &recipe.ingredients {
@@ -129,25 +131,6 @@ pub fn build_structure(
                     } 
                 }
             }
-        }
-    }
-}
-
-pub fn spawn_structure(
-    mut commands: Commands,
-    mut reader: MessageReader<SpawnStructureRequest>,
-    structure_reg: Res<StructureRegistry>,
-    mut chunkgrid: ResMut<ChunkGrid>,
-) {
-    for msg in reader.read() {
-        if let Some(def) = structure_reg.structures.get(&msg.item_id) {
-            let structure = assemble_structure(&def, &mut commands, &msg.item_id);
-            if let Some(chunk) = chunkgrid.chunks.get_mut(&msg.chunk_position) {
-                chunk.changed = true;
-                commands.entity(structure).insert(ParrentChunk { position: msg.chunk_position });
-                commands.entity(structure).insert(Transform::from_translation(msg.position.extend((- msg.position.y + 1.0) * 0.001)));
-            }
-           
         }
     }
 }

@@ -34,17 +34,11 @@ pub fn scroll_events(
     mut writer: MessageWriter<ScrollMessage>,
 ) {
     for ev in scroll.read() {
-        if ev.y == 1.0 {
-            writer.write(ScrollMessage {
-                event: ScrollDir::ScrollUp
-            });
-            println!("Scroll up");
+        let mut delta = -Vec2::new(ev.x, ev.y);
+        if ev.unit == MouseScrollUnit::Line {
+            delta *= 20.0;
         }
-        if ev.y == -1.0 {
-            writer.write(ScrollMessage {
-                event: ScrollDir::ScrollDown
-            });
-        }
+        writer.write(ScrollMessage { delta: delta });
     }
 }
 

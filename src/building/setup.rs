@@ -10,6 +10,7 @@ pub fn setup_building_mode_ui(
                 border: UiRect::all(Val::Px(2.0)),
                 width: Val::Px(48.0),
                 height: Val::Px(48.0),
+                border_radius: BorderRadius::all(Val::Px(4.0)),
                 ..default()
             },
             BorderColor::all(Color::srgb(0.5, 0.5, 0.5)),
@@ -80,34 +81,6 @@ pub fn setup_building_mode_ui(
         // BackgroundColor(Color::WHITE),
         ZIndex(10000),
     ));
-}
-
-pub fn load_structures(
-    mut struct_registry: ResMut<StructureRegistry>,
-    mut recipe_registry: ResMut<RecipeRegistry>,
-    assest_server: Res<AssetServer>,
-) { 
-    let path = "./data/structures";
-    if let Ok(structures) = load_definitions_for::<StructureDefinitionRaw>(path) {
-        let mut count = 0;
-        for structure in structures {
-            let sprite = assest_server.load(&structure.sprite_path);
-            let icon = assest_server.load(&structure.icon_path);
-            if let Some(recipe) = structure.recipe {
-                recipe_registry.recipes.insert(structure.name.clone(), recipe);
-            }
-            let definition = StructureDefinition {
-                sprite,
-                icon,
-                width: structure.width,
-                height: structure.height,
-                radius: structure.radius,
-            };
-            struct_registry.structures.insert(structure.name.clone(), definition);
-            count += 1;
-        }
-        println!("Loaded {} structures", count);
-    }
 }
 
 pub fn setup_building_ui_nodes(

@@ -2,6 +2,11 @@
   "name": "Mechanae_ore",
   "icon": "ores/Mechanae_ore.png",
   "sprite": "ores/Mechanae_ore.png",
+  "oven_recipe": {
+    "input": "Mechanae_ore",
+    "output": "Mechanae_ingot",
+    "process_time": 10.0
+  },
   "usable": false,
   "max_stack": 64
 }

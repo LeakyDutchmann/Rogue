@@ -1,0 +1,23 @@
+{
+  "name": "Structurix_Sword",
+  "icon": "swords/structurix_sword.png",
+  "sprite": "swords/structurix_sword.png",
+  "durability": 100,
+  "usable": false,
+  "animation_style": "Sword",
+  "max_stack": 1,
+  "combat_stats": {
+    "attack_speed": 230,
+    "swing_angle": 180,
+    "radius": 44
+  },
+  "weapon_stats": {
+    "enemy_damage": 15
+  },
+  "recipe": {
+    "ingredients": {
+      "Structurix": 20 
+    }
+  }
+}
+

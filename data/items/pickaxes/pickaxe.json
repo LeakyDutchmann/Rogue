@@ -1,7 +1,7 @@
 {
   "name": "PickAxe",
-  "icon": "pickaxe.png",
-  "sprite": "pickaxe.png",
+  "icon": "pickaxes/pickaxe.png",
+  "sprite": "pickaxes/pickaxe.png",
   "durability": 100,
   "usable": false,
   "animation_style": "PickAxe",

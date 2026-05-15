@@ -5,6 +5,7 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
     entity.insert(Sprite::from_image(definition.sprite.clone()));
     entity.insert(StructureId{
         id: item_id.clone(),
+        
     });
     let width = match definition.width {
         Some(w) => w,
@@ -30,6 +31,32 @@ pub fn assemble_structure(definition: &StructureDefinition, commands: &mut Comma
             _offsety: 0.0,
             _sensor: true,
         });
+    }
+    match definition.interaction {
+        InteractionType::BasicOven => {
+            entity.insert(Interactable);
+            entity.insert(Processing {
+                input: vec![ItemStack { item_stored: None, quantity: 0 }],
+                output: vec![ItemStack { item_stored: None, quantity: 0 }],
+                timer: Timer::from_seconds(10.0, TimerMode::Repeating),
+            });
+        }
+        InteractionType::WorkBench => {
+            entity.insert(WorkBench);
+            entity.insert(Interactable);
+        }
+        InteractionType::Chest => {
+            let mut items_slots = Vec::new();
+            for _ in 0..=39 {
+                items_slots.push(ItemStack::new());
+            }
+            entity.insert(Chest {
+                items: items_slots,
+            });
+            entity.insert(Interactable);
+        }
+        
+        _ => {}
     }
     entity.insert(Health(100));
     entity.insert(Wall);

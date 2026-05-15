@@ -2,11 +2,11 @@ mod mouse_input;
 
 pub use mouse_input::*;
 use bevy::prelude::*;
-use crate::messages::{MouseClickEvent, ScrollMessage, ScrollDir};
+use crate::messages::{MouseClickEvent, ScrollMessage};
 
 use bevy::camera::{Camera};
 use bevy::input::ButtonInput;
-use bevy::input::mouse::MouseWheel;
+use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
 use bevy::math::Vec2;
 use bevy::prelude::{GlobalTransform,MessageWriter, MessageReader, MouseButton, Query, Res, ResMut, Resource, Window, With};
 use bevy::window::PrimaryWindow;

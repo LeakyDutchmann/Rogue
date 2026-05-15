@@ -159,12 +159,12 @@ pub fn generate_trial(
         let player_pos = msg.target_pos;
         let enemy_pos = msg.seeker_pos;
         let start = Position {
-            x: (enemy_pos.x / CELL_SIZE).round() as i32,
-            y: (enemy_pos.y / CELL_SIZE).round() as i32,
+            x: (enemy_pos.x / CELL_SIZE).floor() as i32,
+            y: (enemy_pos.y / CELL_SIZE).floor() as i32,
         };
         let goal = Position {
-            x: (player_pos.x / CELL_SIZE).round() as i32,
-            y: (player_pos.y / CELL_SIZE).round() as i32,
+            x: (player_pos.x / CELL_SIZE).floor() as i32,
+            y: (player_pos.y / CELL_SIZE).floor() as i32,
         };         
         spawn_optimized_pathfinding_task(
                     &mut commands,

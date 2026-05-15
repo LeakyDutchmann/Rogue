@@ -18,10 +18,13 @@ mod building;
 mod utils;
 mod ui;
 mod crafting;
+mod interaction;
+mod structures;
 
 use bevy::prelude::*;
 use bevy::time::Fixed;
 use bevy::window::PrimaryWindow;
+
 use mouse::*;
 use map_setup::*;
 use player::*;
@@ -41,6 +44,8 @@ use building::*;
 use utils::*;
 use ui::*;
 use crafting::*;
+use interaction::*;
+use structures::*;
 
 fn main() {
     App::new()
@@ -52,6 +57,8 @@ fn main() {
         .add_plugins((ColisionPlugin, MovementPlugin))
         .add_plugins((WorldPlugin, CraftingPlugin, ItemsPlugin, CombatPlugin, BuildingPlugin, UiPlugin))
         .add_plugins(VisionPlugin)
+        .add_plugins(StructurePlugin)
+        .add_plugins(InteractionsPlugin)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .run();
 }
