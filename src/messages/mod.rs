@@ -38,10 +38,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<SaveChunk>()
             .add_message::<LoadChunk>()
             .add_message::<UpdateTile>()
-            .add_message::<SpawnWindowRequest>()
             .add_message::<CloseWindowRequest>()
             .add_message::<UiClick>()
-            .add_message::<UiSlotUpdate>()
             .add_message::<UiWindowSpawned>()
             .add_message::<UpdateProcessing>()
             .add_message::<QuickMoveFromContainer>();

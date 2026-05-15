@@ -93,6 +93,9 @@ pub fn apply_style(style: &RawStyle) -> Node {
     if let Some(track) = &style.grid_template_columns {
         node.grid_template_columns = vec![convert_grid_track(track)];
     }
+    if let Some(track) = &style.grid_template_rows {
+        node.grid_template_columns = vec![convert_grid_track(track)];
+    }
 
     if let Some(w) = &style.width {
         node.width = match w {

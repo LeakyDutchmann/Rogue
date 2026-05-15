@@ -10,8 +10,6 @@ pub use input::*;
 use crate::inventory::{UiClickTrack, check_if_inventory_has_item};
 use crate::structures::{load_structures,};
 use bevy::ui::FocusPolicy;
-use crate::crafting::{RecipeRegistry};
-
 pub struct BuildingPlugin;
 
 impl Plugin for BuildingPlugin {
