@@ -8,6 +8,7 @@ mod world;
 mod map;
 mod ui_messages;
 mod processing;
+mod enemy;
 
 pub use map::*;
 pub use combat::*;
@@ -17,6 +18,7 @@ pub use pathfinding::*;
 pub use world::*;
 pub use ui_messages::*;
 pub use processing::*;
+pub use enemy::*;
 
 pub struct MessagesPlugin;
 
@@ -42,6 +44,8 @@ impl Plugin for MessagesPlugin {
             .add_message::<UiClick>()
             .add_message::<UiWindowSpawned>()
             .add_message::<UpdateProcessing>()
+            .add_message::<EnemySpawnRequest>()
+            .add_message::<RebuildGrid>()
             .add_message::<QuickMoveFromContainer>();
     }
 }

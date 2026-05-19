@@ -70,8 +70,8 @@ pub fn ai_steering(
     for (intender_e, intender_tf, mut intent) in enemy_qr.iter_mut() {
         let intender_pos = intender_tf.translation.truncate();
         let intender_dir = intent.direction.normalize();
-        let cell_x = (intender_pos.x / CELL_SIZE).floor() as i32;
-        let cell_y = (intender_pos.y / CELL_SIZE).floor() as i32;
+        let cell_x = (intender_pos.x / CELL_SIZE).round() as i32;
+        let cell_y = (intender_pos.y / CELL_SIZE).round() as i32;
         let cells = get_cells_3x3((cell_x, cell_y));
         let entities = get_entities_in_cells(cells, &world);
         let mut avoidance = Vec2::ZERO;

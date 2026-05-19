@@ -16,18 +16,19 @@ pub fn find_empty_cells(
     world: Res<WorldGrid>,
     mut empty_cells: ResMut<EmptyCellsWorldPos>,
     wall: Query<&Wall>,
+    mut reader: MessageReader<RebuildGrid>,
 ) {
-    for (&coords, entities) in world.cells.iter() {
-        let blocked = entities.iter()
-            .any(|e| wall.get(*e).is_ok());
-        if !blocked {
-            empty_cells.cells.push(Vec2::from(
-                (coords.0 as f32 * TILE_SIZE, coords.1 as f32 * TILE_SIZE)
-            ));
+    for msg in reader.read() {
+        empty_cells.cells.clear();
+        for (&coords, entities) in world.cells.iter() {
+            let blocked = entities.iter()
+                .any(|e| wall.get(*e).is_ok());
+            if !blocked {
+                let pos =  Vec2::from((coords.0 as f32 * TILE_SIZE, coords.1 as f32 * TILE_SIZE));
+                empty_cells.cells.push(pos);        
+            } 
         }
-        
-    }
-    
+    } 
 }
 
 pub fn update_empty_cells(
@@ -56,21 +57,76 @@ pub fn update_bounds(
     }
 }
 
+// #[derive(Component)]
+// pub struct GridMarker;
+
 // pub fn modify_grid(
+//     keys: Res<ButtonInput<KeyCode>>,
 //     mut commands: Commands,
-//     mut cells: ResMut<WorldGrid>,
+//     markers: Query<Entity, With<GridMarker>>,
+//     mut cells: ResMut<SharedBounds>,
+//     mut e_cells: ResMut<EmptyCellsWorldPos>,
 //     mut meshes: ResMut<Assets<Mesh>>,
 //     mut materials: ResMut<Assets<ColorMaterial>>,
+//     wall: Query<&Wall>,
 // ) {
-//     for (grid_pos, entities) in cells.cells.iter_mut() {
-//         let x = grid_pos.0 as f32 * CELL_SIZE;
-//         let y = grid_pos.1 as f32 * CELL_SIZE;
-//         let translation = Vec3::new(x, y, 20.0);
+//     // if !cells.is_changed() {
+//     //     return;
+//     // }
+//     if keys.just_pressed(KeyCode::Space) {
+//         for marker in markers.iter() {
+//             commands.entity(marker).despawn();
+//         }
+//         let bounds = cells.0.read().unwrap();
+//         for grid_pos in bounds.iter() {
+//             let x = grid_pos.x as f32 * CELL_SIZE;
+//             let y = grid_pos.y as f32 * CELL_SIZE;
+//             let translation = Vec3::new(x, y, -y * 0.001 + 21.0);
+//             commands.spawn((
+//                 Mesh2d(meshes.add(Rectangle::new(10.0, 10.0))),
+//                 MeshMaterial2d(materials.add(Color::srgb(0.4, 0.1, 0.1))),
+//                 Transform::from_translation(translation),
+//                 GridMarker,
+//             ));
+//         }
+//     }
+//     for grid_pos in e_cells.cells.iter() {
+//         let x = grid_pos.x;
+//         let y = grid_pos.y;
+//         let translation = Vec3::new(x, y, -y * 0.001 + 20.0);
 //         commands.spawn((
 //             Mesh2d(meshes.add(Rectangle::new(16.0, 16.0))),
 //             MeshMaterial2d(materials.add(Color::srgb(0.1, 0.4, 0.1))),
 //             Transform::from_translation(translation)
 //         ));
-//         println!("spawning at ({}, {})", grid_pos.0, grid_pos.1);
+//     }
+// }
+
+// pub fn check_grid(
+//     mut commands: Commands,
+//     mut bounds: ResMut<SharedBounds>,
+//     mut grid: Res<EmptyCellsWorldPos>,
+//     wall: Query<&Wall>,
+//     mut console: ResMut<Console>,
+//     mut meshes: ResMut<Assets<Mesh>>,
+//     mut materials: ResMut<Assets<ColorMaterial>>,
+// ) {   
+//     let bounds_unpacked = bounds.0.read().unwrap();
+//     for cell in &grid.cells {
+//         let wall_pos = Position {
+//             x: cell.x as i32,
+//             y: cell.y as i32,
+//         };
+//         if !bounds_unpacked.contains(&wall_pos) {
+//             let x = cell.x as f32 * CELL_SIZE;
+//             let y = cell.y as f32 * CELL_SIZE;
+//             let translation = Vec3::new(x, y, 200.0);
+//             commands.spawn((
+//                 Mesh2d(meshes.add(Rectangle::new(16.0, 16.0))),
+//                 MeshMaterial2d(materials.add(Color::srgb(0.4, 0.1, 0.1))),
+//                 Transform::from_translation(translation)
+//             ));
+//             console.log(format!("found collision at ({}, {})", x, y));
+//         }
 //     }
 // }

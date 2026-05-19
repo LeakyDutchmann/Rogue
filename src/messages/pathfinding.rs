@@ -7,3 +7,7 @@ pub struct FindPath {
     pub seeker_pos: Vec2,
     pub target_pos: Vec2,
 }
+
+
+#[derive(Message)]
+pub struct RebuildGrid;

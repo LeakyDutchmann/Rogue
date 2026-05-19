@@ -6,6 +6,7 @@ pub fn spawn_chunk(
     mut commands: Commands,
     mut query: Query<(Entity, &mut PendingChunk)>,
     mut writer: MessageWriter<SpawnStructureRequest>,
+    mut rebuild_writer: MessageWriter<RebuildGrid>,
 ) {
     for (entity, mut pending_chunk) in query.iter_mut() {
         let tiles = std::mem::take(&mut pending_chunk.chunk.tiles);
@@ -78,6 +79,7 @@ pub fn spawn_chunk(
             },
         );
         chunkgrid.pending_chunks.remove(&pending_chunk.chunk.position);
+        rebuild_writer.write(RebuildGrid);
     }
 }
 
