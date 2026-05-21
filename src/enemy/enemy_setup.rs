@@ -36,5 +36,33 @@ pub fn update_enemy_state(
     }
 }
 
+pub fn setup_enemy_registry(
+    mut enemy_registry: ResMut<EnemyRegistry>,
+) {
+    let path = "./data/enemy";
+    if let Ok(defs) = load_definitions_for::<EnemyDefinitionRaw>(path) {
+        for def in defs {
+            let enemy_def = EnemyDefinition {
+                hp: def.hp,
+                sprite_sheet: def.sprite_sheet,
+                dead_sprite: def.dead_sprite,
+                kind: def.kind,
+                speed: def.speed,
+                awareness_range: def.awareness_range,
+                pursuit_time: def.pursuit_time,
+                colider: def.colider,
+                hurt_radius: def.hurt_radius,
+                fraction: def.fraction,
+                held_item: def.held_item,
+            };
+            println!("loaded enemy: {}", def.name);
+            enemy_registry.definitions.insert(def.name.clone(), enemy_def);
+        }
+    } else {
+        println!("failed to load enemy definitions");
+    }
+    
+}
+
 
 

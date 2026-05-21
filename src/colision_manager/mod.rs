@@ -9,6 +9,7 @@ use crate::player::move_player;
 
 
 
+
 pub struct ColisionPlugin; 
 
 impl Plugin for ColisionPlugin {

@@ -1,0 +1,22 @@
+{
+  "name": "Grunt",
+  "hp": 100,
+  "speed": 90,
+  "kind": "Melee",
+  "awareness_range": 200,
+  "pursuit_time": 300,
+  "colider": {
+    "shape": {
+      "Circle": {
+        "radius": 10
+      }
+    },
+    "offset": [0, 0],
+    "mass": 100
+  },
+  "hurt_radius": 10,
+  "fraction":  "Enemy",
+  "held_item": "PickAxe",
+  "sprite_sheet": "characters/enemy_spitesheet.png",
+  "dead_sprite": "characters/enemy_spitesheet.png"
+}

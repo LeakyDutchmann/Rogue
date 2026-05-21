@@ -13,6 +13,7 @@ use crate::components::{Health, ActorState, ActorStateType, FacingDirection, Dea
 use crate::messages::{ApplyDamage, MapChanged, CalculateDamage, DamageType, SpawnItemRequest};
 use crate::items::{AnimationStyle, ItemRegistry};
 use crate::player::{initialize_attack};
+use serde::Deserialize;
 use crate::animations::*;
 use crate::colision_manager::Colider;
 use crate::{components::MovementIntent, raycasting::EnemyAwareness};
@@ -45,7 +46,7 @@ pub struct AttackAnimation {
 }
 
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Hash, Deserialize)]
 pub enum FractionType {
     Player,
     Enemy,
