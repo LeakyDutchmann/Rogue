@@ -1,5 +1,13 @@
 use super::*;
 
+
+#[derive(Component)]
+pub struct CounterMarker;
+
+
+#[derive(Component)]
+pub struct EnemyNear(pub i32);
+
 pub fn assemble_enemy(
     commands: &mut Commands,
     assets_server: &AssetServer,
@@ -12,7 +20,9 @@ pub fn assemble_enemy(
         let texture = assets_server.load(&def.sprite_sheet);
         let atlas_layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 4, 7, None, None);
         let texture_atlas_layout = atlas_layouts.add(atlas_layout);
+        let sector_id = get_sector_id(pos);
         let entity = commands.spawn((
+            EnemyId { id: enemy_name.clone() },
             Sprite::from_atlas_image(
                 texture,
                 TextureAtlas { 
@@ -29,6 +39,7 @@ pub fn assemble_enemy(
                 fraction: def.fraction.clone(),
             },
             Enemy,
+            EnemyNear(0),
             EnemyAwareness {
                 state: AwarenessType::Unaware,
                 player_seen: false,
@@ -71,6 +82,12 @@ pub fn assemble_enemy(
                 });
             }   
         }
+        if let Some(sector_buff) = &def.sector_buff {
+            commands.entity(entity).insert(SectorBuff {
+                hp: sector_buff.hp,
+                speed: sector_buff.speed,
+            });
+        }
         let debug_child = commands.spawn((
             Text2d::new("Setup".to_string()),
             TextFont {
@@ -81,6 +98,25 @@ pub fn assemble_enemy(
             Marker,
             TextColor(Color::srgb(1.0, 1.0, 1.0)),
         )).id();
+        let counter_child = commands.spawn((
+            Text2d::new("0".to_string()),
+            TextFont {
+                font_size: 10.0,
+                ..Default::default()
+            },
+            Transform::from_xyz(0.0, 10.0, 1.0),
+            TextColor(Color::srgb(1.0, 1.0, 1.0)),
+            CounterMarker,
+        )).id();
         commands.entity(entity).add_child(debug_child);
+        commands.entity(entity).add_child(counter_child);
     }
+}
+
+const SECTOR_SIZE: f32 = 400.0;
+
+pub fn get_sector_id(pos: Vec2) -> IVec2 {
+    let sector_x = (pos.x / SECTOR_SIZE).floor();
+    let sector_y = (pos.y / SECTOR_SIZE).floor();
+    IVec2::new(sector_x as i32, sector_y as i32)
 }

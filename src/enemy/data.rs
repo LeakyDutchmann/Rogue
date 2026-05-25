@@ -17,6 +17,7 @@ pub struct EnemyDefinitionRaw {
     pub name: String,
     pub hp: i32,
     pub sprite_sheet: String,
+    pub sector_buff: Option<SectorBuffRaw>,
     pub dead_sprite: String,
     pub kind: EnemyKind,
     pub speed: i32,
@@ -28,3 +29,8 @@ pub struct EnemyDefinitionRaw {
     pub held_item: Option<String>,
 }
 
+#[derive(Deserialize, Hash)]
+pub struct SectorBuffRaw {
+    pub hp: Option<i32>,
+    pub speed: Option<i32>,
+}

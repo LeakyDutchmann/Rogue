@@ -18,5 +18,9 @@
   "fraction":  "Enemy",
   "held_item": "PickAxe",
   "sprite_sheet": "characters/enemy_spitesheet.png",
-  "dead_sprite": "characters/enemy_spitesheet.png"
+  "dead_sprite": "characters/enemy_spitesheet.png",
+  "sector_buff": {
+    "hp": 200,
+    "speed": 200
+  }
 }

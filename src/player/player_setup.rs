@@ -59,7 +59,7 @@ pub fn player_setup(
             radius: 3.0,
             fraction: FractionType::Player,
         },
-        Health(100),
+        Health(1000),
     )).with_children(|parent| {
         parent.spawn((
             HeldItem {

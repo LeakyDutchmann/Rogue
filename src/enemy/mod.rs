@@ -1,6 +1,7 @@
 mod enemy_setup;
 mod ai;
 mod pathfinding;
+mod systems;
 mod spawner;
 mod functions;
 mod data;
@@ -9,6 +10,7 @@ use super::*;
 use enemy_setup::*;
 use data::*;
 use functions::*;
+use systems::*;
 pub use ai::*;
 pub use pathfinding::*;
 pub use spawner::*;
@@ -37,6 +39,9 @@ impl Plugin for EnemyPlugin {
         app.insert_resource(EnemyRegistry {
             definitions: HashMap::new(),
         });
+        app.insert_resource(EnemyNearCounter {
+            amount: 0,
+        });
         app.add_systems(Startup, setup_enemy_registry);
         app.add_systems(Update, generate_trial);
         app.add_systems(Update, (update_enemy_state, apply_pathfinding_to_ai));
@@ -44,9 +49,24 @@ impl Plugin for EnemyPlugin {
         app.add_systems(FixedUpdate, follow_path);
         app.add_systems(FixedUpdate, ai_steering.after(ai_movement));
         app.add_systems(Update, ai_initialize_attack);
+        app.add_systems(Update, (apply_sector_buff_system));
+        app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
     }
 }
+
+
+#[derive(Component)]
+pub struct EnemyId {
+    pub id: String,
+}
+
+
+#[derive(Resource)]
+pub struct EnemyNearCounter {
+    pub amount: i32,
+}
+
 
 #[derive(Hash, Deserialize)]
 pub enum ColiderShapeRaw {
@@ -68,6 +88,7 @@ pub struct EnemyDefinition {
     pub hp: i32,
     pub sprite_sheet: String,
     pub dead_sprite: String,
+    pub sector_buff: Option<SectorBuffRaw>,
     pub kind: EnemyKind,
     pub speed: i32,
     pub awareness_range: i32,

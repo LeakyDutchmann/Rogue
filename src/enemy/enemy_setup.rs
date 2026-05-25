@@ -54,6 +54,7 @@ pub fn setup_enemy_registry(
                 hurt_radius: def.hurt_radius,
                 fraction: def.fraction,
                 held_item: def.held_item,
+                sector_buff: def.sector_buff,
             };
             println!("loaded enemy: {}", def.name);
             enemy_registry.definitions.insert(def.name.clone(), enemy_def);
