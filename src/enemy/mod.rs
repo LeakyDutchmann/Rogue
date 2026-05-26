@@ -14,7 +14,7 @@ use systems::*;
 pub use ai::*;
 pub use pathfinding::*;
 pub use spawner::*;
-use crate::messages::EnemySpawnRequest;
+use crate::messages::{EnemySpawnRequest, ApplySwarmBuff};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
     ActorState, ActorStateType, MovementIntent};
@@ -42,6 +42,7 @@ impl Plugin for EnemyPlugin {
         app.insert_resource(EnemyNearCounter {
             amount: 0,
         });
+        app.insert_resource(SwarmBuffState(false));
         app.add_systems(Startup, setup_enemy_registry);
         app.add_systems(Update, generate_trial);
         app.add_systems(Update, (update_enemy_state, apply_pathfinding_to_ai));
@@ -49,11 +50,23 @@ impl Plugin for EnemyPlugin {
         app.add_systems(FixedUpdate, follow_path);
         app.add_systems(FixedUpdate, ai_steering.after(ai_movement));
         app.add_systems(Update, ai_initialize_attack);
-        app.add_systems(Update, (apply_sector_buff_system));
+        app.add_systems(Update, (apply_swarn_buff_system));
         app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
     }
 }
+
+
+#[derive(Resource)]
+pub struct SwarmBuffState(pub bool);
+
+
+#[derive(Component)]
+pub struct Buffed;
+
+
+#[derive(Component)]
+pub struct BuffVisualMarker;
 
 
 #[derive(Component)]
@@ -88,7 +101,7 @@ pub struct EnemyDefinition {
     pub hp: i32,
     pub sprite_sheet: String,
     pub dead_sprite: String,
-    pub sector_buff: Option<SectorBuffRaw>,
+    pub swarm_buff: Option<SwarmBuffRaw>,
     pub kind: EnemyKind,
     pub speed: i32,
     pub awareness_range: i32,

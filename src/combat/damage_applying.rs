@@ -114,7 +114,7 @@ pub fn dead_actor_processing(
                 }
                 timer.timer.tick(time.delta());
                 if timer.timer.is_finished() {
-                    commands.entity(actor_e).despawn();
+                    // commands.entity(actor_e).despawn();
                 }
             }
             _ => {continue}

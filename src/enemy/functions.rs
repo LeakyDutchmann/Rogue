@@ -82,34 +82,17 @@ pub fn assemble_enemy(
                 });
             }   
         }
-        if let Some(sector_buff) = &def.sector_buff {
-            commands.entity(entity).insert(SectorBuff {
-                hp: sector_buff.hp,
-                speed: sector_buff.speed,
-            });
-        }
-        let debug_child = commands.spawn((
-            Text2d::new("Setup".to_string()),
-            TextFont {
-                font_size: 5.0,
-                ..Default::default()
-            },
-            Transform::from_xyz(0.0, -5.0, 1.0),
-            Marker,
-            TextColor(Color::srgb(1.0, 1.0, 1.0)),
-        )).id();
-        let counter_child = commands.spawn((
-            Text2d::new("0".to_string()),
-            TextFont {
-                font_size: 10.0,
-                ..Default::default()
-            },
-            Transform::from_xyz(0.0, 10.0, 1.0),
-            TextColor(Color::srgb(1.0, 1.0, 1.0)),
-            CounterMarker,
-        )).id();
-        commands.entity(entity).add_child(debug_child);
-        commands.entity(entity).add_child(counter_child);
+        // let debug_child = commands.spawn((
+        //     Text2d::new("Setup".to_string()),
+        //     TextFont {
+        //         font_size: 5.0,
+        //         ..Default::default()
+        //     },
+        //     Transform::from_xyz(0.0, -5.0, 1.0),
+        //     Marker,
+        //     TextColor(Color::srgb(1.0, 1.0, 1.0)),
+        // )).id();
+        // commands.entity(entity).add_child(debug_child);
     }
 }
 
