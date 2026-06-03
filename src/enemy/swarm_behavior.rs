@@ -1,5 +1,3 @@
-use bevy::ecs::entity;
-
 use super::*;
 
 pub fn apply_swarn_buff_system(
@@ -8,10 +6,13 @@ pub fn apply_swarn_buff_system(
     mut buffed: Query<(Entity, &EnemyId, &mut Health, &mut Speed, &Children), With<Buffed>>,
     buffed_marker: Query<&BuffVisualMarker>,
     enemy_reg: Res<EnemyRegistry>,
-    mut swarm_buff: ResMut<SwarmBuffState>,
+    swarm_buff: ResMut<SwarmBuffState>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
+    if !swarm_buff.is_changed() {
+        return;
+    }
     if swarm_buff.0 == true {
         for (enemy_e, id, mut hp, mut speed) in non_buffed.iter_mut() {
             if let Some(def) = enemy_reg.definitions.get(&id.id) {
@@ -57,7 +58,6 @@ pub fn track_enemies_near_player(
     player_tf: Res<PlayerTransform>,
     world: Res<WorldGrid>,
     mut swarm_buff: ResMut<SwarmBuffState>,
-    mut console: ResMut<Console>,
 ) {
     let pos = player_tf.0.translation.truncate();
     let cell_x = (pos.x / CELL_SIZE).round() as i32;
@@ -75,6 +75,5 @@ pub fn track_enemies_near_player(
     } else {
         swarm_buff.0 = false;
     }
-    console.log(format!("{:?} enemy near", count))
 } 
 

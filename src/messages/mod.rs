@@ -44,8 +44,7 @@ impl Plugin for MessagesPlugin {
             .add_message::<UiClick>()
             .add_message::<UiWindowSpawned>()
             .add_message::<UpdateProcessing>()
-            .add_message::<EnemySpawnRequest>()
-            .add_message::<ApplySwarmBuff>()            
+            .add_message::<EnemySpawnRequest>()         
             .add_message::<RebuildGrid>()
             .add_message::<QuickMoveFromContainer>();
     }

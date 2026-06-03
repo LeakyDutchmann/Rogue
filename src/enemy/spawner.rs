@@ -3,12 +3,10 @@ use super::*;
 pub fn tick_spawner_system(
     time: Res<Time>,
     mut spawner: ResMut<EnemySpawnerTimer>,
-    mut console: ResMut<Console>,
     mut writer: MessageWriter<EnemySpawnRequest>,
 ) {
     spawner.timer.tick(time.delta());
     if spawner.timer.just_finished() {
-        console.log(format!("Enemy spawn requested"));
         writer.write(EnemySpawnRequest);
     }
 }

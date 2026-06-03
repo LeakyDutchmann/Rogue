@@ -55,6 +55,24 @@ impl Colider {
             }
         }
     }
+    pub fn _get_colider_normal(&self, colider_pos: Vec2, mover_pos: Vec2) -> Vec2 {
+        match self.shape {
+            ColiderShape::Circle { radius: _radius } => {
+                (mover_pos - colider_pos).normalize()
+            },
+            ColiderShape::Rectangle { width: _width, height: _height } => {
+                let delta = mover_pos - colider_pos;
+                let dx = delta.x;
+                let dy = delta.y;
+                let normal = if dx.abs() > dy.abs() {
+                    if dx > 0.0 { Vec2::X } else { -Vec2::X }
+                } else {
+                    if dy > 0.0 { Vec2::Y } else { -Vec2::Y }
+                };
+                normal
+            }
+        }
+    }
 }
 
 

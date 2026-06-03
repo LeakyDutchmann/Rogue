@@ -5,7 +5,7 @@ mod enemy_vision;
 mod prototype;
 
 use super::*;
-use math::*;
+pub use math::*;
 use enemy_vision::*;
 
 

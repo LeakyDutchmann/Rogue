@@ -1,7 +1,7 @@
 mod enemy_setup;
 mod ai;
 mod pathfinding;
-mod systems;
+mod swarm_behavior;
 mod spawner;
 mod functions;
 mod data;
@@ -10,11 +10,11 @@ use super::*;
 use enemy_setup::*;
 use data::*;
 use functions::*;
-use systems::*;
+use swarm_behavior::*;
 pub use ai::*;
 pub use pathfinding::*;
 pub use spawner::*;
-use crate::messages::{EnemySpawnRequest, ApplySwarmBuff};
+use crate::messages::{EnemySpawnRequest};
 use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
     ActorState, ActorStateType, MovementIntent};
@@ -39,9 +39,6 @@ impl Plugin for EnemyPlugin {
         app.insert_resource(EnemyRegistry {
             definitions: HashMap::new(),
         });
-        app.insert_resource(EnemyNearCounter {
-            amount: 0,
-        });
         app.insert_resource(SwarmBuffState(false));
         app.add_systems(Startup, setup_enemy_registry);
         app.add_systems(Update, generate_trial);
@@ -49,8 +46,9 @@ impl Plugin for EnemyPlugin {
         app.add_systems(FixedUpdate, ai_movement.after(follow_path));
         app.add_systems(FixedUpdate, follow_path);
         app.add_systems(FixedUpdate, ai_steering.after(ai_movement));
+        app.add_systems(FixedUpdate, ai_cosmetics_steering.after(ai_steering));
         app.add_systems(Update, ai_initialize_attack);
-        app.add_systems(Update, (apply_swarn_buff_system));
+        app.add_systems(Update, apply_swarn_buff_system);
         app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
     }
@@ -72,12 +70,6 @@ pub struct BuffVisualMarker;
 #[derive(Component)]
 pub struct EnemyId {
     pub id: String,
-}
-
-
-#[derive(Resource)]
-pub struct EnemyNearCounter {
-    pub amount: i32,
 }
 
 

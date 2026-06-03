@@ -154,7 +154,7 @@ pub fn insert_item_in_inventory(
     for mut inventory in inventory.iter_mut() {
         for (i, item_stack) in &mut inventory.items.iter_mut().enumerate() {
             if i == 0 {
-                let sword = "Sword".to_string();
+                let sword = "Secturix_Sword".to_string();
                 if let Some(def) = item_registry.items.get(&sword) {
                      item_stack.quantity = def.max_stack as i32;
                      item_stack.item_stored = Some(sword);
