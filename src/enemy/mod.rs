@@ -4,6 +4,7 @@ mod pathfinding;
 mod swarm_behavior;
 mod spawner;
 mod functions;
+mod surrounding;
 mod data;
 
 use super::*;
@@ -11,6 +12,7 @@ use enemy_setup::*;
 use data::*;
 use functions::*;
 use swarm_behavior::*;
+use surrounding::*;
 pub use ai::*;
 pub use pathfinding::*;
 pub use spawner::*;
@@ -39,6 +41,9 @@ impl Plugin for EnemyPlugin {
         app.insert_resource(EnemyRegistry {
             definitions: HashMap::new(),
         });
+        app.insert_resource(SlotsForSurrounding {
+            slots: HashMap::new(),
+        });
         app.insert_resource(SwarmBuffState(false));
         app.add_systems(Startup, setup_enemy_registry);
         app.add_systems(Update, generate_trial);
@@ -51,7 +56,14 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, apply_swarn_buff_system);
         app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
+        app.add_systems(Update, (calculate_slots_around_player, track_surrounding_slots_accesibility, modify_slots_near).chain());
     }
+}
+
+//here true means occupied, false unoccupied
+#[derive(Resource)]
+pub struct SlotsForSurrounding {
+    slots: HashMap<(i32, i32), bool>,
 }
 
 
