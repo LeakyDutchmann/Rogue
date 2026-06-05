@@ -12,7 +12,7 @@ use enemy_setup::*;
 use data::*;
 use functions::*;
 use swarm_behavior::*;
-use surrounding::*;
+pub use surrounding::*;
 pub use ai::*;
 pub use pathfinding::*;
 pub use spawner::*;
@@ -57,6 +57,7 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
         app.add_systems(Update, (calculate_slots_around_player, track_surrounding_slots_accesibility, modify_slots_near).chain());
+        app.add_systems(Update, (start_surrounding, remove_surrounding_marker));
     }
 }
 

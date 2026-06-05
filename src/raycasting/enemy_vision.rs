@@ -4,11 +4,15 @@ pub fn enemy_vision_system(
     time: Res<Time>,
     mut commands: Commands,
     mut enemies: Query<(Entity, &Transform, &mut EnemyAwareness), With<Enemy>>,
+    surrounding: Query<&Surrounding>,
     player: Query<&Transform, With<Player>>,
     wall_qr: Query<(&Transform, &Colider), With<Wall>>,
     world: Res<WorldGrid>,
 ) {
     for (enemy_e, enemy_tf, mut awareness) in enemies.iter_mut() {
+        if let Ok(_) = surrounding.get(enemy_e) {
+            continue;
+        }
         for player_tf in player.iter() {
             let enemy_pos = enemy_tf.translation.truncate();
             let player_pos = player_tf.translation.truncate();

@@ -7,6 +7,7 @@ mod prototype;
 use super::*;
 pub use math::*;
 use enemy_vision::*;
+use crate::enemy::Surrounding;
 
 
 
