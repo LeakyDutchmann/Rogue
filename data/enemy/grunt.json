@@ -16,7 +16,6 @@
   },
   "hurt_radius": 10,
   "fraction":  "Enemy",
-  "held_item": "PickAxe",
   "sprite_sheet": "characters/enemy_spitesheet.png",
   "dead_sprite": "characters/enemy_spitesheet.png",
   "swarm_buff": {

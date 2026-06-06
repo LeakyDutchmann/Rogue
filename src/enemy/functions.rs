@@ -21,6 +21,10 @@ pub fn assemble_enemy(
                     index: 0 
                 } 
             ),
+            EnemyState {
+                current: EnemyStateType::Idle,
+                previous: EnemyStateType::Idle,
+            },
             Health(def.hp),
             Transform::from_xyz(pos.x, pos.y, -pos.y * 0.001 - 10.0), ////
             Speed(def.speed as f32),
@@ -32,9 +36,12 @@ pub fn assemble_enemy(
             Enemy,
             EnemyAwareness {
                 state: AwarenessType::Unaware,
-                player_seen: false,
                 radius: def.awareness_range as f32,
                 awareness_timer: Timer::from_seconds(def.pursuit_time as f32, TimerMode::Once),
+            },
+            EnemyEyes {
+                sees_player: false,
+                last_seen_pos: None,
             },
             FacingDirection {
                 facing: Facing::Right,
@@ -72,5 +79,20 @@ pub fn assemble_enemy(
                 });
             }   
         }
+        let child = commands.spawn((
+            Text2d::new("spawned"),
+            TextFont {
+                font_size: 5.0,
+                ..Default::default()
+            },
+            TextColor(Color::WHITE),
+            Transform::from_xyz(0.0, -6.0, 1.0),
+            DebugMarker,
+            )).id();
+        commands.entity(entity).add_child(child);
     }
 }
+
+
+#[derive(Component)]
+pub struct DebugMarker;

@@ -105,6 +105,7 @@ pub fn dead_actor_processing(
                         FacingDirection,
                         Speed,
                         EnemyAwareness,
+                        EnemyEyes,
                     )>();
                     commands.entity(actor_e).despawn_children();
                     if let Some(atlas) = &mut sprite.texture_atlas {

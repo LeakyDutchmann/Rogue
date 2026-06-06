@@ -16,7 +16,7 @@ use crate::player::{initialize_attack};
 use serde::Deserialize;
 use crate::animations::*;
 use crate::colision_manager::Colider;
-use crate::{components::MovementIntent, raycasting::EnemyAwareness};
+use crate::{components::MovementIntent, enemy::{EnemyAwareness, EnemyEyes}};
 use crate::structures::StructureId;
 
 

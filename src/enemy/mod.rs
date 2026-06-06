@@ -4,14 +4,18 @@ mod pathfinding;
 mod swarm_behavior;
 mod spawner;
 mod functions;
+mod vision;
 mod surrounding;
 mod data;
+mod brain;
 
 use super::*;
 use enemy_setup::*;
 use data::*;
 use functions::*;
 use swarm_behavior::*;
+use brain::*;
+use vision::*;
 pub use surrounding::*;
 pub use ai::*;
 pub use pathfinding::*;
@@ -21,7 +25,6 @@ use crate::colision_manager::{Colider, ColiderShape};
 use crate::components::{Speed, Health, FacingDirection, Facing,
     ActorState, ActorStateType, MovementIntent};
 use serde::Deserialize;
-use crate::raycasting::{EnemyAwareness, AwarenessType};
 use std::collections::{HashMap, HashSet, VecDeque};
 use bevy::tasks::{AsyncComputeTaskPool, Task};
 use futures_lite::future;
@@ -48,7 +51,7 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Startup, setup_enemy_registry);
         app.add_systems(Update, generate_trial);
         app.add_systems(Update, (update_enemy_state, apply_pathfinding_to_ai));
-        app.add_systems(FixedUpdate, ai_movement.after(follow_path));
+        app.add_systems(FixedUpdate, ai_brain_system.after(follow_path));
         app.add_systems(FixedUpdate, follow_path);
         app.add_systems(FixedUpdate, ai_steering.after(ai_movement));
         app.add_systems(FixedUpdate, ai_cosmetics_steering.after(ai_steering));
@@ -57,7 +60,8 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
         app.add_systems(Update, (calculate_slots_around_player, track_surrounding_slots_accesibility, modify_slots_near).chain());
-        app.add_systems(Update, (start_surrounding, remove_surrounding_marker));
+        app.add_systems(Update, (enemy_vision_system, tick_awareness_timer, awareness_state_system, show_enemy_state));
+        // app.add_systems(Update, (start_surrounding, remove_surrounding_marker));
     }
 }
 
@@ -148,6 +152,52 @@ pub struct AiPath {
 }
 
 
+#[derive(Copy, Clone, PartialEq)]
+pub enum EnemyStateType{
+    Idle,
+    Patroling,
+    Pursuing,
+    Surrounding,
+    Retreating,
+    Pathfinding,
+}
+
+
+#[derive(Component)]
+pub struct EnemyState {
+    pub current: EnemyStateType,
+    pub previous: EnemyStateType,
+}
+
+impl EnemyState {
+    pub fn set(&mut self, new: EnemyStateType) {
+        if new != self.current {
+            self.previous = self.current;
+            self.current = new;
+        }
+        
+    }
+}
+
+
+pub enum AwarenessType {
+    Unaware,
+    Direct,
+    Indirect,
+}
+
+#[derive(Component)]
+pub struct EnemyAwareness {
+    pub state: AwarenessType,
+    pub radius: f32,
+    pub awareness_timer: Timer,
+}
+
+#[derive(Component)]
+pub struct EnemyEyes {
+    pub sees_player: bool,
+    pub last_seen_pos: Option<Vec2>,
+}
 
 
 
