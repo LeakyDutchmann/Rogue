@@ -31,21 +31,25 @@ pub fn follow_path(
 pub fn ai_pursuing_system(
     mut commands: Commands,
     mut enemy_qr: Query<(Entity, &EnemyState, &Transform, &mut FacingDirection, &mut ActorState),
-        (With<Enemy>, Without<MovementIntent>, Without<AiPath>, Without<HurtTimer>)>,
-    player_sg: Single<&Transform, (With<Player>, Without<Enemy>)>
+        (With<Enemy>, Without<MovementIntent>, Without<HurtTimer>)>,
+    player_sg: Single<&Transform, (With<Player>, Without<Enemy>)>,
+    ai_path: Query<&AiPath>,
 ) {
     for (enemy_entity, state, tf, mut facing_direction, mut actor_state) in enemy_qr.iter_mut() {
-        if state.current != EnemyStateType::Pursuing {
+        if state.current != EnemyStateType::Pursuing && state.current != EnemyStateType::Surrounding {
             continue;
         }
         let enemy_pos = tf.translation.truncate();
         let player_pos = player_sg.translation.truncate();
         let to_player = (player_pos - enemy_pos).normalize();
+        if let Ok(_aipath) = ai_path.get(enemy_entity) {    
+            commands.entity(enemy_entity).remove::<AiPath>();
+        }
+        actor_state.state = ActorStateType::Walking;
+        facing_direction.facing = Facing::from_direction(to_player);    
         commands.entity(enemy_entity).insert(MovementIntent {
             direction: to_player,
         });
-        actor_state.state = ActorStateType::Walking;
-        facing_direction.facing = Facing::from_direction(to_player);    
     }
 }
 

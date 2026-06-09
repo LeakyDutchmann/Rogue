@@ -1,6 +1,6 @@
 mod enemy_setup;
 mod ai_movement;
-mod pathfinding;
+mod pathfinding_data;
 mod swarm_behavior;
 mod spawner;
 mod functions;
@@ -8,6 +8,7 @@ mod vision;
 mod surrounding;
 mod data;
 mod brain;
+mod pathfinding;
 
 use super::*;
 use enemy_setup::*;
@@ -18,6 +19,7 @@ use brain::*;
 use vision::*;
 pub use surrounding::*;
 pub use ai_movement::*;
+pub use pathfinding_data::*;
 pub use pathfinding::*;
 pub use spawner::*;
 use crate::messages::{EnemySpawnRequest};
@@ -53,6 +55,7 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, (update_enemy_state, apply_pathfinding_to_ai));
         app.add_systems(Update, ai_brain_system);
         app.add_systems(FixedUpdate, ai_pursuing_system.after(follow_path));
+        app.add_systems(Update, find_path_ai_system.after(ai_brain_system));
         app.add_systems(FixedUpdate, follow_path);
         app.add_systems(FixedUpdate, ai_steering.after(ai_pursuing_system));
         app.add_systems(FixedUpdate, ai_cosmetics_steering.after(ai_steering));

@@ -1,0 +1,201 @@
+use super::*;
+
+#[derive(Clone, Debug, Hash, Eq, PartialEq, Copy)]
+pub struct Position {
+    pub x: i32,
+    pub y: i32,
+}
+
+impl Position {
+    pub fn heuristic(&self, b: &Position) -> i32 {
+        (self.x - b.x).abs() + (self.y - b.y).abs()
+    }
+}
+
+
+#[derive(Clone, Debug, Eq)]
+struct Node {
+    position: Position,
+    g: i32,
+    h: i32,
+    f: i32,
+    parent: Option<Position>,
+}
+
+impl Ord for Node {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // порівнюємо f, мінімальний f = найвищий пріоритет
+        other.f.cmp(&self.f)
+            .then_with(|| self.h.cmp(&other.h)) // tie-breaker
+    }
+}
+
+impl PartialOrd for Node {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        self.position == other.position
+    }
+}
+
+
+#[derive(Debug)]
+pub enum PathfindingError {
+    StartNotInBounds,
+    GoalNotInBounds,
+    GoalTooFarAway
+}
+
+
+pub fn find_path(start: Position, goal: Position, bounds: &HashSet<Position>, radius: i32) -> Result<Vec<Position>, PathfindingError> {
+    if !bounds.contains(&start) {
+        return Err(PathfindingError::StartNotInBounds)
+    }
+    if !bounds.contains(&goal) {
+        return Err(PathfindingError::GoalNotInBounds)
+    }
+    if start.heuristic(&goal) > radius * 2  {
+        return Err(PathfindingError::GoalTooFarAway)
+    }
+    let mut path: Vec<Position> = Vec::new();
+    let mut to_search: BinaryHeap<Node> = BinaryHeap::new();
+    let mut processed: HashMap<Position, Node> = HashMap::new();
+    let h = start.heuristic(&goal);
+    let f = 0 + h;
+    to_search.push(Node {
+        position: start.clone(),
+        g: 0,
+        h: h,
+        f: f,
+        parent: None,
+    });
+    while !to_search.is_empty() {
+        if let Some(current_node) = to_search.pop() {
+            // current_node — це вузол з мінімальним f
+            // let mut current_position = current_node.position.clone();
+            // Add n to the CLOSED list
+            let mut current_position = current_node.position;
+            processed.insert(current_position.clone(), current_node.clone());
+            if current_position == goal {
+                let mut nodelist: Vec<Position> = vec![];
+                loop {
+                    nodelist.push(current_position.clone());
+                    if let Some(node) = processed.get(&current_position) {
+                        match &node.parent {
+                            Some(parent_pos) => current_position = parent_pos.clone(),
+                            None => break, // досягли старту
+                        }
+                    }
+                }
+                path = nodelist; 
+                break;
+            }
+            let neighbors: Vec<Position> = vec![
+                Position { x: current_position.x + 1, y: current_position.y },
+                Position { x: current_position.x - 1, y: current_position.y },
+                Position { x: current_position.x, y: current_position.y + 1 },
+                Position { x: current_position.x, y: current_position.y - 1 },
+            ];
+                
+            
+                for neighbor in neighbors {
+                    if !bounds.contains(&neighbor) {
+                        continue;
+                    }
+                    if neighbor.heuristic(&start) > radius {
+                        continue;
+                    }
+                    let h = neighbor.heuristic(&goal);
+                    let g = current_node.g + 1;
+                    let f = g + h;
+                    
+                    if processed.contains_key(&neighbor) {
+                        if g > processed.get(&neighbor).unwrap().g {
+                            continue;
+                        }
+                    }
+                    // processed.remove(&neighbor);
+                    to_search.push(Node {
+                        position: neighbor.clone(),
+                        g: g,
+                        h: h,
+                        f: f,
+                        parent: Some(current_position.clone()) });
+            
+                }
+        } else {
+            break;
+        }
+        
+    }
+    Ok(path)
+}
+
+pub fn spawn_optimized_pathfinding_task(
+    commands: &mut Commands,
+    target: Entity,
+    bounds: Arc<RwLock<HashSet<Position>>>,  // clone the Arc, not the HashSet
+    start: Position,
+    goal: Position,
+    radius: i32,
+) {
+    let thread_pool = AsyncComputeTaskPool::get();
+    let task = thread_pool.spawn(async move {
+        let bounds_read = bounds.read().unwrap();
+        find_path(start, goal, &*bounds_read, radius)
+    });
+    commands.entity(target).insert(PathfindingTask(task));
+}
+
+
+
+fn grid_cells_in_rect(start: Vec2, end: Vec2) -> Vec<Position> {
+    let min_x = (start.x.min(end.x) / CELL_SIZE).floor() as i32;
+    let max_x = (start.x.max(end.x) / CELL_SIZE).floor() as i32;
+    let min_y = (start.y.min(end.y) / CELL_SIZE).floor() as i32;
+    let max_y = (start.y.max(end.y) / CELL_SIZE).floor() as i32;
+    let mut cells: Vec<Position> = Vec::new();
+    for y in min_y..=max_y {
+        for x in min_x..=max_x {
+            cells.push(Position { x, y });
+        }
+    }
+    cells
+}
+
+fn is_rect_walkable(start: Vec2, end: Vec2, walkable_cells: &HashSet<Position>) -> bool {
+    grid_cells_in_rect(start, end)
+        .into_iter()
+        .all(|cell| walkable_cells.contains(&cell))
+}
+
+#[derive(Debug)]
+pub struct PathOptimizationError;
+
+pub fn optimize_path(path: &mut VecDeque<Vec2>, empty_cells: &HashSet<Position>  ) -> Result<VecDeque<Vec2>, PathOptimizationError> {
+    if path.is_empty() {
+        return Err(PathOptimizationError);
+
+    }
+    
+        let mut simplified = VecDeque::new();
+        simplified.push_front(*path.front().unwrap());
+        let mut last = 0;
+    
+        for current in 1..path.len() {
+            if !is_rect_walkable(path[last], path[current], empty_cells) {
+                // cannot skip, so add previous point
+                simplified.push_back(path[current - 1]);
+                last = current - 1;
+            }
+        }
+    
+        // always add last point
+        simplified.push_back(*path.back().unwrap());
+        simplified.pop_front();
+        Ok(simplified)
+}
