@@ -33,7 +33,7 @@ pub fn ai_brain_system(
 }
 
 pub fn show_enemy_state(
-    mut enemies: Query<(&mut EnemyState, &Children)>,
+    mut enemies: Query<(&mut EnemyState, &Children), Changed<EnemyState>>,
     mut text: Query<&mut Text2d, With<DebugMarker>>
 ) {
     for (state, children) in enemies.iter_mut() {

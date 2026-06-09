@@ -28,37 +28,24 @@ pub fn follow_path(
     }
 }
 
-pub fn ai_movement(
+pub fn ai_pursuing_system(
     mut commands: Commands,
-    mut enemy_qr: Query<(Entity, &EnemyAwareness, &Transform, &mut FacingDirection, &mut ActorState),
+    mut enemy_qr: Query<(Entity, &EnemyState, &Transform, &mut FacingDirection, &mut ActorState),
         (With<Enemy>, Without<MovementIntent>, Without<AiPath>, Without<HurtTimer>)>,
-    mut writer: MessageWriter<FindPath>,
     player_sg: Single<&Transform, (With<Player>, Without<Enemy>)>
 ) {
-    for (enemy_entity, awarenes, tf, mut facing_direction, mut actor_state) in enemy_qr.iter_mut() {
+    for (enemy_entity, state, tf, mut facing_direction, mut actor_state) in enemy_qr.iter_mut() {
+        if state.current != EnemyStateType::Pursuing {
+            continue;
+        }
         let enemy_pos = tf.translation.truncate();
         let player_pos = player_sg.translation.truncate();
         let to_player = (player_pos - enemy_pos).normalize();
-        match awarenes.state {
-            AwarenessType::Direct => {
-                    commands.entity(enemy_entity).insert(MovementIntent {
-                        direction: to_player,
-                    });
-                    actor_state.state = ActorStateType::Walking;
-                    facing_direction.facing = Facing::from_direction(to_player);
-            },
-            AwarenessType::Indirect => {
-                    writer.write(FindPath {
-                        seeker: enemy_entity,
-                        seeker_pos: enemy_pos,
-                        target_pos: player_pos,
-                    });
-                } 
-            AwarenessType::Unaware => {
-                actor_state.state = ActorStateType::Idle;
-                facing_direction.facing = Facing::from_direction(to_player);
-            }
-        }         
+        commands.entity(enemy_entity).insert(MovementIntent {
+            direction: to_player,
+        });
+        actor_state.state = ActorStateType::Walking;
+        facing_direction.facing = Facing::from_direction(to_player);    
     }
 }
 
