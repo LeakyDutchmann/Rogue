@@ -83,7 +83,7 @@ pub fn pick_best_surrounding_slot(
         let pos_f32 = Vec2::new(pos.0 as f32, pos.1 as f32);
         let distance = p_pos.distance(pos_f32);
         let distance_2 = e_pos.distance(pos_f32);
-        let new_value = (1.0 / distance )+  (1.0 / distance_2);
+        let new_value = (1.0 / distance ) +  (1.0 / distance_2);
         if new_value > value {
             value = new_value;
             best_slot = Some(pos.clone());
@@ -108,9 +108,6 @@ pub fn start_surrounding(
             continue;
         }
         let enemy_pos = tf.translation.truncate();
-        if enemy_pos.distance(player_pos) > 150.0 {
-            continue;
-        }
         let e_cell_x = (enemy_pos.x / CELL_SIZE).round() as i32;
         let e_cell_y = (enemy_pos.y / CELL_SIZE).round() as i32;
         let slots = trim_slots_behind((e_cell_x, e_cell_y), (p_cell_x, p_cell_y), &surrounding_slots.slots);
