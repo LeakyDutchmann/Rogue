@@ -75,7 +75,11 @@ pub fn track_enemies_near_player(
     if count >= 5 {
         swarm_buff.0 = true;
     } else {
-        swarm_buff.0 = false;
+        if swarm_buff.0 {
+            if count <= 2 {
+                swarm_buff.0 = false;
+            }
+        } 
     }
 } 
 
