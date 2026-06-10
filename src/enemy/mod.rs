@@ -1,54 +1,52 @@
-mod enemy_setup;
 mod ai_movement;
-mod pathfinding_data;
-mod swarm_behavior;
-mod spawner;
-mod functions;
-mod vision;
-mod surrounding;
-mod data;
 mod brain;
+mod data;
+mod enemy_setup;
+mod functions;
 mod pathfinding;
+mod pathfinding_data;
+mod spawner;
+mod surrounding;
+mod swarm_behavior;
+mod vision;
 
 use super::*;
-use enemy_setup::*;
-use data::*;
-use functions::*;
-use swarm_behavior::*;
-use brain::*;
-use vision::*;
-pub use surrounding::*;
-pub use ai_movement::*;
-pub use pathfinding_data::*;
-pub use pathfinding::*;
-pub use spawner::*;
-use crate::messages::{EnemySpawnRequest};
 use crate::colision_manager::{Colider, ColiderShape};
-use crate::components::{Speed, Health, FacingDirection, Facing,
-    ActorState, ActorStateType, MovementIntent};
-use serde::Deserialize;
-use std::collections::{HashMap, HashSet, VecDeque};
+use crate::components::{
+    ActorState, ActorStateType, Facing, FacingDirection, Health, MovementIntent, Speed,
+};
+use crate::messages::EnemySpawnRequest;
+pub use ai_movement::*;
 use bevy::tasks::{AsyncComputeTaskPool, Task};
+use brain::*;
+use data::*;
+use enemy_setup::*;
+use functions::*;
 use futures_lite::future;
+pub use pathfinding::*;
+pub use pathfinding_data::*;
 use rand::seq::IndexedRandom;
-use std::sync::{Arc, RwLock};
-use std::collections::BinaryHeap;
+use serde::Deserialize;
+pub use spawner::*;
 use std::cmp::Ordering;
-
+use std::collections::BinaryHeap;
+use std::collections::{HashMap, HashSet, VecDeque};
+use std::sync::{Arc, RwLock};
+pub use surrounding::*;
+use swarm_behavior::*;
+use vision::*;
 
 pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(EnemySpawnerTimer{
-            timer: Timer::from_seconds(5.0, TimerMode::Repeating)
+        app.insert_resource(EnemySpawnerTimer {
+            timer: Timer::from_seconds(5.0, TimerMode::Repeating),
         });
         app.insert_resource(EnemyRegistry {
             definitions: HashMap::new(),
         });
-        app.insert_resource(SlotsForSurrounding {
-            slots: Vec::new(),
-        });
+        app.insert_resource(SlotsForSurrounding { slots: Vec::new() });
         app.insert_resource(SwarmBuffState(false));
         app.add_systems(Startup, setup_enemy_registry);
         app.add_systems(Update, generate_trial);
@@ -64,8 +62,19 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, apply_swarn_buff_system);
         app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
-        app.add_systems(Update, (calculate_slots_around_player, modify_slots_near).chain());
-        app.add_systems(Update, (enemy_vision_system, tick_awareness_timer, awareness_state_system, show_enemy_state));
+        app.add_systems(
+            Update,
+            (calculate_slots_around_player, modify_slots_near).chain(),
+        );
+        app.add_systems(
+            Update,
+            (
+                enemy_vision_system,
+                tick_awareness_timer,
+                awareness_state_system,
+                show_enemy_state,
+            ),
+        );
         // app.add_systems(Update, (start_surrounding, remove_surrounding_marker));
     }
 }
@@ -76,24 +85,21 @@ pub struct SlotsForSurrounding {
     slots: Vec<(i32, i32)>,
 }
 
+pub struct GitIssue;
 
 #[derive(Resource)]
 pub struct SwarmBuffState(pub bool);
 
-
 #[derive(Component)]
 pub struct Buffed;
 
-
 #[derive(Component)]
 pub struct BuffVisualMarker;
-
 
 #[derive(Component)]
 pub struct EnemyId {
     pub id: String,
 }
-
 
 #[derive(Hash, Deserialize)]
 pub enum ColiderShapeRaw {
@@ -101,14 +107,12 @@ pub enum ColiderShapeRaw {
     Rectangle { width: i32, height: i32 },
 }
 
-
 #[derive(Hash, Deserialize)]
 pub struct ColiderRaw {
     pub shape: ColiderShapeRaw,
     pub offset: IVec2,
     pub mass: i32,
 }
-
 
 #[derive(Hash)]
 pub struct EnemyDefinition {
@@ -131,34 +135,27 @@ pub struct EnemyRegistry {
     pub definitions: HashMap<String, EnemyDefinition>,
 }
 
-
 #[derive(Resource)]
 pub struct EnemySpawnerTimer {
     pub timer: Timer,
 }
 
-
-
 #[derive(Component)]
 pub struct Enemy;
-
 
 #[derive(Component)]
 pub struct Marker;
 
-
 #[derive(Component)]
 pub struct PathfindingTask(Task<Result<Vec<Position>, PathfindingError>>);
-
 
 #[derive(Component)]
 pub struct AiPath {
     pub steps: VecDeque<Vec2>,
 }
 
-
 #[derive(Copy, Clone, PartialEq)]
-pub enum EnemyStateType{
+pub enum EnemyStateType {
     Idle,
     Patroling,
     Pursuing,
@@ -166,7 +163,6 @@ pub enum EnemyStateType{
     Retreating,
     Pathfinding,
 }
-
 
 #[derive(Component)]
 pub struct EnemyState {
@@ -180,10 +176,8 @@ impl EnemyState {
             self.previous = self.current;
             self.current = new;
         }
-        
     }
 }
-
 
 pub enum AwarenessType {
     Unaware,
@@ -203,6 +197,3 @@ pub struct EnemyEyes {
     pub sees_player: bool,
     pub last_seen_pos: Option<Vec2>,
 }
-
-
-
