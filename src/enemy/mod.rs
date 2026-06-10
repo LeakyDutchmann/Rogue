@@ -47,7 +47,7 @@ impl Plugin for EnemyPlugin {
             definitions: HashMap::new(),
         });
         app.insert_resource(SlotsForSurrounding {
-            slots: HashMap::new(),
+            slots: Vec::new(),
         });
         app.insert_resource(SwarmBuffState(false));
         app.add_systems(Startup, setup_enemy_registry);
@@ -56,6 +56,7 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, ai_brain_system);
         app.add_systems(FixedUpdate, ai_pursuing_system.after(follow_path));
         app.add_systems(Update, find_path_ai_system.after(ai_brain_system));
+        app.add_systems(Update, start_surrounding.after(ai_brain_system));
         app.add_systems(FixedUpdate, follow_path);
         app.add_systems(FixedUpdate, ai_steering.after(ai_pursuing_system));
         app.add_systems(FixedUpdate, ai_cosmetics_steering.after(ai_steering));
@@ -63,7 +64,7 @@ impl Plugin for EnemyPlugin {
         app.add_systems(Update, apply_swarn_buff_system);
         app.add_systems(Update, track_enemies_near_player);
         app.add_systems(Update, (tick_spawner_system, spawn_enemy_system));
-        app.add_systems(Update, (calculate_slots_around_player, track_surrounding_slots_accesibility, modify_slots_near).chain());
+        app.add_systems(Update, (calculate_slots_around_player, modify_slots_near).chain());
         app.add_systems(Update, (enemy_vision_system, tick_awareness_timer, awareness_state_system, show_enemy_state));
         // app.add_systems(Update, (start_surrounding, remove_surrounding_marker));
     }
@@ -72,7 +73,7 @@ impl Plugin for EnemyPlugin {
 //here true means occupied, false unoccupied
 #[derive(Resource)]
 pub struct SlotsForSurrounding {
-    slots: HashMap<(i32, i32), bool>,
+    slots: Vec<(i32, i32)>,
 }
 
 

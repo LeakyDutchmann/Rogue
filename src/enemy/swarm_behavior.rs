@@ -54,7 +54,7 @@ pub fn apply_swarn_buff_system(
 }
 
 pub fn track_enemies_near_player(
-    enemy: Query<&Enemy>,
+    enemy: Query<&ActorState, With<Enemy>>,
     player_tf: Res<PlayerTransform>,
     world: Res<WorldGrid>,
     mut swarm_buff: ResMut<SwarmBuffState>,
@@ -66,8 +66,10 @@ pub fn track_enemies_near_player(
     let entities = get_entities_in_cells(cells, &world);
     let mut count = 0;
     for entity in entities {
-        if let Ok(_) = enemy.get(entity) {
-            count += 1;
+        if let Ok(state) = enemy.get(entity) {
+            if state.state != ActorStateType::Dead {
+                count += 1;
+            }
         }
     }
     if count >= 5 {

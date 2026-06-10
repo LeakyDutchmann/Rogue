@@ -36,7 +36,7 @@ pub fn ai_pursuing_system(
     ai_path: Query<&AiPath>,
 ) {
     for (enemy_entity, state, tf, mut facing_direction, mut actor_state) in enemy_qr.iter_mut() {
-        if state.current != EnemyStateType::Pursuing && state.current != EnemyStateType::Surrounding {
+        if state.current != EnemyStateType::Pursuing {
             continue;
         }
         let enemy_pos = tf.translation.truncate();

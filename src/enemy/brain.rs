@@ -14,15 +14,12 @@ pub fn ai_brain_system(
                 state.set(EnemyStateType::Patroling);
             },
             AwarenessType::Direct => {
-                if swarm_buff.0 {
+                if distance <= 64.0 {
                     state.set(EnemyStateType::Pursuing);
+                } else if swarm_buff.0 {
+                    state.set(EnemyStateType::Surrounding);
                 } else {
-                    if distance <= 64.0 {
-                        state.set(EnemyStateType::Pursuing);
-                    } else  {
-                        state.set(EnemyStateType::Surrounding);
-                    } 
-                    
+                    state.set(EnemyStateType::Surrounding);
                 }
             },
             AwarenessType::Indirect => {
